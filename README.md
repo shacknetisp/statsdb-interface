@@ -7,6 +7,9 @@ Example config (statsserver.json):
 
 ```
 {
-    'port': 28700
+    "host": '',
+    "port": 28700
 }
 ```
+
+Backups of the sqlite database will be created, one per day, and deleted after 30 days.
