@@ -11,7 +11,7 @@ import api
 import urllib.parse
 import time
 import os
-import cache
+import dbselectors
 
 if len(sys.argv) < 2:
     print("Usage: python3 server.py <master server home directory>")
@@ -61,14 +61,8 @@ class Server:
     def __init__(self):
         self.lasttick = 0
         self.path = homedir + '/stats.sqlite'
-        self.cachelock = Lock()
-        self.cache = {
-            "servers": {},
-            "games": {},
-            "players": {},
-            "weapons": {},
-            }
         self.db = db.DB(self.path)
+        self.dblock = Lock()
         self.httpd = make_server(cfgval("host"), cfgval("port"),
             httpd(self),
             handler_class=httphandler)
@@ -80,14 +74,15 @@ class Server:
 
     def do_http(self):
         while True:
-            if self.cache and select.select([self.httpd], [], [], 3)[0]:
-                self.httpd.handle_request()
+            if select.select([self.httpd], [], [], 3)[0]:
+                with self.dblock:
+                    with self.db:
+                        self.httpd.handle_request()
 
     def tick(self):
         if time.time() - self.lasttick > 60 * 5:
             self.lasttick = time.time()
-            print(('[%s] Caching...' % (datetime.now().strftime('%D %T'))))
-            #Make sure the database exists
+            #Determine if the database exists
             with self.db:
                 self.dbexists = self.db.con.execute(
                         "PRAGMA table_info(games)").fetchone(
@@ -97,22 +92,11 @@ class Server:
                 with self.db:
                     lastgame = self.db.con.execute(
                         "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
-                    cache.weaponlist = [r[0] for r in self.db.con.execute(
+                    dbselectors.weaponlist = [
+                        r[0] for r in self.db.con.execute(
                         "SELECT weapon FROM game_weapons WHERE game = %d" % (
                             lastgame))]
-                self.tcache = {}
-                with self.db:
-                    self.tcache["servers"] = cache.servers(self.db)
-                    self.tcache["games"] = cache.games(self.db)
-                    self.tcache["players"] = cache.players(self.db,
-                        recentlimit=cfgval("playerrecent"))
-                    self.tcache["weapons"] = cache.weapons(self.db,
-                        recentlimit=cfgval("weaponrecent"))
-                with self.cachelock:
-                    self.cache = self.tcache
-                print("...Cached")
-            else:
-                print("...No database")
+            #Create a backup, remove old backups
             backupfile = (homedir +
             "/statsdbbackups/" +
             time.strftime("%Y%m%d") + '.sqlite.bak')
@@ -122,29 +106,8 @@ class Server:
             db.flushdir(homedir + "/statsdbbackups",
                 60 * 60 * 24 * cfgval("backupkeepdays"))
 
-    def getdict(self, name, query):
-        inverr = {'error': "Invalid Query"}
-        nferr = {'error': "Not Found"}
-
-        def simplereturn(q):
-            if query:
-                if query not in self.cache[q]:
-                    return nferr
-                return self.cache[q][query]
-            return self.cache[q]
-        with self.cachelock:
-            if name in ["server", "servers"]:
-                return simplereturn("servers")
-            elif name in ["player", "players"]:
-                return simplereturn("players")
-            elif name in ["game", "games"]:
-                return simplereturn("games")
-            elif name in ["weapon", "weapons"]:
-                return simplereturn("weapons")
-            else:
-                return inverr
-
 server = Server()
 while True:
-    server.tick()
+    with server.dblock:
+        server.tick()
     time.sleep(1)
