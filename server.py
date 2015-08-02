@@ -62,7 +62,12 @@ class Server:
         self.lasttick = 0
         self.path = homedir + '/stats.sqlite'
         self.cachelock = Lock()
-        self.cache = None
+        self.cache = {
+            "servers": {},
+            "games": {},
+            "players": {},
+            "weapons": {},
+            }
         self.db = db.DB(self.path)
         self.httpd = make_server(cfgval("host"), cfgval("port"),
             httpd(self),
@@ -82,26 +87,32 @@ class Server:
         if time.time() - self.lasttick > 60 * 5:
             self.lasttick = time.time()
             print(('[%s] Caching...' % (datetime.now().strftime('%D %T'))))
-            #Get a list of weapons from the last played game
+            #Make sure the database exists
             with self.db:
-                lastgame = self.db.con.execute(
-                    "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
-                cache.weaponlist = [r[0] for r in self.db.con.execute(
-                    "SELECT weapon FROM game_weapons WHERE game = %d" % (
-                        lastgame))]
-            self.tcache = {
-                "servers": {}
-                }
-            with self.db:
-                self.tcache["servers"] = cache.servers(self.db)
-                self.tcache["games"] = cache.games(self.db)
-                self.tcache["players"] = cache.players(self.db,
-                    recentlimit=cfgval("playerrecent"))
-                self.tcache["weapons"] = cache.weapons(self.db,
-                    recentlimit=cfgval("weaponrecent"))
-            with self.cachelock:
-                self.cache = self.tcache
-            print("...Cached")
+                self.dbexists = self.db.con.execute(
+                        "PRAGMA table_info(games)").fetchone(
+                            ) is not None
+            if self.dbexists:
+                #Get a list of weapons from the last played game
+                with self.db:
+                    lastgame = self.db.con.execute(
+                        "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
+                    cache.weaponlist = [r[0] for r in self.db.con.execute(
+                        "SELECT weapon FROM game_weapons WHERE game = %d" % (
+                            lastgame))]
+                self.tcache = {}
+                with self.db:
+                    self.tcache["servers"] = cache.servers(self.db)
+                    self.tcache["games"] = cache.games(self.db)
+                    self.tcache["players"] = cache.players(self.db,
+                        recentlimit=cfgval("playerrecent"))
+                    self.tcache["weapons"] = cache.weapons(self.db,
+                        recentlimit=cfgval("weaponrecent"))
+                with self.cachelock:
+                    self.cache = self.tcache
+                print("...Cached")
+            else:
+                print("...No database")
 
             backupfile = (homedir +
             "/statsdbbackups/" +
