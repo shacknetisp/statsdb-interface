@@ -113,13 +113,12 @@ class Server:
                 print("...Cached")
             else:
                 print("...No database")
-
             backupfile = (homedir +
             "/statsdbbackups/" +
-            "statsdb" +
-            time.strftime(".%Y%m%d"))
+            time.strftime("%Y%m%d") + '.sqlite.bak')
             if not os.path.exists(backupfile):
                 self.db.backup(backupfile)
+                print("Creating backup.")
             db.flushdir(homedir + "/statsdbbackups", 60 * 60 * 24 * 30)
 
     def getdict(self, name, query):
