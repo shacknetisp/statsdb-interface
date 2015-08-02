@@ -2,5 +2,6 @@
 "host": "",
 "port": 28700,
 "playerrecent": 100,
-"weaponrecent": 1000
+"weaponrecent": 1000,
+"backupkeepdays":  30
 }

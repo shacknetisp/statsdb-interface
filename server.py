@@ -119,7 +119,8 @@ class Server:
             if not os.path.exists(backupfile):
                 self.db.backup(backupfile)
                 print("Creating backup.")
-            db.flushdir(homedir + "/statsdbbackups", 60 * 60 * 24 * 30)
+            db.flushdir(homedir + "/statsdbbackups",
+                60 * 60 * 24 * cfgval("backupkeepdays"))
 
     def getdict(self, name, query):
         inverr = {'error': "Invalid Query"}
