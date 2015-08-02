@@ -86,7 +86,7 @@ class Server:
             with self.db:
                 lastgame = self.db.con.execute(
                     "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
-                cache.weapons = [r[0] for r in self.db.con.execute(
+                cache.weaponlist = [r[0] for r in self.db.con.execute(
                     "SELECT weapon FROM game_weapons WHERE game = %d" % (
                         lastgame))]
             self.tcache = {
@@ -97,6 +97,8 @@ class Server:
                 self.tcache["games"] = cache.games(self.db)
                 self.tcache["players"] = cache.players(self.db,
                     recentlimit=cfgval("playerrecent"))
+                self.tcache["weapons"] = cache.weapons(self.db,
+                    recentlimit=cfgval("weaponrecent"))
             with self.cachelock:
                 self.cache = self.tcache
             print("...Cached")
@@ -126,6 +128,8 @@ class Server:
                 return simplereturn("players")
             elif name in ["game", "games"]:
                 return simplereturn("games")
+            elif name in ["weapon", "weapons"]:
+                return simplereturn("weapons")
             else:
                 return inverr
 

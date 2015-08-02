@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-weapons = []
+weaponlist = []
 
 
 def dictfromrow(d, r, l, start=0):
@@ -53,18 +53,20 @@ def players(db, recentlimit):
                 alltime[t] = allsum(t)
             #Weapon Data
             ##Individual Weapons
-            for weapon in weapons:
+            for weapon in weaponlist:
                 wr = {}
                 wa = {}
                 recentsum = lambda x: db.con.execute(
                     """SELECT sum(%s) FROM
-                    (SELECT * FROM game_weapons WHERE weapon = ?
+                    (SELECT * FROM game_weapons
+                    WHERE weapon = ? AND playerhandle = ?
                     ORDER by ROWID DESC LIMIT %d)""" % (x, recentlimit),
-                    (weapon,)).fetchone()[0]
+                    (weapon, player['handle'])).fetchone()[0]
                 allsum = lambda x: db.con.execute(
-                    """SELECT sum(%s) FROM game_weapons WHERE weapon = ?""" % (
+                    """SELECT sum(%s) FROM game_weapons
+                    WHERE weapon = ? AND playerhandle = ?""" % (
                         x),
-                    (weapon,)).fetchone()[0]
+                    (weapon, player['handle'])).fetchone()[0]
                 for t in weapcols:
                     wr[t] = recentsum(t)
                     wa[t] = allsum(t)
@@ -122,7 +124,7 @@ def games(db):
                 dictfromrow(player, player_row, [None,
                     "name", "handle",
                     "score", "timealive", "frags", "deaths"])
-                for weapon in weapons:
+                for weapon in weaponlist:
                     w = {}
                     for t in weapcols:
                         w[t] = db.con.execute("""
@@ -132,7 +134,7 @@ def games(db):
                             ), (weapon,)).fetchone()[0]
                     player["weapons"][weapon] = w
                 game["players"].append(player)
-        for weapon in weapons:
+        for weapon in weaponlist:
             w = {}
             gameweapsum = lambda x: db.con.execute(
                 """SELECT sum(%s) FROM game_weapons
@@ -143,4 +145,28 @@ def games(db):
                 w[t] = gameweapsum(t)
             game['weapons'][weapon] = w
         ret[row[0]] = game
+    return ret
+
+
+def weapons(db, recentlimit):
+    ret = {}
+    for weapon in weaponlist:
+        wr = {}
+        wa = {}
+        recentsum = lambda x: db.con.execute(
+            """SELECT sum(%s) FROM
+            (SELECT * FROM game_weapons WHERE weapon = ?
+            ORDER by ROWID DESC LIMIT %d)""" % (x, recentlimit),
+            (weapon,)).fetchone()[0]
+        allsum = lambda x: db.con.execute(
+            """SELECT sum(%s) FROM game_weapons WHERE weapon = ?""" % (
+                x),
+            (weapon,)).fetchone()[0]
+        for t in weapcols:
+            wr[t] = recentsum(t)
+            wa[t] = allsum(t)
+        ret[weapon] = {
+            'recent': wr,
+            'alltime': wa,
+            }
     return ret
