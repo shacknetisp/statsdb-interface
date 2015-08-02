@@ -11,6 +11,7 @@ import api
 import urllib.parse
 import time
 import os
+import cache
 
 if len(sys.argv) < 2:
     print("Usage: python3 server.py <master server home directory>")
@@ -19,7 +20,17 @@ if len(sys.argv) < 2:
 homedir = sys.argv[1]
 os.makedirs(homedir + '/statsdbbackups', exist_ok=True)
 
-config = json.loads(open(homedir + '/statsserver.json').read())
+try:
+    config = json.loads(open(homedir + '/statsserver.json').read())
+except FileNotFoundError:
+    config = {}
+defaultconfig = json.loads(open('defaultconfig.json').read())
+
+
+def cfgval(key):
+    if key in config:
+        return config[key]
+    return defaultconfig[key]
 
 
 class httpd:
@@ -45,11 +56,6 @@ class httphandler (WSGIRequestHandler):
         pass
 
 
-def dictfromrow(d, r, l, start):
-    for i in range(len(l)):
-        d[l[i]] = r[i + start]
-
-
 class Server:
 
     def __init__(self):
@@ -58,7 +64,7 @@ class Server:
         self.cachelock = Lock()
         self.cache = None
         self.db = db.DB(self.path)
-        self.httpd = make_server(config['host'], config['port'],
+        self.httpd = make_server(cfgval("host"), cfgval("port"),
             httpd(self),
             handler_class=httphandler)
         self.tick()
@@ -73,33 +79,24 @@ class Server:
                 self.httpd.handle_request()
 
     def tick(self):
-        if time.time() - self.lasttick > 30:
+        if time.time() - self.lasttick > 60 * 5:
             self.lasttick = time.time()
             print(('[%s] Caching...' % (datetime.now().strftime('%D %T'))))
+            #Get a list of weapons from the last played game
+            with self.db:
+                lastgame = self.db.con.execute(
+                    "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
+                cache.weapons = [r[0] for r in self.db.con.execute(
+                    "SELECT weapon FROM game_weapons WHERE game = %d" % (
+                        lastgame))]
             self.tcache = {
                 "servers": {}
                 }
             with self.db:
-                #Servers
-                sc = {}
-                for row in self.db.con.execute(
-                    "SELECT DISTINCT handle FROM game_servers"):
-                        server = {
-                            "handle": row[0],
-                            }
-                        lastrow = self.db.con.execute(
-                            """SELECT * FROM game_servers
-                            WHERE handle = ?
-                            ORDER BY ROWID DESC""", (row[0],)).fetchone()
-                        dictfromrow(server, lastrow, [
-                            "flags", "desc", "version", "host", "port"
-                            ], start=2)
-                        server["games"] = [r[0] for r in
-                        self.db.con.execute(
-                            """SELECT game FROM game_servers
-                            WHERE handle = ?""", (row[0],))]
-                        sc[row[0]] = server
-                self.tcache["servers"] = sc
+                self.tcache["servers"] = cache.servers(self.db)
+                self.tcache["games"] = cache.games(self.db)
+                self.tcache["players"] = cache.players(self.db,
+                    recentlimit=cfgval("playerrecent"))
             with self.cachelock:
                 self.cache = self.tcache
             print("...Cached")
@@ -115,13 +112,20 @@ class Server:
     def getdict(self, name, query):
         inverr = {'error': "Invalid Query"}
         nferr = {'error': "Not Found"}
+
+        def simplereturn(q):
+            if query:
+                if query not in self.cache[q]:
+                    return nferr
+                return self.cache[q][query]
+            return self.cache[q]
         with self.cachelock:
-            if name == "server":
-                if query:
-                    if query not in self.cache["servers"]:
-                        return nferr
-                    return self.cache["servers"][query]
-                return self.cache["servers"]
+            if name in ["server", "servers"]:
+                return simplereturn("servers")
+            elif name in ["player", "players"]:
+                return simplereturn("players")
+            elif name in ["game", "games"]:
+                return simplereturn("games")
             else:
                 return inverr
 

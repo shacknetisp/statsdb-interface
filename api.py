@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import matplotlib
-matplotlib.use('Agg')
-import pylab as p
 import time
 
 
