@@ -1,6 +1,6 @@
 {
 "host": "",
 "port": 28700,
-"playerrecent": 100
-"weaponrecent": 1000,
+"playerrecent": 100,
+"weaponrecent": 1000
 }

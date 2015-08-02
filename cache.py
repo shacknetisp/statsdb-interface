@@ -7,6 +7,13 @@ def dictfromrow(d, r, l, start=0):
         if l[i] is not None:
             d[l[i]] = r[i + start]
 
+weapcols = ['timewielded', 'timeloadout']
+for a in ['damage',
+    'hits', 'shots',
+    'flakhits', 'flakshots',
+    'frags']:
+        weapcols += [a + '1', a + '2']
+
 
 def players(db, recentlimit):
     pc = {}
@@ -46,12 +53,6 @@ def players(db, recentlimit):
                 alltime[t] = allsum(t)
             #Weapon Data
             ##Individual Weapons
-            weapsums = ['timewielded', 'timeloadout']
-            for a in ['damage',
-                'hits', 'shots',
-                'flakhits', 'flakshots',
-                'frags']:
-                    weapsums += [a + '1', a + '2']
             for weapon in weapons:
                 wr = {}
                 wa = {}
@@ -64,7 +65,7 @@ def players(db, recentlimit):
                     """SELECT sum(%s) FROM game_weapons WHERE weapon = ?""" % (
                         x),
                     (weapon,)).fetchone()[0]
-                for t in weapsums:
+                for t in weapcols:
                     wr[t] = recentsum(t)
                     wa[t] = allsum(t)
                 alltime['weapons'][weapon] = wa
@@ -102,6 +103,8 @@ def games(db):
     for row in db.con.execute("SELECT * FROM games"):
         game = {
             "teams": {},
+            "players": [],
+            "weapons": {},
             }
         dictfromrow(game, row, ["id", "time",
             "map", "mode", "mutators",
@@ -111,5 +114,33 @@ def games(db):
                 team = {}
                 dictfromrow(team, team_row, [None, "team", "score", "name"])
                 game["teams"][team["name"]] = team
+        for player_row in db.con.execute(
+            "SELECT * FROM game_players WHERE game = %d" % row[0]):
+                player = {
+                    "weapons": {},
+                    }
+                dictfromrow(player, player_row, [None,
+                    "name", "handle",
+                    "score", "timealive", "frags", "deaths"])
+                for weapon in weapons:
+                    w = {}
+                    for t in weapcols:
+                        w[t] = db.con.execute("""
+                        SELECT %s FROM game_weapons
+                        WHERE game = %d AND player = %d AND weapon = ?""" % (
+                            t, game['id'], player_row[7]
+                            ), (weapon,)).fetchone()[0]
+                    player["weapons"][weapon] = w
+                game["players"].append(player)
+        for weapon in weapons:
+            w = {}
+            gameweapsum = lambda x: db.con.execute(
+                """SELECT sum(%s) FROM game_weapons
+                WHERE weapon = ? AND game = %d""" % (
+                    x, game['id']),
+                (weapon,)).fetchone()[0]
+            for t in weapcols:
+                w[t] = gameweapsum(t)
+            game['weapons'][weapon] = w
         ret[row[0]] = game
     return ret
