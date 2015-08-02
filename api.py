@@ -27,4 +27,4 @@ def make(server, db, q, path):
         if name:
             return 'application/json', '200 OK', json.dumps(
                 server.getdict(name, arg)).encode()
-    return 'text/html', '400 NotFound', b'400 Not Found'
+    return 'text/html', '404 NotFound', b'404 Not Found'
