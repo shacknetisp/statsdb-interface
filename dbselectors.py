@@ -10,6 +10,8 @@ for a in ['damage',
         weapcols += [a + '1', a + '2']
 m_laptime_sql = ("mode != 6 OR (mutators & 32768) = 0",
     "mode = 6 AND (mutators & 32768) != 0")
+modestr = ["Demo", "Editing", "Deathmatch",
+    "CTF", "DAC", "Bomber Ball", "Race"]
 
 
 #Other Utilities
@@ -88,8 +90,8 @@ class BaseSelector:
         return (("WHERE " if sql else "") + " AND ".join(sql)), opts
 
     def copyfrom(self, other):
-        self.pathid = None
-        self.qopt = None
+        self.pathid = other.pathid
+        self.qopt = other.qopt
         self.server = other.server
         self.db = other.db
 
@@ -194,7 +196,7 @@ class GameSelector(BaseSelector):
     def single(self, num, one=True):
         row = self.db.con.execute(
             """SELECT * FROM games
-            WHERE id = %d""" % num).fetchone()
+            WHERE id = ?""", (num,)).fetchone()
         if not row:
             return None
         ret = {
@@ -207,7 +209,7 @@ class GameSelector(BaseSelector):
             "timeplayed"])
         ret["server"] = self.db.con.execute(
             """SELECT handle FROM game_servers
-            WHERE game = %d""" % num).fetchone()[0]
+            WHERE game = %d""" % ret['id']).fetchone()[0]
         for team_row in self.db.con.execute(
             "SELECT * FROM game_teams WHERE game = %d" % row[0]):
                 team = {}

@@ -1,11 +1,11 @@
 body {
     background-image: url("/images/background.png");
     background-size: cover;
-    color: #BBB;
+    color: #EEE;
 }
 
 a:link {
-    color: #AA0;
+    color: #EE0;
 }
 
 .center {
@@ -43,4 +43,20 @@ a:link {
 
 #top-navbar > ul > li:active {
     border-style: inset;
+}
+
+.display-table {
+    margin-top: 4px;
+    text-align: center;
+}
+
+.display-table > table {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.display-table > table > tbody > tr > td,
+.display-table > table > tbody > tr > th {
+    border: 2px outset black;
+    text-align: center;
 }
