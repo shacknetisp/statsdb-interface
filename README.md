@@ -9,9 +9,17 @@ Backups of the sqlite database will be created, one per day, and deleted after 3
 
 Web Points:
 
-`<>` means a placeholder, `[]` means a LIKE placeholder.
+`<>` means a placeholder, `[]` means a LIKE placeholder, `{}` is an optional set.
 
 * `/get`
- * `/servers[/handle]`
-  * `?host=<IP>`
-  * `?version=[version]`
+ * `/servers{/handle}`
+  * `?{not-}host=<IP>`
+  * `?{not-}version=[version]`
+  * `?{not-}flags=[flags]`
+ * `/game{/gameid}`
+  * `?{not-}mode=<mode>`
+  * `?{lt/gt/not-}timeplayed=<timeplayed>`
+  * `?{lt/gt/not-}time=<time>`
+  * List: `?{not-}map=<map>`
+  * List: `?{not-}mutator=<mutator>`
+  * List: `?{not-}playerhandle=<playerhandle>`

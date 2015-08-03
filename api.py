@@ -14,11 +14,14 @@ class Qopt:
     def __init__(self, q):
         self.q = q
 
-    def __call__(self, opt, d=None):
+    def __call__(self, opt, d=None, c=str):
         try:
-            return self.q[opt][0]
+            return c(self.q[opt][0])
         except:
             return d
+
+    def __getitem__(self, opt):
+        return self.q[opt] if opt in self.q else []
 
     def __contains__(self, key):
         return key in self.q

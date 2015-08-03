@@ -7,13 +7,6 @@ def dictfromrow(d, r, l, start=0):
         if l[i] is not None:
             d[l[i]] = r[i + start]
 
-weapcols = ['timewielded', 'timeloadout']
-for a in ['damage',
-    'hits', 'shots',
-    'flakhits', 'flakshots',
-    'frags']:
-        weapcols += [a + '1', a + '2']
-
 
 def players(db, recentlimit):
     pc = {}
