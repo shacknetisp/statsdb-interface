@@ -72,6 +72,12 @@ class BaseSelector:
                 opts.append(self.qopt(f['key']))
         return (("WHERE " if sql else "") + " AND ".join(sql)), opts
 
+    def copyfrom(self, other):
+        self.pathid = None
+        self.qopt = None
+        self.server = other.server
+        self.db = other.db
+
 
 class ServerSelector(BaseSelector):
 
@@ -82,7 +88,9 @@ class ServerSelector(BaseSelector):
         ]
 
     def single(self, handle):
-        ret = {}
+        ret = {
+            "recentgames": {},
+            }
         row = self.db.con.execute(
             """SELECT * FROM game_servers
             WHERE handle = ?
@@ -96,6 +104,15 @@ class ServerSelector(BaseSelector):
         self.db.con.execute(
             """SELECT game FROM game_servers
             WHERE handle = ?""", (handle,))]
+        recentgames = [r[0] for r in self.db.con.execute(
+                """SELECT id FROM
+                (SELECT * FROM games
+                ORDER by id DESC LIMIT %d)""" % (
+                    self.server.cfgval("serverrecent")))]
+        for gid in recentgames:
+            gs = GameSelector()
+            gs.copyfrom(self)
+            ret["recentgames"][gid] = gs.single(gid, one=False)
         return ret
 
     def getdict(self):

@@ -1,7 +1,13 @@
 {
 "host": "",
 "port": 28700,
-"playerrecent": 100,
-"weaponrecent": 1000,
-"backupkeepdays": 30
+"backupkeepdays": 30,
+
+"serverrecent": 5,
+"serverrecentavg": 100,
+
+"playerrecent": 5,
+"playerrecentavg": 100,
+
+"weaponrecentavg": 1000
 }

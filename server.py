@@ -110,6 +110,9 @@ class Server:
             db.flushdir(homedir + "/statsdbbackups",
                 60 * 60 * 24 * cfgval("backupkeepdays"))
 
+    def cfgval(self, k):
+        return cfgval(k)
+
 server = Server()
 while True:
     with server.dblock:
