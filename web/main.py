@@ -12,7 +12,7 @@ def page(sel):
         "recent": [True],
         })
     games = gs.getdict()
-    for gid, game in list(games.items())[:10]:
+    for gid, game in list(reversed(list(games.items())))[:10]:
         recentgames += '<tr>'
         recentgames += '<td>#%d</td>' % gid
         recentgames += '<td>%s</td>' % dbselectors.modestr[game["mode"]]
