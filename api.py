@@ -36,6 +36,9 @@ def make(server, db, q, path):
     qopt = Qopt(q)
     paths = path.split('/')[1:]
     if paths[0] == 'get':
+        if not server.dbexists:
+            return 'application/json', '200 OK', json.dumps(
+                {}).encode()
         if len(paths) >= 2:
             name = paths[1]
             pathid = paths[2] if len(paths) >= 3 else None

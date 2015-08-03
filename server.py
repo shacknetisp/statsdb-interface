@@ -89,7 +89,7 @@ class Server:
                             ) is not None
                 if self.dbexists:
                     self.dbexists = self.db.con.execute(
-                            "PRAGMA table_info(games)").fetchone(
+                            "SELECT id FROM games ORDER BY id DESC").fetchone(
                                 ) is not None
             if self.dbexists:
                 #Get a list of weapons from the last played game
