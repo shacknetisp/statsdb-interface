@@ -31,8 +31,6 @@ def basicfilter(k, c="=", s=None):
     if s is None:
         s = k
     e = ""
-    if (c == "LIKE"):
-        e = " ESCAPE '\\'"
     return [
         {"key": k, "sql": "%s %s ?%s" % (s, c, e)},
         {"key": "not-" + k, "sql": "%s NOT %s ?%s" % (s, c, e)}]
@@ -95,13 +93,21 @@ class BaseSelector:
         self.server = other.server
         self.db = other.db
 
+    def vlimit(self, i="game"):
+        if "allversions" in self.qopt:
+            return "1 = 1"
+        return """%s IN (SELECT game FROM game_servers
+        WHERE version GLOB '%s')""" % (i,
+            self.server.cfgval("recordversion").replace("'", "''")
+            )
+
 
 class ServerSelector(BaseSelector):
 
     filters = [
         basicfilter("host"),
-        basicfilter("version", "LIKE"),
-        basicfilter("flags", "LIKE"),
+        basicfilter("version", "GLOB"),
+        basicfilter("flags", "GLOB"),
         ]
 
     def single(self, handle):
@@ -265,7 +271,7 @@ class GameSelector(BaseSelector):
 class PlayerSelector(BaseSelector):
 
     filters = [
-        basicfilter("name", "LIKE"),
+        basicfilter("name", "GLOB"),
         ]
 
     def single(self, handle, one=True):
@@ -290,14 +296,16 @@ class PlayerSelector(BaseSelector):
             """SELECT sum(%s) FROM
             (SELECT * FROM game_players
             WHERE game IN (SELECT id FROM games WHERE %s)
+            AND %s
             ORDER by ROWID DESC LIMIT %d)""" % (x,
-            m_laptime_sql[0],
+            m_laptime_sql[0], self.vlimit(),
             self.server.cfgval("playerrecentavg"))
             ).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
-            WHERE game IN (SELECT id FROM games WHERE %s)""" % (x,
-                m_laptime_sql[0])
+            WHERE game IN (SELECT id FROM games WHERE %s)
+            AND %s""" % (x,
+                m_laptime_sql[0], self.vlimit())
             ).fetchone()[0]
         alltime = {
             'weapons': {},
@@ -319,14 +327,17 @@ class PlayerSelector(BaseSelector):
                     (SELECT * FROM game_weapons
                     WHERE weapon = ? AND playerhandle = ?
                     AND game IN (SELECT id FROM games WHERE %s)
+                    AND %s
                     ORDER by ROWID DESC LIMIT %d)""" % (x, m_laptime_sql[0],
+                    self.vlimit(),
                     self.server.cfgval("playerrecentavg")),
                     (weapon, ret['handle'])).fetchone()[0]
                 allsum = lambda x: self.db.con.execute(
                     """SELECT sum(%s) FROM game_weapons
                     WHERE weapon = ? AND playerhandle = ?
+                    AND %s
                     AND game IN (SELECT id FROM games WHERE %s)""" % (
-                        x, m_laptime_sql[0]),
+                        x, self.vlimit(), m_laptime_sql[0]),
                     (weapon, ret['handle'])).fetchone()[0]
                 for t in weapcols:
                     wr[t] = recentsum(t)
@@ -365,7 +376,9 @@ class WeaponSelector(BaseSelector):
         recentsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM
             (SELECT * FROM game_weapons WHERE weapon = ?
+            AND %s
             ORDER by ROWID DESC LIMIT %d)""" % (x,
+            self.vlimit(),
             self.server.cfgval("weaponrecentavg")),
             (name,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
@@ -390,9 +403,70 @@ class WeaponSelector(BaseSelector):
             ret[w] = self.single(w)
         return ret
 
+
+class MapSelector(BaseSelector):
+
+    def single(self, mapname, one=True):
+        ret = {
+            "name": mapname,
+            "recentgames": {},
+            "toprace": {
+                "game": None,
+                "gameplayer": None,
+                "time": 0,
+                },
+            }
+        ret["games"] = [r[0] for r in
+        self.db.con.execute(
+            """SELECT id FROM games
+            WHERE map = ?""", (mapname,))]
+        if one:
+            for gid in list(reversed(ret["games"]))[
+                :self.server.cfgval("maprecent")]:
+                gs = GameSelector()
+                gs.copyfrom(self)
+                game = gs.single(gid, one=False)
+                ret["recentgames"][gid] = game
+        for row in self.db.con.execute(
+            """SELECT id FROM games
+            WHERE map = ?
+            AND %s
+            AND %s""" % (self.vlimit("id"), m_laptime_sql[1]), (mapname,)):
+                gs = GameSelector()
+                gs.copyfrom(self)
+                game = gs.single(row[0], one=False)
+                finishedplayers = [
+                    p for p in game["players"] if p["score"] > 0]
+                bestplayer = None
+                for p in finishedplayers:
+                    if not bestplayer or p["score"] <= bestplayer["score"]:
+                        bestplayer = p
+                if bestplayer:
+                    if bestplayer["score"] <= ret[
+                        "toprace"]["time"] or ret["toprace"]["time"] == 0:
+                            ret["toprace"]["time"] = bestplayer["score"]
+                            ret["toprace"]["gameplayer"] = bestplayer
+                            ret["toprace"]["game"] = game
+
+        return ret
+
+    def getdict(self):
+        if self.pathid is not None:
+            return self.single(self.pathid)
+        f = self.makefilters()
+        maps = [r[0] for r in
+        self.db.con.execute(
+            """SELECT DISTINCT map FROM games
+            %s""" % f[0], f[1])]
+        ret = {}
+        for mapname in maps:
+            ret[mapname] = self.single(mapname, False)
+        return ret
+
 selectors = {
     'servers': ServerSelector(),
     'games': GameSelector(),
     'players': PlayerSelector(),
     'weapons': WeaponSelector(),
+    'maps': MapSelector(),
     }

@@ -9,7 +9,7 @@ Backups of the sqlite database will be created, one per day, and deleted after 3
 
 ## API Points:
 
-`<>` means a placeholder, `[]` means a LIKE placeholder (ESCAPE `\`), `{}` is an optional set.
+`<>` means a placeholder, `[]` means a GLOB placeholder, `{}` is an optional set.
 
 ### `/get`
 * `/servers{/handle}`
@@ -24,3 +24,10 @@ Backups of the sqlite database will be created, one per day, and deleted after 3
  * (*List*) `?{not-}map=<map>`
  * (*List*) `?{not-}mutator=<mutator>`
  * (*List*) `?{not-}playerhandle=<playerhandle>`
+* `/players{/handle}`
+ * `?allversions`
+ * `?{not-}name=[name]`
+* `/weapons[/weapon]`
+ * `?allversions`
+* `/maps[/map]`
+ * `?allversions`

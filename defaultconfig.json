@@ -4,6 +4,7 @@
 "backupkeepdays": 30,
 
 "gamerecent": 20,
+"maprecent": 5,
 
 "serverrecent": 5,
 "serverrecentavg": 100,
@@ -11,5 +12,7 @@
 "playerrecent": 5,
 "playerrecentavg": 100,
 
-"weaponrecentavg": 1000
+"weaponrecentavg": 1000,
+
+"recordversion": "1.5.*"
 }
