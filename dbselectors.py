@@ -104,15 +104,13 @@ class ServerSelector(BaseSelector):
         self.db.con.execute(
             """SELECT game FROM game_servers
             WHERE handle = ?""", (handle,))]
-        recentgames = [r[0] for r in self.db.con.execute(
-                """SELECT id FROM
-                (SELECT * FROM games
-                ORDER by id DESC LIMIT %d)""" % (
-                    self.server.cfgval("serverrecent")))]
-        for gid in recentgames:
+        for gid in list(reversed(ret["games"]))[
+            :self.server.cfgval("serverrecent")]:
             gs = GameSelector()
             gs.copyfrom(self)
-            ret["recentgames"][gid] = gs.single(gid, one=False)
+            game = gs.single(gid, one=False)
+            if game["server"] == ret["handle"]:
+                ret["recentgames"][gid] = game
         return ret
 
     def getdict(self):
@@ -184,6 +182,9 @@ class GameSelector(BaseSelector):
         dictfromrow(ret, row, ["id", "time",
             "map", "mode", "mutators",
             "timeplayed"])
+        ret["server"] = self.db.con.execute(
+            """SELECT handle FROM game_servers
+            WHERE game = %d""" % num).fetchone()[0]
         for team_row in self.db.con.execute(
             "SELECT * FROM game_teams WHERE game = %d" % row[0]):
                 team = {}
