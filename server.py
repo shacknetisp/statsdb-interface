@@ -85,8 +85,12 @@ class Server:
             #Determine if the database exists
             with self.db:
                 self.dbexists = self.db.con.execute(
-                        "SELECT id FROM games ORDER BY id DESC").fetchone(
+                        "PRAGMA table_info(games)").fetchone(
                             ) is not None
+                if self.dbexists:
+                    self.dbexists = self.db.con.execute(
+                            "PRAGMA table_info(games)").fetchone(
+                                ) is not None
             if self.dbexists:
                 #Get a list of weapons from the last played game
                 with self.db:
