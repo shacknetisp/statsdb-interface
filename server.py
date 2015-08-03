@@ -42,10 +42,19 @@ class httpd:
         print(((datetime.now().strftime('%D %T')
         + ': ' + environ['REMOTE_ADDR']
         + ': ' + environ['PATH_INFO'] + '?' + environ['QUERY_STRING']).strip()))
-        t, status, result = api.make(self.server,
+        result = b""
+        r = api.make(self.server,
             self.server.db, urllib.parse.parse_qs(
                     environ['QUERY_STRING'], True), environ['PATH_INFO'])
-        headers = [('Content-type', '%s' % t)]
+        if len(r) == 3:
+            t, status, result = r
+            headers = [('Content-type', '%s' % t)]
+        elif len(r) == 2:
+            t = r[0]
+            args = r[1:]
+            if t == 'redirect':
+                status = "301 Moved Permanently"
+                headers = [('Location', '%s' % args[0])]
         start_response(status, headers)
         return [result]
 

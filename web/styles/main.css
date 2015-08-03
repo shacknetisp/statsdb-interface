@@ -1,0 +1,46 @@
+body {
+    background-image: url("/images/background.png");
+    background-size: cover;
+    color: #BBB;
+}
+
+a:link {
+    color: #AA0;
+}
+
+.center {
+    text-align: center;
+}
+
+#top-navbar {
+    text-align: center;
+}
+
+#top-navbar > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#top-navbar > ul > li {
+    display: inline;
+    border-style: outset;
+    border-width: 2px;
+}
+
+#top-navbar > ul > li > a:link {
+    color: #DDD;
+    text-decoration: none;
+}
+
+#top-navbar > ul > li > a {
+    outline: 0;
+}
+
+#top-navbar > ul > li:hover {
+    background-color: #300;
+}
+
+#top-navbar > ul > li:active {
+    border-style: inset;
+}

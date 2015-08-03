@@ -2,6 +2,7 @@
 import json
 import time
 import dbselectors
+import web
 
 
 def chunks(l, n):
@@ -35,21 +36,48 @@ def counterwait(c):
 def make(server, db, q, path):
     qopt = Qopt(q)
     paths = path.split('/')[1:]
+    sel = dbselectors.BaseSelector()
+    sel.pathid = None
+    sel.server = server
+    sel.db = db
+    sel.qopt = qopt
     if paths[0] == 'get':
+        ret = {"error": "Invalid Query"}
         if not server.dbexists:
             return 'application/json', '200 OK', json.dumps(
-                {}).encode()
+                {"error": "Empty Database"}).encode()
         if len(paths) >= 2:
             name = paths[1]
             pathid = paths[2] if len(paths) >= 3 else None
+            sel.pathid = pathid
             if name in dbselectors.selectors:
-                dbselectors.selectors[name].pathid = pathid
-                dbselectors.selectors[name].server = server
-                dbselectors.selectors[name].db = db
-                dbselectors.selectors[name].qopt = qopt
+                dbselectors.selectors[name].copyfrom(sel)
                 ret = dbselectors.selectors[name].getdict()
                 if ret is None:
                     ret = {"error": "Invalid Query"}
-                return 'application/json', '200 OK', json.dumps(
-                    ret).encode()
-    return 'text/html', '404 NotFound', b'404 Not Found'
+        return 'application/json', '200 OK', json.dumps(
+            ret).encode()
+    elif paths[0] == 'images':
+        try:
+            return 'image/png', '200 OK', open(
+                "web/images/%s" % '/'.join(paths[1:]).replace(
+                    '..', ''), 'rb').read()
+        except IndexError:
+            pass
+        except FileNotFoundError:
+            pass
+    elif paths[0] == 'styles':
+        try:
+            return 'text/css', '200 OK', open(
+                "web/styles/%s" % '/'.join(paths[1:]).replace(
+                    '..', '')).read().encode()
+        except IndexError:
+            pass
+        except FileNotFoundError:
+            pass
+    elif not paths[0]:
+        return 'text/html', '200 OK', web.main.page(sel).encode()
+    elif paths[0] == 'apidocs':
+        return ('redirect',
+        'https://github.com/shacknetisp/statsdb-interface#api-points')
+    return 'text/html', '404 Not Found', web.err404.page(sel).encode()
