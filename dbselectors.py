@@ -293,7 +293,8 @@ class PlayerSelector(BaseSelector):
         if row is None:
             return None
         ret = {
-            'handle': row[2]
+            'handle': row[2],
+            "recentgames": {},
             }
         dictfromrow(ret, row, [
             "name"
@@ -301,7 +302,13 @@ class PlayerSelector(BaseSelector):
         ret["games"] = [r[0] for r in
         self.db.con.execute(
             """SELECT game FROM game_players
-            WHERE handle = ?""", (row[0],))]
+            WHERE handle = ?""", (handle,))]
+        for gid in list(reversed(ret["games"]))[
+            :self.server.cfgval("playerrecent")]:
+            gs = GameSelector()
+            gs.copyfrom(self)
+            game = gs.single(gid, one=False)
+            ret["recentgames"][gid] = game
         #Data from games
         recentsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM

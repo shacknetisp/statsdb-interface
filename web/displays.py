@@ -60,10 +60,10 @@ def game(sel):
     gs = dbselectors.GameSelector()
     gs.copyfrom(sel)
     game = gs.single(sel.pathid)
-    game["map"] = cgi.escape(game["map"])
     if game is None:
         ret = "<div class='center'><h2>No such game.</h2></div>"
     else:
+        game["map"] = cgi.escape(game["map"])
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         server = ss.single(game["server"])
@@ -83,8 +83,8 @@ def game(sel):
             playersstr += "<td>%s</td>" % (dbselectors.scorestr(game,
                 player["score"]))
             playersstr += tdlink("player", player["handle"], player["handle"])
-            playersstr += "<td>%d%%</td>" % (
-                player["timealive"] / game["timeplayed"] * 100)
+            playersstr += "<td>%s</td>" % (
+                timeutils.durstr(player["timealive"]))
             playersstr += "<td>%d</td>" % player["frags"]
             playersstr += "<td>%d</td>" % player["deaths"]
             playersstr += "</tr>"
@@ -129,3 +129,53 @@ def game(sel):
             game=game, server=server, teams=teamsstr, players=playersstr)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["game"] = game
+
+
+def player(sel):
+    ret = ""
+    gs = dbselectors.PlayerSelector()
+    gs.copyfrom(sel)
+    player = gs.single(sel.pathid)
+    if player is None:
+        ret = "<div class='center'><h2>No such player.</h2></div>"
+    else:
+        player["name"] = cgi.escape(player["name"])
+        recentgames = ""
+        for gid, game in list(reversed(
+            list(player["recentgames"].items())))[:10]:
+                entry = [p for p in game["players"]
+                if p["handle"] == player["handle"]][0]
+                recentgames += '<tr>'
+                recentgames += tdlink("game", gid,
+                    "#%d (%s on %s)" % (gid, dbselectors.modestr[game["mode"]],
+                        game["map"]))
+                recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
+                recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
+                recentgames += '<td>%s</td>' % dbselectors.scorestr(game,
+                    entry["score"])
+                recentgames += '<td>%d</td>' % entry["frags"]
+                recentgames += '<td>%d</td>' % entry["deaths"]
+                recentgames += '</tr>'
+        ret += """
+        <div class="center">
+            <h2>{player[name]}</h2>
+            <h3>{player[handle]}</h3>
+            <div class='display-table'>
+                <h3>Recent Games</h3>
+                <table>
+                    <tr>
+                        <th>Game</th>
+                        <th>Time</th>
+                        <th>Played As</th>
+                        <th>Score</th>
+                        <th>Frags</th>
+                        <th>Deaths</th>
+                    </tr>
+                    {recentgames}
+                </table>
+            </div>
+        </div>
+        """.format(recentgames=recentgames,
+            player=player)
+    return base.page(sel, ret, title="Game %s" % sel.pathid)
+displays["player"] = player
