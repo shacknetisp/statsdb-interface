@@ -57,6 +57,15 @@ def make(server, db, q, path):
                     ret = {"error": "Invalid Query"}
         return 'application/json', '200 OK', json.dumps(
             ret).encode()
+    elif paths[0] == 'display':
+        if server.dbexists:
+            if len(paths) >= 3:
+                name = paths[1]
+                pathid = paths[2]
+                sel.pathid = pathid
+                if name in web.displays.displays:
+                    ret = web.displays.displays[name](sel)
+                    return 'text/html', '200 OK', ret.encode()
     elif paths[0] == 'images':
         try:
             return 'image/png', '200 OK', open(

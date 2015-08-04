@@ -2,6 +2,8 @@
 from . import base
 import api
 import dbselectors
+from .base import tdlink
+import timeutils
 
 
 def page(sel):
@@ -14,21 +16,21 @@ def page(sel):
     games = gs.getdict()
     for gid, game in list(reversed(list(games.items())))[:10]:
         recentgames += '<tr>'
-        recentgames += '<td>#%d</td>' % gid
-        recentgames += '<td>%s</td>' % dbselectors.modestr[game["mode"]]
+        recentgames += tdlink("game", gid, "#%d" % gid)
+        recentgames += tdlink("mode",
+            game["mode"],
+            dbselectors.modestr[game["mode"]])
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
-        recentgames += '<td>%s</td>' % desc
-        recentgames += '<td>%s</td>' % game["map"]
+        recentgames += tdlink('server', game["server"], desc)
+        recentgames += tdlink('map', game["map"], game["map"])
+        recentgames += '<td>%s</td>' % timeutils.durstr(round(
+            game["timeplayed"] / 1000))
+        recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
         recentgames += '</tr>'
     ret = """
     <h2 class='center'>Red Eclipse Statistics</h2>
-    <div class='center'>
-    The main display is still in progress,
-    however the <a href="/apidocs">JSON API</a> is working.
-    </div>
-
     <div class='display-table'>
         <h3>Recent Games</h3>
         <table>
@@ -37,6 +39,8 @@ def page(sel):
                 <th>Mode</th>
                 <th>Server</th>
                 <th>Map</th>
+                <th>Duration</th>
+                <th>Played</th>
             </tr>
             {recentgames}
         </table>
