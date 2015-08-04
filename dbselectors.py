@@ -14,6 +14,13 @@ modestr = ["Demo", "Editing", "Deathmatch",
     "CTF", "DAC", "Bomber Ball", "Race"]
 
 
+def scorestr(game, score):
+    import timeutils
+    if game["mode"] == 6 and game["mutators"] & 32768:
+        return timeutils.durstr(score / 1000, dec=True)
+    return str(score)
+
+
 #Other Utilities
 def dictfromrow(d, r, l, start=0):
     for i in range(len(l)):

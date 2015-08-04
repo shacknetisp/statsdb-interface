@@ -23,15 +23,14 @@ def durstr(dur, skip="", dec=False):
             if style[1] in skip:
                 continue
             last = style[1]
-            if not dec:
-                amount = dur // style[0]
-                extra = dur % style[0]
-            else:
+            amount = dur // style[0]
+            extra = dur % style[0]
+            if dec and style[0] == 1:
                 amount = dur
             dur = extra
             if amount > 0:
                 if round(amount) != amount and dec:
-                    ret += '%.2f%s' % (amount, style[1])
+                    ret += '%.3f%s' % (amount, style[1])
                 else:
                     ret += '%d%s' % (amount, style[1])
 
