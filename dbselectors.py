@@ -236,12 +236,15 @@ class GameSelector(BaseSelector):
                     for weapon in weaponlist:
                         w = {}
                         for t in weapcols:
-                            w[t] = self.db.con.execute("""
-                            SELECT %s FROM game_weapons
-                            WHERE game = %d
-                            AND player = %d AND weapon = ?""" % (
-                                t, ret['id'], player_row[7]
-                                ), (weapon,)).fetchone()[0]
+                            try:
+                                w[t] = self.db.con.execute("""
+                                SELECT %s FROM game_weapons
+                                WHERE game = %d
+                                AND player = %d AND weapon = ?""" % (
+                                    t, ret['id'], player_row[7]
+                                    ), (weapon,)).fetchone()[0]
+                            except TypeError:
+                                w[t] = 0
                         player["weapons"][weapon] = w
                 ret["players"].append(player)
         if one:
