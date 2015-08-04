@@ -26,7 +26,7 @@ def page(sel):
         recentgames += tdlink('server', game["server"], desc)
         recentgames += tdlink('map', game["map"], game["map"])
         recentgames += '<td>%s</td>' % timeutils.durstr(round(
-            game["timeplayed"] / 1000))
+            game["timeplayed"]))
         recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
         recentgames += '</tr>'
     ret = """

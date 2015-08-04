@@ -25,7 +25,7 @@ def server(sel):
                 dbselectors.modestr[game["mode"]])
             recentgames += tdlink('map', game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
-                game["timeplayed"] / 1000))
+                game["timeplayed"]))
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
             recentgames += '</tr>'
         server["desc"] = cgi.escape(server["desc"])

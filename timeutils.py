@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+import time
 
 
 def utcepoch():
     """Get the UTC epoch time."""
-    import datetime
-    dt = datetime.datetime.utcnow()
-    return dt.timestamp()
+    return time.time()
 
 
 def durstr(dur, skip="", dec=False):
