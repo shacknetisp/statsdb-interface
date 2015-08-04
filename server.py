@@ -89,35 +89,38 @@ class Server:
                         self.httpd.handle_request()
 
     def tick(self):
-        if time.time() - self.lasttick > 60 * 5:
+        if time.time() - self.lasttick > 60 * 1:
             self.lasttick = time.time()
             #Determine if the database exists
-            with self.db:
-                self.dbexists = self.db.con.execute(
-                        "PRAGMA table_info(games)").fetchone(
-                            ) is not None
-                if self.dbexists:
+            with self.dblock:
+                with self.db:
                     self.dbexists = self.db.con.execute(
+                            "PRAGMA table_info(games)").fetchone(
+                                ) is not None
+                    if self.dbexists:
+                        self.dbexists = self.db.con.execute(
                             "SELECT id FROM games ORDER BY id DESC").fetchone(
                                 ) is not None
             if self.dbexists:
                 #Get a list of weapons from the last played game
-                with self.db:
-                    lastgame = self.db.con.execute(
+                with self.dblock:
+                    with self.db:
+                        lastgame = self.db.con.execute(
                         "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
-                    dbselectors.weaponlist = [
+                        dbselectors.weaponlist = [
                         r[0] for r in self.db.con.execute(
                         "SELECT weapon FROM game_weapons WHERE game = %d" % (
                             lastgame))]
             #Create a backup, remove old backups
-            backupfile = (homedir +
-            "/statsdbbackups/" +
-            time.strftime("%Y%m%d") + '.sqlite.bak')
-            if not os.path.exists(backupfile):
-                self.db.backup(backupfile)
-                print("Creating backup.")
-            db.flushdir(homedir + "/statsdbbackups",
-                60 * 60 * 24 * cfgval("backupkeepdays"))
+            with self.dblock:
+                backupfile = (homedir +
+                "/statsdbbackups/" +
+                time.strftime("%Y%m%d") + '.sqlite.bak')
+                if not os.path.exists(backupfile):
+                    self.db.backup(backupfile)
+                    print("Creating backup.")
+                db.flushdir(homedir + "/statsdbbackups",
+                    60 * 60 * 24 * cfgval("backupkeepdays"))
 
     def cfgval(self, k):
         return cfgval(k)
