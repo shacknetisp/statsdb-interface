@@ -57,6 +57,6 @@ a:link {
 
 .display-table > table > tbody > tr > td,
 .display-table > table > tbody > tr > th {
-    border: 2px outset black;
+    border: 2px solid #444;
     text-align: center;
 }

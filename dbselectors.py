@@ -481,10 +481,50 @@ class MapSelector(BaseSelector):
             ret[mapname] = self.single(mapname, False)
         return ret
 
+
+class ModeSelector(BaseSelector):
+
+    def single(self, mode, one=True):
+        try:
+            mint = int(mode)
+        except ValueError:
+            return None
+        ret = {
+            "name": modestr[mint],
+            "recentgames": {},
+            }
+        ret["games"] = [r[0] for r in
+        self.db.con.execute(
+            """SELECT id FROM games
+            WHERE mode = ?""", (mode,))]
+        if one:
+            for gid in list(reversed(ret["games"]))[
+                :self.server.cfgval("moderecent")]:
+                gs = GameSelector()
+                gs.copyfrom(self)
+                game = gs.single(gid, one=False)
+                ret["recentgames"][gid] = game
+
+        return ret
+
+    def getdict(self):
+        if self.pathid is not None:
+            return self.single(self.pathid)
+        f = self.makefilters()
+        modes = [r[0] for r in
+        self.db.con.execute(
+            """SELECT DISTINCT mode FROM games
+            %s""" % f[0], f[1])]
+        ret = {}
+        for mode in modes:
+            ret[modes] = self.single(modes, False)
+        return ret
+
 selectors = {
     'servers': ServerSelector(),
     'games': GameSelector(),
     'players': PlayerSelector(),
     'weapons': WeaponSelector(),
     'maps': MapSelector(),
+    'modes': ModeSelector(),
     }

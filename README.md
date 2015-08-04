@@ -31,3 +31,5 @@ Backups of the sqlite database will be created, one per day, and deleted after 3
  * `?allversions`
 * `/maps[/map]`
  * `?allversions`
+* `/modes[/mode]`
+ * `?allversions`
