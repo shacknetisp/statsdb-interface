@@ -157,23 +157,31 @@ def player(sel):
                 recentgames += '<td>%d</td>' % entry["deaths"]
                 recentgames += '</tr>'
         recentweapons = ""
-        totalwielded = sum([w['timewielded']
-            for w in list(player['recent']['weapons'].values())])
-        for weap in sorted(dbselectors.weaponlist):
-            weapon = player['recent']['weapons'][weap]
-            recentweapons += "<tr>"
-            recentweapons += "<td>%s</td>" % cgi.escape(weap)
-            recentweapons += "<td>%d%%</td>" % (
-                weapon["timeloadout"] / max(1, totalwielded) * 100)
-            recentweapons += "<td>%d%%</td>" % (
-                weapon["timewielded"] / max(1, totalwielded) * 100)
-            recentweapons += "<td>%d%%</td>" % (
-                weapon["hits1"] / max(1, weapon["shots1"]) * 100)
-            recentweapons += "<td>%d%%</td>" % (
-                weapon["hits2"] / max(1, weapon["shots2"]) * 100)
-            recentweapons += "<td>%d</td>" % weapon["frags1"]
-            recentweapons += "<td>%d</td>" % weapon["frags2"]
-            recentweapons += "</tr>"
+        try:
+            fratio = "%.2f" % (player["recent"]["frags"] /
+                max(1, player["recent"]["deaths"]))
+        except TypeError:
+            fratio = "-"
+        try:
+            totalwielded = sum([w['timewielded']
+                for w in list(player['recent']['weapons'].values())])
+            for weap in sorted(dbselectors.weaponlist):
+                weapon = player['recent']['weapons'][weap]
+                recentweapons += "<tr>"
+                recentweapons += "<td>%s</td>" % cgi.escape(weap)
+                recentweapons += "<td>%d%%</td>" % (
+                    weapon["timeloadout"] / max(1, totalwielded) * 100)
+                recentweapons += "<td>%d%%</td>" % (
+                    weapon["timewielded"] / max(1, totalwielded) * 100)
+                recentweapons += "<td>%d%%</td>" % (
+                    weapon["hits1"] / max(1, weapon["shots1"]) * 100)
+                recentweapons += "<td>%d%%</td>" % (
+                    weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+                recentweapons += "<td>%d</td>" % weapon["frags1"]
+                recentweapons += "<td>%d</td>" % weapon["frags2"]
+                recentweapons += "</tr>"
+        except TypeError:
+            pass
         gs = dbselectors.GameSelector()
         gs.copyfrom(sel)
         firstago = timeutils.agohtml(gs.single(min(player["games"]))["time"])
@@ -215,8 +223,7 @@ def player(sel):
         </div>
         """.format(recentgames=recentgames,
             player=player, firstago=firstago,
-            fratio="%.2f" % (player["recent"]["frags"] /
-            max(1, player["recent"]["deaths"])),
+            fratio=fratio,
             recentweapons=recentweapons)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["player"] = player
