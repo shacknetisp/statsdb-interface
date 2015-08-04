@@ -125,6 +125,8 @@ class ServerSelector(BaseSelector):
         dictfromrow(ret, row, [
             "handle", "flags", "desc", "version", "host", "port"
             ], start=1)
+        if not ret['desc']:
+            ret['desc'] = ret['host'] + ':' + str(ret['port'])
         ret["games"] = [r[0] for r in
         self.db.con.execute(
             """SELECT game FROM game_servers

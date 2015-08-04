@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import time
 
 
 def utcepoch():
     """Get the UTC epoch time."""
-    return time.time()
+    import datetime
+    dt = datetime.datetime.utcnow()
+    return dt.timestamp()
 
 
 def durstr(dur, skip="", dec=False):
@@ -38,12 +39,12 @@ def durstr(dur, skip="", dec=False):
 
 
 def agostr(ts, skip="", dec=False):
-    """Return durstr(utcepoch() - ts)."""
-    return durstr(utcepoch() - ts, skip, dec)
+    import time
+    return durstr(time.time() - ts, skip, dec)
 
 
 def agohtml(ts, skip="", ago=True):
-    import datetime
-    tss = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S UTC")
+    import time
+    tss = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(ts))
     return "<abbr title='%s'>%s%s</abbr>" % (tss, agostr(ts, skip),
         " ago" if ago else "")
