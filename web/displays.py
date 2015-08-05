@@ -245,7 +245,7 @@ def map(sel):
         for gid, game in sorted(list(gamemap["recentgames"].items()),
             key=lambda x: -x[0])[:10]:
                 recentgames += '<tr>'
-                recentgames += tdlink("game", gid, "#%d" % gid)
+                recentgames += tdlink("game", gid, "Game #%d" % gid)
                 recentgames += tdlink("mode",
                     game["mode"],
                     dbselectors.modestr[game["mode"]])
@@ -297,7 +297,7 @@ def mode(sel):
         for gid, game in sorted(list(mode["recentgames"].items()),
             key=lambda x: -x[0])[:10]:
                 recentgames += '<tr>'
-                recentgames += tdlink("game", gid, "#%d" % gid)
+                recentgames += tdlink("game", gid, "Game #%d" % gid)
                 recentgames += tdlink("map", game["map"], game["map"])
                 recentgames += '<td>%s</td>' % timeutils.durstr(round(
                     game["timeplayed"]))
