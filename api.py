@@ -59,9 +59,9 @@ def make(server, db, q, path):
             ret).encode()
     elif paths[0] == 'display':
         if server.dbexists:
-            if len(paths) >= 3:
+            if len(paths) >= 2:
                 name = paths[1]
-                pathid = paths[2]
+                pathid = paths[2] if len(paths) >= 3 else None
                 sel.pathid = pathid
                 if name in web.displays.displays:
                     ret = web.displays.displays[name](sel)

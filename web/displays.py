@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import base
-from .base import tdlink, alink
+from .base import tdlink, alink, tdlinkp, alinkp
 import dbselectors
 import cgi
 import timeutils
@@ -79,10 +79,10 @@ def game(sel):
         playersstr = ""
         for player in game["players"]:
             playersstr += "<tr>"
-            playersstr += tdlink("player", player["handle"], player["name"])
+            playersstr += tdlinkp("player", player["handle"], player["name"])
             playersstr += "<td>%s</td>" % (dbselectors.scorestr(game,
                 player["score"]))
-            playersstr += tdlink("player", player["handle"], player["handle"])
+            playersstr += tdlinkp("player", player["handle"], player["handle"])
             playersstr += "<td>%s</td>" % (
                 timeutils.durstr(player["timealive"]))
             playersstr += "<td>%d</td>" % player["frags"]
@@ -253,7 +253,7 @@ def map(sel):
         if gamemap["toprace"]["time"]:
             toprace = """<h3>%s by %s (%s)</h3>""" % (
                 timeutils.durstr(gamemap["toprace"]["time"] / 1000, dec=True),
-                alink("player", gamemap["toprace"]["gameplayer"]["handle"],
+                alinkp("player", gamemap["toprace"]["gameplayer"]["handle"],
                     gamemap["toprace"]["gameplayer"]["name"]),
                 alink("game", gamemap["toprace"]["game"]["id"],
                     "Game #%d" % gamemap["toprace"]["game"]["id"]),
