@@ -5,7 +5,11 @@ body {
 }
 
 a:link {
-    color: #EE0;
+    color: #48C;
+}
+
+a:hover {
+    color: #55F;
 }
 
 .center {
@@ -58,5 +62,8 @@ a:link {
 .display-table > table > tbody > tr > td,
 .display-table > table > tbody > tr > th {
     border: 2px solid #444;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
     text-align: center;
 }
