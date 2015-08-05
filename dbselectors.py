@@ -452,7 +452,9 @@ class MapSelector(BaseSelector):
             """SELECT id FROM games
             WHERE map = ?
             AND %s
-            AND %s""" % (self.vlimit("id"), m_laptime_sql[1]), (mapname,)):
+            AND %s
+            AND (mutators & 1024) = 0""" % (self.vlimit("id"),
+                m_laptime_sql[1]), (mapname,)):
                 gs = GameSelector()
                 gs.copyfrom(self)
                 game = gs.single(row[0], one=False)
