@@ -16,8 +16,8 @@ def server(sel):
         ret = "<div class='center'><h2>No such server.</h2></div>"
     else:
         recentgames = ""
-        for gid, game in list(reversed(
-            list(server["recentgames"].items())))[:10]:
+        for gid, game in sorted(list(server["recentgames"].items()),
+            key=lambda x: -x[0])[:10]:
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
@@ -141,8 +141,8 @@ def player(sel):
     else:
         player["name"] = cgi.escape(player["name"])
         recentgames = ""
-        for gid, game in list(reversed(
-            list(player["recentgames"].items())))[:10]:
+        for gid, game in sorted(list(player["recentgames"].items()),
+            key=lambda x: -x[0])[:10]:
                 entry = [p for p in game["players"]
                 if p["handle"] == player["handle"]][0]
                 recentgames += '<tr>'
@@ -184,12 +184,16 @@ def player(sel):
             pass
         gs = dbselectors.GameSelector()
         gs.copyfrom(sel)
-        firstago = timeutils.agohtml(gs.single(min(player["games"]))["time"])
+        firstago = '<a href="/display/game/%d">%s</a>' % (min(player["games"]),
+            timeutils.agohtml(gs.single(min(player["games"]))["time"]))
+        lastago = '<a href="/display/game/%d">%s</a>' % (max(player["games"]),
+            timeutils.agohtml(gs.single(max(player["games"]))["time"]))
         ret += """
         <div class="center">
             <h2>{player[name]}</h2>
             <h3>{player[handle]}</h3>
-            First recorded game: {firstago}<br>
+            First appeared: {firstago}<br>
+            Last appeared: {lastago}<br>
             Frag Ratio: {fratio}<br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
@@ -222,7 +226,7 @@ def player(sel):
             </div>
         </div>
         """.format(recentgames=recentgames,
-            player=player, firstago=firstago,
+            player=player, firstago=firstago, lastago=lastago,
             fratio=fratio,
             recentweapons=recentweapons)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
@@ -238,8 +242,8 @@ def map(sel):
         ret = "<div class='center'><h2>No such Map.</h2></div>"
     else:
         recentgames = ""
-        for gid, game in list(reversed(
-            list(gamemap["recentgames"].items())))[:10]:
+        for gid, game in sorted(list(gamemap["recentgames"].items()),
+            key=lambda x: -x[0])[:10]:
                 recentgames += '<tr>'
                 recentgames += tdlink("game", gid, "#%d" % gid)
                 recentgames += tdlink("mode",
@@ -290,8 +294,8 @@ def mode(sel):
         ret = "<div class='center'><h2>No such Mode.</h2></div>"
     else:
         recentgames = ""
-        for gid, game in list(reversed(
-            list(mode["recentgames"].items())))[:10]:
+        for gid, game in sorted(list(mode["recentgames"].items()),
+            key=lambda x: -x[0])[:10]:
                 recentgames += '<tr>'
                 recentgames += tdlink("game", gid, "#%d" % gid)
                 recentgames += tdlink("map", game["map"], game["map"])
