@@ -10,21 +10,24 @@ def utcepoch():
 
 def durstr(dur, skip="", dec=False):
     """Return dur as a formatted string."""
+    firstdur = dur
     ret = ""
-    last = ""
+    last = (1, "")
     for style in [
-        (60 * 60 * 24 * 365.25, 'Y'),
-        (60 * 60 * 24 * 7, 'w'),
-        (60 * 60 * 24, 'd'),
-        (60 * 60, 'h'),
-        (60, 'm'),
-        (1, 's'),
+        (60 * 60 * 24 * 365.25, 'Y', 0),
+        (60 * 60 * 24 * 7, 'w', 4),
+        (60 * 60 * 24, 'd', 7),
+        (60 * 60, 'h', 24),
+        (60, 'm', 60),
+        (1, 's', 60),
         ]:
             if style[1] in skip:
                 continue
-            last = style[1]
+            last = style
             amount = dur // style[0]
             extra = dur % style[0]
+            if style[2] and firstdur / style[0] > style[2] and not dec:
+                break
             if dec and style[0] == 1:
                 amount = dur
             dur = extra
@@ -34,7 +37,7 @@ def durstr(dur, skip="", dec=False):
                 else:
                     ret += '%d%s' % (amount, style[1])
 
-    return ret if ret else '0' + last
+    return ret if ret else '0' + last[1]
 
 
 def agostr(ts, skip="", dec=False):

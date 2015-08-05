@@ -105,10 +105,10 @@ class Server:
                 with self.db:
                     lastgame = self.db.con.execute(
                     "SELECT id FROM games ORDER BY id DESC").fetchone()[0]
-                    dbselectors.weaponlist = [
+                    dbselectors.weaponlist = set([
                     r[0] for r in self.db.con.execute(
                     "SELECT weapon FROM game_weapons WHERE game = %d" % (
-                        lastgame))]
+                        lastgame))])
             #Create a backup, remove old backups
             backupfile = (homedir +
             "/statsdbbackups/" +
