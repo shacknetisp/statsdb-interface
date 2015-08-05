@@ -16,7 +16,7 @@ def page(sel):
     games = gs.getdict()
     for gid, game in list(reversed(list(games.items())))[:10]:
         recentgames += '<tr>'
-        recentgames += tdlink("game", gid, "#%d" % gid)
+        recentgames += tdlink("game", gid, "Game #%d" % gid)
         recentgames += tdlink("mode",
             game["mode"],
             dbselectors.modestr[game["mode"]])
