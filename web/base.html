@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
     <head>
-        <title>Red Eclipse Statistics | {title}</title>
+        <title>Red Eclipse Stats: {title}</title>
         <link rel="apple-touch-icon" sizes="57x57" href="http://redeclipse.net/bits/apple-touch-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="http://redeclipse.net/bits/apple-touch-icon-60x60.png">
         <link rel="apple-touch-icon" sizes="72x72" href="http://redeclipse.net/bits/apple-touch-icon-72x72.png">
@@ -16,25 +16,55 @@
         <link rel="icon" type="image/png" href="http://redeclipse.net/bits/favicon-96x96.png" sizes="96x96">
         <link rel="icon" type="image/png" href="http://redeclipse.net/bits/android-chrome-192x192.png" sizes="192x192">
         <link rel="icon" type="image/png" href="http://redeclipse.net/bits/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="http://redeclipse.net/bits/manifest.json">
         <link rel="shortcut icon" href="http://redeclipse.net/bits/favicon.ico">
         <meta name="msapplication-TileColor" content="#440000">
         <meta name="msapplication-TileImage" content="http://redeclipse.net/bits/mstile-144x144.png">
         <meta name="msapplication-config" content="http://redeclipse.net/bits/browserconfig.xml">
         <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="http://redeclipse.net/bits/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="http://redeclipse.net/bits/style.css" />
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="/styles/main.css"/>
         <style>
         {css}
         </style>
     </head>
     <body>
-        <div id="top-navbar">
-            <ul>
-                <li><a href="/">Overview</a></li>
-                <li><a href="/apidocs">API Documentation</a></li>
-            </ul>
+        <nav class="navbar  navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <img src="http://redeclipse.net/bits/favicon-82x82.png" alt="Red Eclipse" style="display: inline; vertical-align: middle">
+                        <h2 style="display: inline; vertical-align: middle">Statistics</h2>
+                    </a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/">Overview</a></li>
+                    <li><a href="/apidocs">API Documentation</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div id="container" style="text-align: center; padding: 0px 24px 24px 24px">
+            {content}
         </div>
-        <div id="content">
-        {content}
+        <div id="copyright" style="text-align: center">
+            <p>Red Eclipse Statistics, Copyright &copy; 2015 Beha</p>
+            <p>Red Eclipse, Copyright &copy; 2009-2015 Quinton Reeves, Lee Salzman</p>
+            <p><a href="http://remiclouet.com" target="_blank">Website by R&eacute;mi Clouet d'Orval</a></p>
         </div>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="http://redeclipse.net/bits/js/bootstrap.min.js"></script>
     </body>
 </html>

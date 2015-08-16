@@ -30,7 +30,7 @@ def page(sel):
         recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
         recentgames += '</tr>'
     ret = """
-    <h2 class='center'>Red Eclipse Statistics</h2>
+    <h2>Overview</h2>
     <div class='display-table'>
         <h3>Recent Games</h3>
         <table>
