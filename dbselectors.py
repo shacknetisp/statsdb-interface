@@ -264,10 +264,13 @@ class GameSelector(BaseSelector):
         if self.pathid is not None:
             return self.single(self.pathid)
         f = self.makefilters()
-        ids = [r[0] for r in
-        self.db.con.execute(
-            """SELECT id FROM games
-            %s""" % f[0], f[1])]
+        if self.server.dbexists:
+            ids = [r[0] for r in
+            self.db.con.execute(
+                """SELECT id FROM games
+                %s""" % f[0], f[1])]
+        else:
+            ids = []
         if "recent" in self.qopt:
             ids = list(reversed(ids))[:self.server.cfgval("gamerecent")]
         ret = {}
