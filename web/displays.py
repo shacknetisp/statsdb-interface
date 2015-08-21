@@ -168,7 +168,7 @@ def player(sel):
             for weap in sorted(dbselectors.weaponlist):
                 weapon = player['recent']['weapons'][weap]
                 recentweapons += "<tr>"
-                recentweapons += "<td>%s</td>" % cgi.escape(weap)
+                recentweapons += "%s" % tdlink("weapon", weap, weap)
                 recentweapons += "<td>%d%%</td>" % (
                     weapon["timeloadout"] / max(1, totalwielded) * 100)
                 recentweapons += "<td>%d%%</td>" % (
@@ -231,6 +231,114 @@ def player(sel):
             recentweapons=recentweapons)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["player"] = player
+
+
+def weapon_disp(sel):
+    ret = ""
+    gs = dbselectors.WeaponSelector()
+    gs.copyfrom(sel)
+    gs.pathid = None
+    totalwielded = sum([w['alltime']['timewielded']
+        for w in list(gs.getdict().values())])
+    weapon = gs.single(sel.pathid)["alltime"]
+    if weapon is None or sel.pathid not in dbselectors.weaponlist:
+        ret = "<div class='center'><h2>No such weapon.</h2></div>"
+    else:
+        weapon["name"] = cgi.escape(sel.pathid)
+        weapons = ""
+        try:
+            weapons += "<tr>"
+            weapons += "<td>%s</td>" % cgi.escape(weapon["name"])
+            weapons += "<td>%d%%</td>" % (
+                weapon["timeloadout"] / max(1, totalwielded) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["timewielded"] / max(1, totalwielded) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["hits1"] / max(1, weapon["shots1"]) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+            weapons += "<td>%d</td>" % weapon["frags1"]
+            weapons += "<td>%d</td>" % weapon["frags2"]
+            weapons += "</tr>"
+        except TypeError:
+            pass
+        ret += """
+        <div class="center">
+            <h2>{weapon[name]}</h2>
+            <div class='display-table'>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Loadout</th>
+                        <th>Wielded</th>
+                        <th>Hit Ratio 1</th>
+                        <th>Hit Ratio 2</th>
+                        <th>Frags 1</th>
+                        <th>Frags 2</th>
+                    </tr>
+                    {weapons}
+                </table>
+            </div>
+        </div>
+        """.format(weapon=weapon, weapons=weapons)
+    try:
+        return base.page(sel, ret, title="%s" % sel.pathid.capitalize())
+    except AttributeError:
+        return base.page(sel, ret)
+displays["weapon"] = weapon_disp
+
+
+def weapons(sel):
+    if sel.pathid:
+        return weapon_disp(sel)
+    ret = ""
+    gs = dbselectors.WeaponSelector()
+    gs.copyfrom(sel)
+    gs.pathid = None
+    weapons = ""
+    totalwielded = sum([w['alltime']['timewielded']
+        for w in list(gs.getdict().values())])
+    for name in sorted(dbselectors.weaponlist):
+        weapon = gs.single(name)["alltime"]
+        weapon["name"] = cgi.escape(name)
+        weap = weapon["name"]
+        try:
+            weapons += "<tr>"
+            weapons += "%s" % tdlink("weapon", weap, weap)
+            weapons += "<td>%d%%</td>" % (
+                weapon["timeloadout"] / max(1, totalwielded) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["timewielded"] / max(1, totalwielded) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["hits1"] / max(1, weapon["shots1"]) * 100)
+            weapons += "<td>%d%%</td>" % (
+                weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+            weapons += "<td>%d</td>" % weapon["frags1"]
+            weapons += "<td>%d</td>" % weapon["frags2"]
+            weapons += "</tr>"
+        except TypeError:
+            pass
+    ret += """
+    <div class="center">
+        <h2>Weapons</h2>
+        <div class='display-table'>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Loadout</th>
+                    <th>Wielded</th>
+                    <th>Hit Ratio 1</th>
+                    <th>Hit Ratio 2</th>
+                    <th>Frags 1</th>
+                    <th>Frags 2</th>
+                </tr>
+                {weapons}
+            </table>
+        </div>
+    </div>
+    """.format(weapons=weapons)
+    return base.page(sel, ret, title="Weapons")
+displays["weapons"] = weapons
 
 
 def map(sel):
