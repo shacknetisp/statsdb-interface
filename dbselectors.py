@@ -415,8 +415,8 @@ class WeaponSelector(BaseSelector):
                 x, m_race_sql[0]),
             (name,)).fetchone()[0]
         for t in weapcols:
-            wr[t] = recentsum(t)
-            wa[t] = allsum(t)
+            wr[t] = recentsum(t) or 0
+            wa[t] = allsum(t) or 0
         return {
             'recent': wr,
             'alltime': wa,
