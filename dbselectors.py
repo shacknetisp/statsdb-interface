@@ -10,6 +10,8 @@ for a in ['damage',
         weapcols += [a + '1', a + '2']
 m_laptime_sql = ("mode != 6 OR (mutators & 32768) = 0",
     "mode = 6 AND (mutators & 32768) != 0")
+m_race_sql = ("mode != 6",
+    "mode = 6")
 modestr = ["Demo", "Editing", "Deathmatch",
     "CTF", "DAC", "Bomber Ball", "Race"]
 
@@ -401,13 +403,16 @@ class WeaponSelector(BaseSelector):
             """SELECT sum(%s) FROM
             (SELECT * FROM game_weapons WHERE weapon = ?
             AND %s
+            AND game IN (SELECT id FROM games WHERE %s)
             ORDER by ROWID DESC LIMIT %d)""" % (x,
             self.vlimit(),
+            m_race_sql[0],
             self.server.cfgval("weaponrecentavg")),
             (name,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
-            """SELECT sum(%s) FROM game_weapons WHERE weapon = ?""" % (
-                x),
+            """SELECT sum(%s) FROM game_weapons WHERE weapon = ?
+            AND game IN (SELECT id FROM games WHERE %s)""" % (
+                x, m_race_sql[0]),
             (name,)).fetchone()[0]
         for t in weapcols:
             wr[t] = recentsum(t)
