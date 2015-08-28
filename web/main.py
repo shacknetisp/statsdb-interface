@@ -11,6 +11,7 @@ def page(sel):
     recentgames = ""
     gs = dbselectors.GameSelector()
     gs.copyfrom(sel)
+    gs.pathid = None
     gs.qopt = api.Qopt({
         "recent": [True],
         })
@@ -40,14 +41,31 @@ def page(sel):
                     players[player["handle"]] += player["score"]
     if players:
         best = sorted(list(players.items()), key=lambda x: -x[1])[0]
-        topplayer = "<h3>Top player from recent games: <b>%s</b> [%d]</h3>" % (
+        topplayer = "<h3>Top player from recent games: %s [%d]</h3>" % (
             alink('player', best[0], best[0]), best[1])
     else:
         topplayer = ""
+
+    ws = dbselectors.WeaponSelector()
+    ws.copyfrom(sel)
+    ws.pathid = None
+
+    weapons = {}
+    for name in dbselectors.weaponlist:
+        weapon = ws.single(name)["recent"]
+        weapons[name] = weapon["timewielded"]
+
+    if weapons:
+        best = sorted(list(weapons.items()), key=lambda x: -x[1])[0]
+        topweapon = "<h3>Most wielded weapon: %s</h3>" % (
+            alink('weapon', best[0], best[0]))
+    else:
+        topweapon = ""
     ret = """
     <h2>Overview</h2>
     <div class='display-table'>
         {topplayer}
+        {topweapon}
         <h3>Recent Games</h3>
         <table>
             <tr>
@@ -62,5 +80,6 @@ def page(sel):
         </table>
     </div>
     """.format(recentgames=recentgames,
-        topplayer=topplayer)
+        topplayer=topplayer,
+        topweapon=topweapon)
     return base.page(sel, ret, title="Overview")
