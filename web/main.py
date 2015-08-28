@@ -60,7 +60,7 @@ def page(sel):
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             weapon[1]["damage1"] / max(weapon[1]["timewielded"], 1) +
             weapon[1]["damage2"] / max(weapon[1]["timewielded"], 1)))[0]
-        topweapons.append("<h3>Most efficent weapon: %s</h3>" % (
+        topweapons.append("<h3>Most efficient weapon: %s</h3>" % (
             alink('weapon', best[0], best[0])))
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             max(weapon[1]["timewielded"], 1)))[0]
