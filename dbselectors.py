@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 #Red Eclipse Utilities
-weaponlist = []
+loadoutweaponlist = ["pistol", "sword", "shotgun",
+    "smg", "flamer", "plasma", "zapper", "rifle"]
+weaponlist = loadoutweaponlist + ["melee", "grenade", "mine", "rocket"]
 weapcols = ['timewielded', 'timeloadout']
 for a in ['damage',
     'hits', 'shots',

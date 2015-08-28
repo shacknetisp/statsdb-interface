@@ -51,16 +51,21 @@ def page(sel):
     ws.pathid = None
 
     weapons = {}
-    for name in dbselectors.weaponlist:
+    for name in dbselectors.loadoutweaponlist:
         weapon = ws.single(name)["recent"]
-        weapons[name] = weapon["timewielded"]
+        weapons[name] = weapon
 
+    topweapons = []
     if weapons:
-        best = sorted(list(weapons.items()), key=lambda x: -x[1])[0]
-        topweapon = "<h3>Most wielded weapon: %s</h3>" % (
-            alink('weapon', best[0], best[0]))
-    else:
-        topweapon = ""
+        best = sorted(list(weapons.items()), key=lambda weapon: -(
+            weapon[1]["damage1"] / max(weapon[1]["timewielded"], 1) +
+            weapon[1]["damage2"] / max(weapon[1]["timewielded"], 1)))[0]
+        topweapons.append("<h3>Most efficent weapon: %s</h3>" % (
+            alink('weapon', best[0], best[0])))
+        best = sorted(list(weapons.items()), key=lambda weapon: -(
+            max(weapon[1]["timewielded"], 1)))[0]
+        topweapons.append("<h3>Most wielded weapon: %s</h3>" % (
+            alink('weapon', best[0], best[0])))
     ret = """
     <h2>Overview</h2>
     <div class='display-table'>
@@ -81,5 +86,5 @@ def page(sel):
     </div>
     """.format(recentgames=recentgames,
         topplayer=topplayer,
-        topweapon=topweapon)
+        topweapon="\n".join(topweapons))
     return base.page(sel, ret, title="Overview")
