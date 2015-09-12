@@ -173,10 +173,10 @@ def player(sel):
                     weapon["timeloadout"] / max(1, totalwielded) * 100)
                 recentweapons += "<td>%d%%</td>" % (
                     weapon["timewielded"] / max(1, totalwielded) * 100)
-                recentweapons += "<td>%d%%</td>" % (
-                    weapon["hits1"] / max(1, weapon["shots1"]) * 100)
-                recentweapons += "<td>%d%%</td>" % (
-                    weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+                recentweapons += "<td>%d</td>" % (
+                    weapon["damage1"] / max(1, weapon["hits1"]))
+                recentweapons += "<td>%d</td>" % (
+                    weapon["damage2"] / max(1, weapon["hits2"]))
                 recentweapons += "<td>%d</td>" % weapon["frags1"]
                 recentweapons += "<td>%d</td>" % weapon["frags2"]
                 recentweapons += "</tr>"
@@ -216,8 +216,8 @@ def player(sel):
                         <th>Name</th>
                         <th>Loadout</th>
                         <th>Wielded</th>
-                        <th>Hit Ratio 1</th>
-                        <th>Hit Ratio 2</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 1</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 2</th>
                         <th>Frags 1</th>
                         <th>Frags 2</th>
                     </tr>
@@ -253,10 +253,10 @@ def weapon_disp(sel):
                 weapon["timeloadout"] / max(1, totalwielded) * 100)
             weapons += "<td>%d%%</td>" % (
                 weapon["timewielded"] / max(1, totalwielded) * 100)
-            weapons += "<td>%d%%</td>" % (
-                weapon["hits1"] / max(1, weapon["shots1"]) * 100)
-            weapons += "<td>%d%%</td>" % (
-                weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+            weapons += "<td>%d</td>" % (
+                weapon["damage1"] / max(1, weapon["hits1"]))
+            weapons += "<td>%d</td>" % (
+                weapon["damage2"] / max(1, weapon["hits2"]))
             weapons += "<td>%d</td>" % weapon["frags1"]
             weapons += "<td>%d</td>" % weapon["frags2"]
             weapons += "</tr>"
@@ -271,8 +271,8 @@ def weapon_disp(sel):
                         <th>Name</th>
                         <th>Loadout</th>
                         <th>Wielded</th>
-                        <th>Hit Ratio 1</th>
-                        <th>Hit Ratio 2</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 1</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 2</th>
                         <th>Frags 1</th>
                         <th>Frags 2</th>
                     </tr>
@@ -309,10 +309,10 @@ def weapons(sel):
                 weapon["timeloadout"] / max(1, totalwielded) * 100)
             weapons += "<td>%d%%</td>" % (
                 weapon["timewielded"] / max(1, totalwielded) * 100)
-            weapons += "<td>%d%%</td>" % (
-                weapon["hits1"] / max(1, weapon["shots1"]) * 100)
-            weapons += "<td>%d%%</td>" % (
-                weapon["hits2"] / max(1, weapon["shots2"]) * 100)
+            weapons += "<td>%d</td>" % (
+                weapon["damage1"] / max(1, weapon["hits1"]))
+            weapons += "<td>%d</td>" % (
+                weapon["damage2"] / max(1, weapon["hits2"]))
             weapons += "<td>%d</td>" % weapon["frags1"]
             weapons += "<td>%d</td>" % weapon["frags2"]
             weapons += "</tr>"
@@ -327,8 +327,8 @@ def weapons(sel):
                     <th>Name</th>
                     <th>Loadout</th>
                     <th>Wielded</th>
-                    <th>Hit Ratio 1</th>
-                    <th>Hit Ratio 2</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 1</th>
+                        <th><abbr title="Hit Damage Ratio">HDR</abbr> 2</th>
                     <th>Frags 1</th>
                     <th>Frags 2</th>
                 </tr>
