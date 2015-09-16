@@ -238,7 +238,7 @@ class GameSelector(BaseSelector):
                     "score", "timealive", "frags", "deaths"])
                 if one:
                     for weapon in weaponlist:
-                        w = {}
+                        w = {'name': weapon}
                         for t in weapcols:
                             try:
                                 w[t] = self.db.con.execute("""
@@ -253,7 +253,7 @@ class GameSelector(BaseSelector):
                 ret["players"].append(player)
         if one:
             for weapon in weaponlist:
-                w = {}
+                w = {'name': weapon}
                 gameweapsum = lambda x: self.db.con.execute(
                     """SELECT sum(%s) FROM game_weapons
                     WHERE weapon = ? AND game = %d""" % (
@@ -348,8 +348,8 @@ class PlayerSelector(BaseSelector):
             #Weapon Data
             ##Individual Weapons
             for weapon in weaponlist:
-                wr = {}
-                wa = {}
+                wr = {'name': weapon}
+                wa = {'name': weapon}
                 recentsum = lambda x: self.db.con.execute(
                     """SELECT sum(%s) FROM
                     (SELECT * FROM game_weapons
@@ -399,8 +399,8 @@ class PlayerSelector(BaseSelector):
 class WeaponSelector(BaseSelector):
 
     def single(self, name):
-        wr = {}
-        wa = {}
+        wr = {'name': name}
+        wa = {'name': name}
         recentsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM
             (SELECT * FROM game_weapons WHERE weapon = ?
