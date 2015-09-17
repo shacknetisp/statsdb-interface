@@ -93,9 +93,12 @@ def game(sel):
         ss.copyfrom(sel)
         server = ss.single(game["server"])
         server["desc"] = cgi.escape(server["desc"])
+        teamlist = {}
         teamsstr = ""
-        for team in game["teams"]:
+        for team in sorted(game["teams"],
+            key=lambda x: -game["teams"][x]["score"]):
             team = game["teams"][team]
+            teamlist[team["team"]] = team
             teamsstr += "<tr>"
             teamsstr += "<td>%s</td>" % cgi.escape(team["name"])
             teamsstr += "<td>%s</td>" % (dbselectors.scorestr(game,
@@ -113,6 +116,108 @@ def game(sel):
             playersstr += "<td>%d</td>" % player["frags"]
             playersstr += "<td>%d</td>" % player["deaths"]
             playersstr += "</tr>"
+
+        ffarounds = ""
+        captures = ""
+        bombings = ""
+
+        if "ffarounds" in game:
+            ffarounds += """
+            <div class='display-table'>
+                <h3>Rounds</h3>
+                <table>
+                    <tr>
+                        <th>Round</th>
+                        <th>Winner</th>
+                        <th>Versus</th>
+                    </tr>"""
+            donerounds = []
+            for ffaround in game["ffarounds"]:
+                if ffaround["round"] in donerounds:
+                    continue
+                haswinner = False
+                for ffaround_s in game["ffarounds"]:
+                    if (ffaround_s["round"] == ffaround["round"]
+                    and ffaround_s["winner"]):
+                        haswinner = True
+                        break
+                versuslist = []
+                for ffaround_s in game["ffarounds"]:
+                    if (ffaround_s["round"] == ffaround["round"]
+                    and not ffaround_s["winner"]):
+                        versuslist.append(alinkp(
+                            "player", ffaround_s["playerhandle"],
+                            game["players"][ffaround_s["player"]]["name"]))
+                if haswinner and ffaround["winner"]:
+                    ffarounds += "<tr>"
+                    ffarounds += "<td>%d</td>" % ffaround["round"]
+                    ffarounds += tdlinkp(
+                        "player", ffaround["playerhandle"],
+                        game["players"][ffaround["player"]]["name"])
+                    ffarounds += "<td>"
+                    ffarounds += ", ".join(versuslist)
+                    ffarounds += "</td>"
+                    ffarounds += "</tr>"
+                elif not haswinner:
+                    donerounds.append(ffaround["round"])
+                    if len(versuslist) == 1:
+                        ffarounds += """<tr><td>%d</td><td><i>A bot</i>
+                        </td><td>%s</td></tr>""" % (ffaround["round"],
+                            ", ".join(versuslist))
+                    else:
+                        ffarounds += """<tr><td>%d</td><td><i>Epic fail!</i>
+                        </td><td>%s</td></tr>""" % (ffaround["round"],
+                            ", ".join(versuslist))
+            ffarounds += "</table></div>"
+
+        if "captures" in game:
+            captures += """
+            <div class='display-table'>
+                <h3>Flag Captures</h3>
+                <table>
+                    <tr>
+                        <th>Player</th>
+                        <th>Capturing Team</th>
+                        <th>Captured Flag</th>
+                    </tr>"""
+            for capture in game["captures"]:
+                captures += "<tr>"
+                captures += tdlinkp(
+                        "player", capture["playerhandle"],
+                        game["players"][capture["player"]]["name"])
+                captures += "<td>%s</td>" % (cgi.escape(
+                    teamlist[capture["capturing"]]["name"],
+                    ))
+                captures += "<td>%s</td>" % (cgi.escape(
+                    teamlist[capture["captured"]]["name"],
+                    ))
+                captures += "</tr>"
+            captures += "</table></div>"
+
+        if "bombings" in game:
+            bombings += """
+            <div class='display-table'>
+                <h3>Base Bombings</h3>
+                <table>
+                    <tr>
+                        <th>Player</th>
+                        <th>Bombing Team</th>
+                        <th>Bombed Base</th>
+                    </tr>"""
+            for bombing in game["bombings"]:
+                bombings += "<tr>"
+                bombings += tdlinkp(
+                        "player", bombing["playerhandle"],
+                        game["players"][bombing["player"]]["name"])
+                bombings += "<td>%s</td>" % (cgi.escape(
+                    teamlist[bombing["bombing"]]["name"],
+                    ))
+                bombings += "<td>%s</td>" % (cgi.escape(
+                    teamlist[bombing["bombing"]]["name"],
+                    ))
+                bombings += "</tr>"
+            bombings += "</table></div>"
+
         ret += """
         <div class="center">
             <h2>Game #{game[id]}: {modestr} on {mapstr}</h2>
@@ -144,6 +249,9 @@ def game(sel):
                     {players}
                 </table>
             </div>
+            {captures}
+            {bombings}
+            {ffarounds}
         </div>
         """.format(
             modestr=alink("mode", game["mode"],
@@ -151,7 +259,8 @@ def game(sel):
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
-            game=game, server=server, teams=teamsstr, players=playersstr)
+            game=game, server=server, teams=teamsstr, players=playersstr,
+            captures=captures, bombings=bombings, ffarounds=ffarounds)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["game"] = game
 

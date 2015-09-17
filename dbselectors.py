@@ -228,6 +228,36 @@ class GameSelector(BaseSelector):
                 team = {}
                 dictfromrow(team, team_row, [None, "team", "score", "name"])
                 ret["teams"][team["name"]] = team
+        captures = []
+        for capture_row in self.db.con.execute(
+            "SELECT * FROM game_captures WHERE game = %d" % row[0]):
+                capture = {}
+                dictfromrow(capture, capture_row, [None,
+                    "player", "playerhandle", "capturing", "captured"])
+                captures.append(capture)
+        if captures:
+            ret['captures'] = captures
+        bombings = []
+        for bombing_row in self.db.con.execute(
+            "SELECT * FROM game_bombings WHERE game = %d" % row[0]):
+                bombing = {}
+                dictfromrow(bombing, bombing_row, [None,
+                    "player", "playerhandle", "bombing", "bombed"])
+                bombings.append(bombing)
+        if bombings:
+            ret['bombings'] = bombings
+
+        if one:
+            ffarounds = []
+            for ffaround_row in self.db.con.execute(
+                "SELECT * FROM game_ffarounds WHERE game = %d" % row[0]):
+                    ffaround = {}
+                    dictfromrow(ffaround, ffaround_row, [None,
+                        "player", "playerhandle", "round", "winner"])
+                    ffarounds.append(ffaround)
+            if ffarounds:
+                ret['ffarounds'] = ffarounds
+
         for player_row in self.db.con.execute(
             "SELECT * FROM game_players WHERE game = %d" % row[0]):
                 player = {
@@ -318,6 +348,17 @@ class PlayerSelector(BaseSelector):
             gs = GameSelector()
             gs.copyfrom(self)
             game = gs.single(gid, one=False)
+            ffarounds = []
+            for ffaround_row in self.db.con.execute(
+                """SELECT * FROM game_ffarounds
+                WHERE playerhandle = ?
+                AND game = %d""" % gid, (handle,)):
+                    ffaround = {}
+                    dictfromrow(ffaround, ffaround_row, ["game",
+                        None, None, "round", "winner"])
+                    ffarounds.append(ffaround)
+            if ffarounds:
+                game['player_ffarounds'] = ffarounds
             ret["recentgames"][gid] = game
         #Data from games
         recentsum = lambda x: self.db.con.execute(
@@ -341,6 +382,26 @@ class PlayerSelector(BaseSelector):
         recent = {
             'weapons': {},
             }
+
+        captures = []
+        for capture_row in self.db.con.execute(
+            "SELECT * FROM game_captures WHERE playerhandle = ?", (handle,)):
+                capture = {}
+                dictfromrow(capture, capture_row, ["game",
+                    None, None, "capturing", "captured"])
+                captures.append(capture)
+        if captures:
+            ret['captures'] = captures
+        bombings = []
+        for bombing_row in self.db.con.execute(
+            "SELECT * FROM game_bombings WHERE playerhandle = ?", (handle,)):
+                bombing = {}
+                dictfromrow(bombing, bombing_row, ["game",
+                    None, None, "bombing", "bombed"])
+                bombings.append(bombing)
+        if bombings:
+            ret['bombings'] = bombings
+
         for t in ['frags', 'deaths']:
             recent[t] = recentsum(t)
             alltime[t] = allsum(t)
