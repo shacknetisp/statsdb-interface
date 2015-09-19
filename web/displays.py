@@ -449,7 +449,7 @@ def servers(sel):
     for server in sorted(servers, key=lambda x: -servers[x]["games"][0]):
         server = servers[server]
         firstgame = gs.single(server["games"][0])
-        latestgame = gs.single(server["games"][0])
+        latestgame = gs.single(server["games"][-1])
         servertable += "<tr>"
         servertable += tdlink("server", server["handle"],
             "%s" % (cgi.escape(server["handle"])), False)
