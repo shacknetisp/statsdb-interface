@@ -13,9 +13,9 @@ def page(sel,
         return ret
 
 
-def tdlink(t, i, d):
+def tdlink(t, i, d, e=True):
     return '<td><a href="/display/%s/%s">%s</a></td>' % (t, str(i),
-        cgi.escape(str(d)))
+        cgi.escape(str(d)) if e else str(d))
 
 
 def alink(t, i, d):

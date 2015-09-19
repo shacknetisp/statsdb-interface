@@ -44,6 +44,10 @@ def server(sel):
     if server is None:
         ret = "<div class='center'><h2>No such server.</h2></div>"
     else:
+        gs = dbselectors.GameSelector()
+        gs.copyfrom(sel)
+        gs.pathid = None
+        firstgame = gs.single(server["games"][0])
         recentgames = ""
         for gid, game in sorted(list(server["recentgames"].items()),
             key=lambda x: -x[0])[:10]:
@@ -65,6 +69,8 @@ def server(sel):
                 Version {server[version]}</h4>
             <a href="redeclipse://{server[host]}:{server[port]}">
             {server[host]}:{server[port]}</a><br>
+            First Recorded: {fgtime} with
+            <a href="/displays/game/{fgid}">Game #{fgid}</a><br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -79,7 +85,8 @@ def server(sel):
                 </table>
             </div>
         </div>
-        """.format(server=server, recentgames=recentgames)
+        """.format(server=server, recentgames=recentgames,
+            fgtime=timeutils.agohtml(firstgame["time"]), fgid=firstgame["id"])
     return base.page(sel, ret, title="Server %s" % sel.pathid)
 displays["server"] = server
 
@@ -422,6 +429,61 @@ def weapons(sel):
     """.format(weapons=weapons, tableweaponlabels=tableweaponlabels())
     return base.page(sel, ret, title="Weapons")
 displays["weapons"] = weapons
+
+
+def servers(sel):
+    if sel.pathid:
+        global server
+        return server(sel)
+    ret = ""
+    gs = dbselectors.GameSelector()
+    gs.copyfrom(sel)
+    gs.pathid = None
+    s = dbselectors.ServerSelector()
+    s.copyfrom(sel)
+    s.pathid = None
+    servers = s.getdict()
+    servertable = ""
+    for server in sorted(servers, key=lambda x: -servers[x]["games"][0]):
+        server = servers[server]
+        firstgame = gs.single(server["games"][0])
+        latestgame = gs.single(server["games"][0])
+        servertable += "<tr>"
+        servertable += tdlink("server", server["handle"], server["desc"])
+        servertable += tdlink("server", server["handle"], server["handle"])
+        servertable += """<td>
+            <a href="redeclipse://{server[host]}:{server[port]}">
+            {server[host]}:{server[port]}</a></td>""".format(server=server)
+        servertable += tdlink("game", latestgame["id"],
+            "#%d: %s on %s %s" % (latestgame["id"],
+                dbselectors.modestr[latestgame["mode"]],
+                latestgame["map"],
+                timeutils.agohtml(latestgame["time"])), False)
+        servertable += tdlink("game", firstgame["id"],
+            "#%d: %s on %s %s" % (firstgame["id"],
+                dbselectors.modestr[firstgame["mode"]],
+                firstgame["map"],
+                timeutils.agohtml(firstgame["time"])), False)
+        servertable += "</tr>"
+    ret += """
+    <div class="center">
+        <h2>Servers</h2>
+        <div class='display-table'>
+            <table>
+                <tr>
+                    <th>Desc</th>
+                    <th>Handle</th>
+                    <th>Address</th>
+                    <th>Latest Game</th>
+                    <th>First Game</th>
+                </tr>
+                {servertable}
+            </table>
+        </div>
+    </div>
+    """.format(servertable=servertable)
+    return base.page(sel, ret, title="Weapons")
+displays["servers"] = servers
 
 
 def map(sel):
