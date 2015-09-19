@@ -48,6 +48,6 @@ def agostr(ts, skip="", dec=False):
 def agohtml(ts, skip="", ago=True):
     import time
     tss = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(ts))
-    return "<span class='ago-title' title='%s'>%s%s</abbr>" % (
+    return "<span class='ago-title' title='%s'>%s%s</span>" % (
         tss, agostr(ts, skip),
         " ago" if ago else "")

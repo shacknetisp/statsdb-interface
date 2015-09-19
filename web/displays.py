@@ -65,12 +65,13 @@ def server(sel):
         ret += """
         <div class="center">
             <h2>{server[desc]}</h2>
-            <h4>{server[handle]} [{server[flags]}]:
-                Version {server[version]}</h4>
+            <h3>{server[handle]} <i>[{server[flags]}]</i>:
+                Version {server[version]}</h3>
             <a href="redeclipse://{server[host]}:{server[port]}">
             {server[host]}:{server[port]}</a><br>
+            {servergames} games recorded.<br>
             First Recorded: {fgtime} with
-            <a href="/displays/game/{fgid}">Game #{fgid}</a><br>
+            <a href="/displays/game/{fgid}">Game #{fgid}</a>.<br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -86,6 +87,7 @@ def server(sel):
             </div>
         </div>
         """.format(server=server, recentgames=recentgames,
+            servergames=len(server["games"]),
             fgtime=timeutils.agohtml(firstgame["time"]), fgid=firstgame["id"])
     return base.page(sel, ret, title="Server %s" % sel.pathid)
 displays["server"] = server
