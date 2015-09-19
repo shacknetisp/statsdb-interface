@@ -446,7 +446,7 @@ def servers(sel):
     s.pathid = None
     servers = s.getdict()
     servertable = ""
-    for server in sorted(servers, key=lambda x: -servers[x]["games"][0]):
+    for server in sorted(servers, key=lambda x: -servers[x]["games"][-1]):
         server = servers[server]
         firstgame = gs.single(server["games"][0])
         latestgame = gs.single(server["games"][-1])
