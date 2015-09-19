@@ -449,21 +449,17 @@ def servers(sel):
         firstgame = gs.single(server["games"][0])
         latestgame = gs.single(server["games"][0])
         servertable += "<tr>"
-        servertable += tdlink("server", server["handle"], server["desc"])
-        servertable += tdlink("server", server["handle"], server["handle"])
-        servertable += """<td>
-            <a href="redeclipse://{server[host]}:{server[port]}">
-            {server[host]}:{server[port]}</a></td>""".format(server=server)
-        servertable += tdlink("game", latestgame["id"],
-            "#%d: %s on %s %s" % (latestgame["id"],
-                dbselectors.modestr[latestgame["mode"]],
-                latestgame["map"],
-                timeutils.agohtml(latestgame["time"])), False)
-        servertable += tdlink("game", firstgame["id"],
-            "#%d: %s on %s %s" % (firstgame["id"],
-                dbselectors.modestr[firstgame["mode"]],
-                firstgame["map"],
-                timeutils.agohtml(firstgame["time"])), False)
+        servertable += tdlink("server", server["handle"],
+            "%s" % (cgi.escape(server["handle"])), False)
+        servertable += tdlink("server", server["handle"],
+            "%s" % (cgi.escape(server["desc"])), False)
+        servertable += "<td>%d</td>" % len(server["games"])
+        servertable += "<td>%s: %s</td>" % (alink("game", firstgame["id"],
+            "#%d" % (firstgame["id"]), False),
+                timeutils.agohtml(firstgame["time"]))
+        servertable += "<td>%s: %s</td>" % (alink("game", latestgame["id"],
+            "#%d" % (latestgame["id"]), False),
+                timeutils.agohtml(latestgame["time"]))
         servertable += "</tr>"
     ret += """
     <div class="center">
@@ -471,11 +467,11 @@ def servers(sel):
         <div class='display-table'>
             <table>
                 <tr>
-                    <th>Desc</th>
                     <th>Handle</th>
-                    <th>Address</th>
-                    <th>Latest Game</th>
+                    <th>Server</th>
+                    <th>Games</th>
                     <th>First Game</th>
+                    <th>Latest Game</th>
                 </tr>
                 {servertable}
             </table>
