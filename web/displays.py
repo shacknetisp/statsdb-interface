@@ -2,6 +2,7 @@
 from . import base
 from .base import tdlink, alink, tdlinkp, alinkp
 import dbselectors
+import redeclipse
 import cgi
 import timeutils
 displays = {}
@@ -38,15 +39,12 @@ def tableweaponlabels():
 
 def server(sel):
     ret = ""
-    ss = dbselectors.ServerSelector()
-    ss.copyfrom(sel)
+    ss = dbselectors.ServerSelector(sel, True)
     server = ss.single(sel.pathid)
     if server is None:
         ret = "<div class='center'><h2>No such server.</h2></div>"
     else:
-        gs = dbselectors.GameSelector()
-        gs.copyfrom(sel)
-        gs.pathid = None
+        gs = dbselectors.GameSelector(sel)
         firstgame = gs.single(server["games"][0])
         recentgames = ""
         for gid, game in sorted(list(server["recentgames"].items()),
@@ -55,7 +53,7 @@ def server(sel):
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
                 game["mode"],
-                dbselectors.modestr[game["mode"]])
+                redeclipse.modestr[game["mode"]])
             recentgames += tdlink('map', game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
@@ -95,15 +93,13 @@ displays["server"] = server
 
 def game(sel):
     ret = ""
-    gs = dbselectors.GameSelector()
-    gs.copyfrom(sel)
+    gs = dbselectors.GameSelector(sel, True)
     game = gs.single(sel.pathid)
     if game is None:
         ret = "<div class='center'><h2>No such game.</h2></div>"
     else:
         game["map"] = cgi.escape(game["map"])
-        ss = dbselectors.ServerSelector()
-        ss.copyfrom(sel)
+        ss = dbselectors.ServerSelector(sel)
         server = ss.single(game["server"])
         server["desc"] = cgi.escape(server["desc"])
         teamlist = {}
@@ -114,14 +110,14 @@ def game(sel):
             teamlist[team["team"]] = team
             teamsstr += "<tr>"
             teamsstr += "<td>%s</td>" % cgi.escape(team["name"])
-            teamsstr += "<td>%s</td>" % (dbselectors.scorestr(game,
+            teamsstr += "<td>%s</td>" % (redeclipse.scorestr(game,
                 team["score"]))
             teamsstr += "</tr>"
         playersstr = ""
         for player in game["players"]:
             playersstr += "<tr>"
             playersstr += tdlinkp("player", player["handle"], player["name"])
-            playersstr += "<td>%s</td>" % (dbselectors.scorestr(game,
+            playersstr += "<td>%s</td>" % (redeclipse.scorestr(game,
                 player["score"]))
             playersstr += tdlinkp("player", player["handle"], player["handle"])
             playersstr += "<td>%s</td>" % (
@@ -268,7 +264,7 @@ def game(sel):
         </div>
         """.format(
             modestr=alink("mode", game["mode"],
-                dbselectors.modestr[game["mode"]]),
+                redeclipse.modestr[game["mode"]]),
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
@@ -280,8 +276,7 @@ displays["game"] = game
 
 def player(sel):
     ret = ""
-    gs = dbselectors.PlayerSelector()
-    gs.copyfrom(sel)
+    gs = dbselectors.PlayerSelector(sel)
     player = gs.single(sel.pathid)
     if player is None:
         ret = "<div class='center'><h2>No such player.</h2></div>"
@@ -294,11 +289,11 @@ def player(sel):
                 if p["handle"] == player["handle"]][0]
                 recentgames += '<tr>'
                 recentgames += tdlink("game", gid,
-                    "#%d (%s on %s)" % (gid, dbselectors.modestr[game["mode"]],
+                    "#%d (%s on %s)" % (gid, redeclipse.modestr[game["mode"]],
                         game["map"]))
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
                 recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
-                recentgames += '<td>%s</td>' % dbselectors.scorestr(game,
+                recentgames += '<td>%s</td>' % redeclipse.scorestr(game,
                     entry["score"])
                 recentgames += '<td>%d</td>' % entry["frags"]
                 recentgames += '<td>%d</td>' % entry["deaths"]
@@ -312,13 +307,12 @@ def player(sel):
         try:
             totalwielded = sum([w['timewielded']
                 for w in list(player['recent']['weapons'].values())])
-            for weap in sorted(dbselectors.weaponlist):
+            for weap in redeclipse.weaponlist:
                 weapon = player['recent']['weapons'][weap]
                 recentweapons += tableweapon(weapon, totalwielded)
         except TypeError:
             pass
-        gs = dbselectors.GameSelector()
-        gs.copyfrom(sel)
+        gs = dbselectors.GameSelector(sel)
         firstago = '<a href="/display/game/%d">%s</a>' % (min(player["games"]),
             timeutils.agohtml(gs.single(min(player["games"]))["time"]))
         lastago = '<a href="/display/game/%d">%s</a>' % (max(player["games"]),
@@ -365,13 +359,11 @@ displays["player"] = player
 
 def weapon_disp(sel):
     ret = ""
-    gs = dbselectors.WeaponSelector()
-    gs.copyfrom(sel)
-    gs.pathid = None
+    gs = dbselectors.WeaponSelector(sel)
     totalwielded = sum([w['alltime']['timewielded']
         for w in list(gs.getdict().values())])
     weapon = gs.single(sel.pathid)["alltime"]
-    if weapon is None or sel.pathid not in dbselectors.weaponlist:
+    if weapon is None or sel.pathid not in redeclipse.weaponlist:
         ret = "<div class='center'><h2>No such weapon.</h2></div>"
     else:
         weapons = ""
@@ -404,13 +396,11 @@ def weapons(sel):
     if sel.pathid:
         return weapon_disp(sel)
     ret = ""
-    gs = dbselectors.WeaponSelector()
-    gs.copyfrom(sel)
-    gs.pathid = None
+    gs = dbselectors.WeaponSelector(sel)
     weapons = ""
     totalwielded = sum([w['alltime']['timewielded']
         for w in list(gs.getdict().values())])
-    for name in sorted(dbselectors.weaponlist):
+    for name in redeclipse.weaponlist:
         weapon = gs.single(name)["alltime"]
         try:
             weapons += tableweapon(weapon, totalwielded)
@@ -438,12 +428,8 @@ def servers(sel):
         global server
         return server(sel)
     ret = ""
-    gs = dbselectors.GameSelector()
-    gs.copyfrom(sel)
-    gs.pathid = None
-    s = dbselectors.ServerSelector()
-    s.copyfrom(sel)
-    s.pathid = None
+    gs = dbselectors.GameSelector(sel)
+    s = dbselectors.ServerSelector(sel)
     servers = s.getdict()
     servertable = ""
     for server in sorted(servers, key=lambda x: -servers[x]["games"][-1]):
@@ -486,8 +472,7 @@ displays["servers"] = servers
 
 def map(sel):
     ret = ""
-    gs = dbselectors.MapSelector()
-    gs.copyfrom(sel)
+    gs = dbselectors.MapSelector(sel)
     gamemap = gs.single(sel.pathid)
     if gamemap is None:
         ret = "<div class='center'><h2>No such Map.</h2></div>"
@@ -499,7 +484,7 @@ def map(sel):
                 recentgames += tdlink("game", gid, "Game #%d" % gid)
                 recentgames += tdlink("mode",
                     game["mode"],
-                    dbselectors.modestr[game["mode"]])
+                    redeclipse.modestr[game["mode"]])
                 recentgames += '<td>%s</td>' % timeutils.durstr(round(
                     game["timeplayed"]))
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
@@ -538,8 +523,7 @@ displays["map"] = map
 
 def mode(sel):
     ret = ""
-    gs = dbselectors.ModeSelector()
-    gs.copyfrom(sel)
+    gs = dbselectors.ModeSelector(sel, True)
     mode = gs.single(sel.pathid)
     if mode is None:
         ret = "<div class='center'><h2>No such Mode.</h2></div>"

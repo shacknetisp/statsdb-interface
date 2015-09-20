@@ -1,28 +1,5 @@
 # -*- coding: utf-8 -*-
-
-#Red Eclipse Utilities
-loadoutweaponlist = ["pistol", "sword", "shotgun",
-    "smg", "flamer", "plasma", "zapper", "rifle"]
-weaponlist = loadoutweaponlist + ["melee", "grenade", "mine", "rocket"]
-weapcols = ['timewielded', 'timeloadout']
-for a in ['damage',
-    'hits', 'shots',
-    'flakhits', 'flakshots',
-    'frags']:
-        weapcols += [a + '1', a + '2']
-m_laptime_sql = ("mode != 6 OR (mutators & 32768) = 0",
-    "mode = 6 AND (mutators & 32768) != 0")
-m_race_sql = ("mode != 6",
-    "mode = 6")
-modestr = ["Demo", "Editing", "Deathmatch",
-    "CTF", "DAC", "Bomber Ball", "Race"]
-
-
-def scorestr(game, score):
-    import timeutils
-    if game["mode"] == 6 and game["mutators"] & 32768:
-        return timeutils.durstr(score / 1000, dec=True)
-    return str(score)
+import redeclipse
 
 
 #Other Utilities
@@ -78,7 +55,7 @@ class BaseSelector:
     filters = []
     xfilters = []
 
-    def __init__(self):
+    def __init__(self, sel=None, pathid=False):
         f = []
         for e in self.filters:
             if type(e) is list:
@@ -86,6 +63,10 @@ class BaseSelector:
             else:
                 f.append(e)
         self.filters = f
+        if sel is not None:
+            self.copyfrom(sel)
+            if not pathid:
+                self.pathid = None
 
     def makefilters(self):
         sql = []
@@ -144,8 +125,7 @@ class ServerSelector(BaseSelector):
             WHERE handle = ?""", (handle,))]
         for gid in list(reversed(ret["games"]))[
             :self.server.cfgval("serverrecent")]:
-            gs = GameSelector()
-            gs.copyfrom(self)
+            gs = GameSelector(self)
             game = gs.single(gid, one=False)
             ret["recentgames"][gid] = game
         return ret
@@ -170,7 +150,8 @@ class GameSelector(BaseSelector):
         basicfilter("mode"),
         mathfilter("time"),
         mathfilter("timeplayed"),
-        boolfilter("timed", m_laptime_sql[1], m_laptime_sql[0]),
+        boolfilter("timed",
+            redeclipse.m_laptime_sql[1], redeclipse.m_laptime_sql[0]),
         ]
     xfilters = [
         basicxfilter("map"),
@@ -267,9 +248,9 @@ class GameSelector(BaseSelector):
                     "name", "handle",
                     "score", "timealive", "frags", "deaths"])
                 if one:
-                    for weapon in weaponlist:
+                    for weapon in redeclipse.weaponlist:
                         w = {'name': weapon}
-                        for t in weapcols:
+                        for t in redeclipse.weapcols:
                             try:
                                 w[t] = self.db.con.execute("""
                                 SELECT %s FROM game_weapons
@@ -282,14 +263,14 @@ class GameSelector(BaseSelector):
                         player["weapons"][weapon] = w
                 ret["players"].append(player)
         if one:
-            for weapon in weaponlist:
+            for weapon in redeclipse.weaponlist:
                 w = {'name': weapon}
                 gameweapsum = lambda x: self.db.con.execute(
                     """SELECT sum(%s) FROM game_weapons
                     WHERE weapon = ? AND game = %d""" % (
                         x, ret['id']),
                     (weapon,)).fetchone()[0]
-                for t in weapcols:
+                for t in redeclipse.weapcols:
                     w[t] = gameweapsum(t)
                 ret['weapons'][weapon] = w
         return ret
@@ -345,8 +326,7 @@ class PlayerSelector(BaseSelector):
             WHERE handle = ?""", (handle,))]
         for gid in list(reversed(ret["games"]))[
             :self.server.cfgval("playerrecent")]:
-            gs = GameSelector()
-            gs.copyfrom(self)
+            gs = GameSelector(self)
             game = gs.single(gid, one=False)
             ffarounds = []
             for ffaround_row in self.db.con.execute(
@@ -367,14 +347,14 @@ class PlayerSelector(BaseSelector):
             WHERE game IN (SELECT id FROM games WHERE %s)
             AND %s
             ORDER by ROWID DESC LIMIT %d)""" % (x,
-            m_laptime_sql[0], self.vlimit(),
+                redeclipse.m_laptime_sql[0], self.vlimit(),
             self.server.cfgval("playerrecentavg"))
             ).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
             WHERE game IN (SELECT id FROM games WHERE %s)
             AND %s""" % (x,
-                m_laptime_sql[0], self.vlimit())
+                redeclipse.m_laptime_sql[0], self.vlimit())
             ).fetchone()[0]
         alltime = {
             'weapons': {},
@@ -408,7 +388,7 @@ class PlayerSelector(BaseSelector):
         if one:
             #Weapon Data
             ##Individual Weapons
-            for weapon in weaponlist:
+            for weapon in redeclipse.weaponlist:
                 wr = {'name': weapon}
                 wa = {'name': weapon}
                 recentsum = lambda x: self.db.con.execute(
@@ -417,7 +397,8 @@ class PlayerSelector(BaseSelector):
                     WHERE weapon = ? AND playerhandle = ?
                     AND game IN (SELECT id FROM games WHERE %s)
                     AND %s
-                    ORDER by ROWID DESC LIMIT %d)""" % (x, m_laptime_sql[0],
+                    ORDER by ROWID DESC LIMIT %d)""" % (x,
+                    redeclipse.m_laptime_sql[0],
                     self.vlimit(),
                     self.server.cfgval("playerrecentavg")),
                     (weapon, ret['handle'])).fetchone()[0]
@@ -426,9 +407,9 @@ class PlayerSelector(BaseSelector):
                     WHERE weapon = ? AND playerhandle = ?
                     AND %s
                     AND game IN (SELECT id FROM games WHERE %s)""" % (
-                        x, self.vlimit(), m_laptime_sql[0]),
+                        x, self.vlimit(), redeclipse.m_laptime_sql[0]),
                     (weapon, ret['handle'])).fetchone()[0]
-                for t in weapcols:
+                for t in redeclipse.weapcols:
                     wr[t] = recentsum(t)
                     wa[t] = allsum(t)
                 alltime['weapons'][weapon] = wa
@@ -469,15 +450,15 @@ class WeaponSelector(BaseSelector):
             AND game IN (SELECT id FROM games WHERE %s)
             ORDER by ROWID DESC LIMIT %d)""" % (x,
             self.vlimit(),
-            m_race_sql[0],
+            redeclipse.m_race_sql[0],
             self.server.cfgval("weaponrecentavg")),
             (name,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_weapons WHERE weapon = ?
             AND game IN (SELECT id FROM games WHERE %s)""" % (
-                x, m_race_sql[0]),
+                x, redeclipse.m_race_sql[0]),
             (name,)).fetchone()[0]
-        for t in weapcols:
+        for t in redeclipse.weapcols:
             wr[t] = recentsum(t) or 0
             wa[t] = allsum(t) or 0
         return {
@@ -487,11 +468,11 @@ class WeaponSelector(BaseSelector):
 
     def getdict(self):
         if self.pathid is not None:
-            if self.pathid not in weaponlist:
+            if self.pathid not in redeclipse.weaponlist:
                 return None
             return self.single(self.pathid)
         ret = {}
-        for w in weaponlist:
+        for w in redeclipse.weaponlist:
             ret[w] = self.single(w)
         return ret
 
@@ -515,8 +496,7 @@ class MapSelector(BaseSelector):
         if one:
             for gid in list(reversed(ret["games"]))[
                 :self.server.cfgval("maprecent")]:
-                gs = GameSelector()
-                gs.copyfrom(self)
+                gs = GameSelector(self)
                 game = gs.single(gid, one=False)
                 ret["recentgames"][gid] = game
         for row in self.db.con.execute(
@@ -525,9 +505,8 @@ class MapSelector(BaseSelector):
             AND %s
             AND %s
             AND (mutators & 1024) = 0""" % (self.vlimit("id"),
-                m_laptime_sql[1]), (mapname,)):
-                gs = GameSelector()
-                gs.copyfrom(self)
+                redeclipse.m_laptime_sql[1]), (mapname,)):
+                gs = GameSelector(self)
                 game = gs.single(row[0], one=False)
                 finishedplayers = [
                     p for p in game["players"] if p["score"] > 0]
@@ -563,10 +542,12 @@ class ModeSelector(BaseSelector):
     def single(self, mode, one=True):
         try:
             mint = int(mode)
-        except ValueError:
+        except TypeError:
+            return None
+        if mint not in list(range(len(redeclipse.modestr))):
             return None
         ret = {
-            "name": modestr[mint],
+            "name": redeclipse.modestr[mint],
             "recentgames": {},
             }
         ret["games"] = [r[0] for r in
@@ -576,8 +557,7 @@ class ModeSelector(BaseSelector):
         if one:
             for gid in list(reversed(ret["games"]))[
                 :self.server.cfgval("moderecent")]:
-                gs = GameSelector()
-                gs.copyfrom(self)
+                gs = GameSelector(self)
                 game = gs.single(gid, one=False)
                 ret["recentgames"][gid] = game
 
