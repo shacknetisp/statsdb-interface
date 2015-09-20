@@ -2,6 +2,7 @@
 from . import base
 import api
 import dbselectors
+import redeclipse
 from .base import tdlink
 from .base import alink
 import timeutils
@@ -21,7 +22,7 @@ def page(sel):
         recentgames += tdlink("game", gid, "Game #%d" % gid)
         recentgames += tdlink("mode",
             game["mode"],
-            dbselectors.modestr[game["mode"]])
+            redeclipse.modestr[game["mode"]])
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
@@ -51,7 +52,7 @@ def page(sel):
     ws.pathid = None
 
     weapons = {}
-    for name in dbselectors.loadoutweaponlist:
+    for name in redeclipse.loadoutweaponlist:
         weapon = ws.single(name)["recent"]
         weapons[name] = weapon
 
