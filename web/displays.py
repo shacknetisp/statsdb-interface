@@ -104,15 +104,16 @@ def game(sel):
         server["desc"] = cgi.escape(server["desc"])
         teamlist = {}
         teamsstr = ""
-        for team in sorted(game["teams"],
-            key=lambda x: -game["teams"][x]["score"]):
-            team = game["teams"][team]
-            teamlist[team["team"]] = team
-            teamsstr += "<tr>"
-            teamsstr += "<td>%s</td>" % cgi.escape(team["name"])
-            teamsstr += "<td>%s</td>" % (redeclipse.scorestr(game,
-                team["score"]))
-            teamsstr += "</tr>"
+        if len(game["teams"]) > 1:
+            for team in sorted(game["teams"],
+                key=lambda x: -game["teams"][x]["score"]):
+                team = game["teams"][team]
+                teamlist[team["team"]] = team
+                teamsstr += "<tr>"
+                teamsstr += "<td>%s</td>" % cgi.escape(team["name"])
+                teamsstr += "<td>%s</td>" % (redeclipse.scorestr(game,
+                    team["score"]))
+                teamsstr += "</tr>"
         playersstr = ""
         for player in game["players"]:
             playersstr += "<tr>"
@@ -234,16 +235,7 @@ def game(sel):
             Played: {agohtml}<br>
             Server: <a
             href="/display/server/{server[handle]}">{server[desc]}</a><br>
-            <div class='display-table'>
-                <h3>Teams</h3>
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Score</th>
-                    </tr>
-                    {teams}
-                </table>
-            </div>
+            {teamtable}
             <div class='display-table'>
                 <h3>Players</h3>
                 <table>
@@ -268,8 +260,20 @@ def game(sel):
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
-            game=game, server=server, teams=teamsstr, players=playersstr,
-            captures=captures, bombings=bombings, ffarounds=ffarounds)
+            game=game, server=server, players=playersstr,
+            captures=captures, bombings=bombings, ffarounds=ffarounds,
+            teamtable=("""
+            <div class='display-table'>
+                <h3>Teams</h3>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                    %s
+                </table>
+            </div>
+            """ % teamsstr) if teamsstr else "")
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["game"] = game
 

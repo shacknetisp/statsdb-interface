@@ -14,11 +14,20 @@ for a in ['damage',
     'frags']:
         weapcols += [a + '1', a + '2']
 
+modes = {
+    "race": 6,
+    }
+mutators = {
+    "timed": 32768,
+    }
+
 # SQL Filters, [<is not>, <is>]
-m_laptime_sql = ("mode != 6 OR (mutators & 32768) = 0",
-    "mode = 6 AND (mutators & 32768) != 0")
-m_race_sql = ("mode != 6",
-    "mode = 6")
+m_laptime_sql = ("mode != %d OR (mutators & %d) = 0" % (modes["race"],
+    mutators["timed"]),
+    "mode = %d AND (mutators & %d) != 0" % (modes["race"],
+    mutators["timed"]))
+m_race_sql = ("mode != %d" % modes["race"],
+    "mode = 6 %d" % modes["race"])
 
 modestr = ["Demo", "Editing", "Deathmatch",
     "CTF", "DAC", "Bomber Ball", "Race"]
@@ -27,6 +36,6 @@ modestr = ["Demo", "Editing", "Deathmatch",
 def scorestr(game, score):
     """Display score as a str, as time or points depending on the game."""
     import timeutils
-    if game["mode"] == 6 and game["mutators"] & 32768:
+    if game["mode"] == modes["race"] and game["mutators"] & mutators["timed"]:
         return timeutils.durstr(score / 1000, dec=True)
     return str(score)
