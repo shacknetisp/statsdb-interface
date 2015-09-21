@@ -105,8 +105,13 @@ def game(sel):
         teamlist = {}
         teamsstr = ""
         if len(game["teams"]) > 1:
-            for team in sorted(game["teams"],
-                key=lambda x: -game["teams"][x]["score"]):
+            for team in sorted(sorted(game["teams"],
+                key=lambda x: game["teams"][x]["score"] * (
+                    1 if
+                    game["mode"] == redeclipse.modes["race"]
+                    and (game["mutators"] & redeclipse.mutators["timed"])
+                    else -1
+                    )), key=lambda x: game["teams"][x]["score"] == 0):
                 team = game["teams"][team]
                 teamlist[team["team"]] = team
                 teamsstr += "<tr>"
