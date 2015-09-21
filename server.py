@@ -69,6 +69,7 @@ class Server:
 
     def __init__(self):
         self.lasttick = 0
+        self.retcache = {}
         self.path = homedir + '/stats.sqlite'
         self.db = db.DB(self.path)
         self.dblock = Lock()
@@ -89,8 +90,15 @@ class Server:
                         self.httpd.handle_request()
 
     def tick(self):
-        if time.time() - self.lasttick > 60 * 1:
+        if time.time() - self.lasttick >= 60 * 1:
             self.lasttick = time.time()
+            #Clear old cached pages
+            todel = []
+            for k, v in list(self.retcache.items()):
+                if time.time() - v[0] >= 60 * 5:
+                    todel.append(k)
+            for k in todel:
+                del self.retcache[k]
             #Determine if the database exists
             with self.db:
                 self.dbexists = self.db.con.execute(

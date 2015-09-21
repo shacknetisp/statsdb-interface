@@ -34,6 +34,15 @@ def counterwait(c):
 
 
 def make(server, db, q, path):
+
+    if path in server.retcache:
+        return server.retcache[path][1]
+
+    def sendout(t):
+        if path not in server.retcache:
+            server.retcache[path] = (time.time(), t)
+        return t
+
     qopt = Qopt(q)
     paths = path.split('/')[1:]
     sel = dbselectors.BaseSelector()
@@ -55,8 +64,8 @@ def make(server, db, q, path):
                 ret = dbselectors.selectors[name].getdict()
                 if ret is None:
                     ret = {"error": "Invalid Query"}
-        return 'application/json', '200 OK', json.dumps(
-            ret).encode()
+        return sendout(('application/json', '200 OK', json.dumps(
+            ret).encode()))
     elif paths[0] == 'display':
         if server.dbexists:
             if len(paths) >= 2:
@@ -65,28 +74,29 @@ def make(server, db, q, path):
                 sel.pathid = pathid
                 if name in web.displays.displays:
                     ret = web.displays.displays[name](sel)
-                    return 'text/html', '200 OK', ret.encode()
+                    return sendout(('text/html', '200 OK', ret.encode()))
     elif paths[0] == 'images':
         try:
-            return 'image/png', '200 OK', open(
+            return sendout(('image/png', '200 OK', open(
                 "web/images/%s" % '/'.join(paths[1:]).replace(
-                    '..', ''), 'rb').read()
+                    '..', ''), 'rb').read()))
         except IndexError:
             pass
         except FileNotFoundError:
             pass
     elif paths[0] == 'styles':
         try:
-            return 'text/css', '200 OK', open(
+            return sendout(('text/css', '200 OK', open(
                 "web/styles/%s" % '/'.join(paths[1:]).replace(
-                    '..', '')).read().encode()
+                    '..', '')).read().encode()))
         except IndexError:
             pass
         except FileNotFoundError:
             pass
     elif not paths[0]:
-        return 'text/html', '200 OK', web.main.page(sel).encode()
+        return sendout(('text/html', '200 OK', web.main.page(sel).encode()))
     elif paths[0] == 'apidocs':
-        return ('redirect',
-        'https://github.com/shacknetisp/statsdb-interface#api-points')
-    return 'text/html', '404 Not Found', web.err404.page(sel).encode()
+        return sendout((('redirect',
+        'https://github.com/shacknetisp/statsdb-interface#api-points'),))
+    return sendout((
+        'text/html', '404 Not Found', web.err404.page(sel).encode()))
