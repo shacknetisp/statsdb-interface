@@ -333,6 +333,7 @@ def player(sel):
             First appeared: {firstago}<br>
             Last appeared: {lastago}<br>
             Frag Ratio: {fratio}<br>
+            DPM: {dpm}<br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -361,7 +362,9 @@ def player(sel):
             player=player, firstago=firstago, lastago=lastago,
             fratio=fratio,
             recentweapons=recentweapons,
-            tableweaponlabels=tableweaponlabels())
+            tableweaponlabels=tableweaponlabels(),
+            dpm=round(player["recent"]["damage"]
+            / (player["recent"]["timealive"] / 60)))
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["player"] = player
 

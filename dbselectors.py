@@ -250,6 +250,12 @@ class GameSelector(BaseSelector):
                     "name", "handle",
                     "score", "timealive", "frags", "deaths", "id"])
 
+                player["damage"] = self.db.con.execute(
+                        """SELECT (sum(damage1) + sum(damage2))
+                        FROM game_weapons
+                        WHERE game = %d AND player = %s""" % (
+                            row[0], player["id"])).fetchone()[0]
+
                 for capture in captures:
                     if capture["player"] == player["id"]:
                         player["captures"].append(capture)
@@ -357,15 +363,18 @@ class PlayerSelector(BaseSelector):
             (SELECT * FROM game_players
             WHERE game IN (SELECT id FROM games WHERE %s)
             AND %s
+            AND handle = ?
             ORDER by ROWID DESC LIMIT %d)""" % (x,
-                redeclipse.m_laptime_sql[0], self.vlimit(),
-            self.server.cfgval("playerrecentavg"))
-            ).fetchone()[0]
+                redeclipse.m_laptime_sql[0],
+                self.vlimit(),
+                self.server.cfgval("playerrecentavg")), (handle,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
             WHERE game IN (SELECT id FROM games WHERE %s)
+            AND handle = ?
             AND %s""" % (x,
-                redeclipse.m_laptime_sql[0], self.vlimit())
+                redeclipse.m_laptime_sql[0],
+                self.vlimit()), (handle,)
             ).fetchone()[0]
         alltime = {
             'weapons': {},
@@ -393,9 +402,24 @@ class PlayerSelector(BaseSelector):
         if bombings:
             ret['bombings'] = bombings
 
-        for t in ['frags', 'deaths']:
+        for t in ['frags', 'deaths', 'timealive']:
             recent[t] = recentsum(t)
             alltime[t] = allsum(t)
+
+        recent["damage"] = self.db.con.execute(
+            """SELECT (sum(damage1) + sum(damage2)) FROM game_weapons
+                WHERE %s
+                AND playerhandle = ?
+                ORDER by ROWID DESC LIMIT %d""" % (self.vlimit(),
+                self.server.cfgval("playerrecentavg")),
+                    (ret["handle"],)).fetchone()[0]
+
+        alltime["damage"] = self.db.con.execute(
+            """SELECT (sum(damage1) + sum(damage2)) FROM game_weapons
+                WHERE %s
+                AND playerhandle = ?""" % (self.vlimit()),
+                (ret["handle"],)).fetchone()[0]
+
         if one:
             #Weapon Data
             ##Individual Weapons

@@ -29,6 +29,28 @@ class pt:
             ret += "<td>%d</td>" % player[1]
         return ret
 
+    def gamediv(key, akey, sel):
+        ret = ""
+        players = {}
+        d = {}
+        for gid in [x[0] for x in sel.db.con.execute("""
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 7)
+        """ % time.time())]:
+            game = dbselectors.GameSelector(sel).single(gid)
+            if game["mode"] != redeclipse.modes["race"]:
+                for player in game["players"]:
+                    if player["handle"]:
+                        if player["handle"] not in players:
+                            players[player["handle"]] = 0
+                        players[player["handle"]] += key(player)
+                        if player["handle"] not in d:
+                            d[player["handle"]] = 0
+                        d[player["handle"]] += akey(player)
+        for player in sorted(list(players.items()), key=lambda x: -x[1]):
+            ret += tdlink("player", player[0], player[0])
+            ret += "<td>%d</td>" % round(player[1] / d[player[0]])
+        return ret
+
 
 def page(sel):
     recentgames = ""
@@ -80,6 +102,8 @@ def page(sel):
         "points": pt.game(lambda x: x["score"], sel),
         "captures": pt.game(lambda x: len(x["captures"]), sel),
         "bombings": pt.game(lambda x: len(x["bombings"]), sel),
+        "dpm": pt.gamediv(lambda x: x["damage"],
+            lambda x: x["timealive"] / 60, sel),
         }
     ret = """
     <h2>Recent Overview</h2>
@@ -99,6 +123,13 @@ def page(sel):
         <h2>Last 7 days:</h2>
         <h3>Players</h3>
         <table>
+            <h5>By DPM</h5>
+            <tr>
+                <th>Name</th>
+                <th>DPM</th>
+            </tr>
+            {topplayer[dpm]}
+        </table><table>
             <h5>By Points</h5>
             <tr>
                 <th>Name</th>
