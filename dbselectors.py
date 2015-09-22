@@ -414,7 +414,9 @@ class PlayerSelector(BaseSelector):
             """SELECT (sum(damage1) + sum(damage2)) FROM game_weapons
                 WHERE %s
                 AND playerhandle = ?
-                ORDER by ROWID DESC LIMIT %d""" % (self.vlimit(),
+                AND game IN (SELECT id FROM games WHERE mode != {modes[race]})
+                ORDER by ROWID DESC LIMIT %d""".format(
+                modes=redeclipse.modes) % (self.vlimit(),
                 self.server.cfgval("playerrecentavg")),
                     (ret["handle"],)).fetchone()[0]
 
