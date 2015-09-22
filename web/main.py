@@ -11,13 +11,13 @@ import time
 
 class pt:
 
-    def game(key, sel):
+    def game(key, sel, days):
         ret = ""
         players = {}
         gs = dbselectors.GameSelector(sel)
         gs.gamefilter = """
-        (%d - time) < (60 * 60 * 24 * 90)
-        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        (%d - time) < (60 * 60 * 24 * %d)
+        AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
@@ -31,14 +31,14 @@ class pt:
             ret += "</tr>"
         return ret
 
-    def gamediv(key, akey, sel):
+    def gamediv(key, akey, sel, days):
         ret = ""
         players = {}
         d = {}
         gs = dbselectors.GameSelector(sel)
         gs.gamefilter = """
-        (%d - time) < (60 * 60 * 24 * 90)
-        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        (%d - time) < (60 * 60 * 24 * %d)
+        AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
@@ -55,14 +55,12 @@ class pt:
             ret += "</tr>"
         return ret
 
-    def mapnum(sel):
-        return ""
+    def mapnum(sel, days):
         ret = ""
         ms = {}
         gs = dbselectors.GameSelector(sel)
         gs.gamefilter = """
-        (%d - time) < (60 * 60 * 24 * 90)
-        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        (%d - time) < (60 * 60 * 24 * %d)""" % (time.time(), days)
         for game in list(gs.getdict().values()):
             if game["map"] not in ms:
                 ms[game["map"]] = 0
@@ -70,6 +68,24 @@ class pt:
         for m in sorted(ms, key=lambda x: -ms[x])[:5]:
             ret += "<tr>"
             ret += tdlink("map", m, m)
+            ret += "<td>%d</td>" % (ms[m])
+            ret += "</tr>"
+        return ret
+
+    def servernum(sel, days):
+        ret = ""
+        ms = {}
+        gs = dbselectors.GameSelector(sel)
+        ss = dbselectors.ServerSelector(sel)
+        gs.gamefilter = """
+        (%d - time) < (60 * 60 * 24 * %d)""" % (time.time(), days)
+        for game in list(gs.getdict().values()):
+            if game["server"] not in ms:
+                ms[game["server"]] = 0
+            ms[game["server"]] += 1
+        for m in sorted(ms, key=lambda x: -ms[x])[:5]:
+            ret += "<tr>"
+            ret += tdlink("server", m, ss.single(m)["desc"])
             ret += "<td>%d</td>" % (ms[m])
             ret += "</tr>"
         return ret
@@ -122,16 +138,17 @@ def page(sel):
             alink('weapon', best[0], best[0])))
 
     ptcounters = {
-        "points": pt.game(lambda x: x["score"], sel),
-        "captures": pt.game(lambda x: len(x["captures"]), sel),
-        "bombings": pt.game(lambda x: len(x["bombings"]), sel),
+        "points": pt.game(lambda x: x["score"], sel, 7),
+        "captures": pt.game(lambda x: len(x["captures"]), sel, 7),
+        "bombings": pt.game(lambda x: len(x["bombings"]), sel, 7),
         "dpm": pt.gamediv(lambda x: x["damage"],
-            lambda x: x["timealive"] / 60, sel),
-        "maps": pt.mapnum(sel),
+            lambda x: x["timealive"] / 60, sel, 7),
+        "maps": pt.mapnum(sel, 90),
+        "servers": pt.servernum(sel, 90),
         }
     ret = """
     <h2>Recent Overview</h2>
-    <h3>Last 90 Days</h3>
+    <h3>Last 7 Days</h3>
     <h5>Players</h5>
     <div class='display-table float-table'>
         <h5>DPM</h5>
@@ -174,6 +191,7 @@ def page(sel):
         </table>
     </div>
     <div style="clear: both;"></div>
+    <h3>Last 90 Days</h3>
     <div class='display-table float-table'>
         <h5>Maps</h5>
         <table>
@@ -182,6 +200,16 @@ def page(sel):
                 <th>Games</th>
             </tr>
             {ptcounters[maps]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Servers</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            </tr>
+            {ptcounters[servers]}
         </table>
     </div>
     <div style="clear: both;"></div>
