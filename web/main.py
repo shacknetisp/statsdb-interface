@@ -14,16 +14,16 @@ class pt:
     def game(key, sel):
         ret = ""
         players = {}
-        for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
-        """ % time.time())]:
-            game = dbselectors.GameSelector(sel).single(gid)
-            if game["mode"] != redeclipse.modes["race"]:
-                for player in game["players"]:
-                    if player["handle"]:
-                        if player["handle"] not in players:
-                            players[player["handle"]] = 0
-                        players[player["handle"]] += key(player)
+        gs = dbselectors.GameSelector(sel)
+        gs.gamefilter = """
+        (%d - time) < (60 * 60 * 24 * 90)
+        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        for game in list(gs.getdict().values()):
+            for player in game["players"]:
+                if player["handle"]:
+                    if player["handle"] not in players:
+                        players[player["handle"]] = 0
+                    players[player["handle"]] += key(player)
         for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
             ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
@@ -35,19 +35,19 @@ class pt:
         ret = ""
         players = {}
         d = {}
-        for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
-        """ % time.time())]:
-            game = dbselectors.GameSelector(sel).single(gid)
-            if game["mode"] != redeclipse.modes["race"]:
-                for player in game["players"]:
-                    if player["handle"]:
-                        if player["handle"] not in players:
-                            players[player["handle"]] = 0
-                        players[player["handle"]] += key(player)
-                        if player["handle"] not in d:
-                            d[player["handle"]] = 0
-                        d[player["handle"]] += akey(player)
+        gs = dbselectors.GameSelector(sel)
+        gs.gamefilter = """
+        (%d - time) < (60 * 60 * 24 * 90)
+        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        for game in list(gs.getdict().values()):
+            for player in game["players"]:
+                if player["handle"]:
+                    if player["handle"] not in players:
+                        players[player["handle"]] = 0
+                    players[player["handle"]] += key(player)
+                    if player["handle"] not in d:
+                        d[player["handle"]] = 0
+                    d[player["handle"]] += akey(player)
         for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
             ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
@@ -56,15 +56,17 @@ class pt:
         return ret
 
     def mapnum(sel):
+        return ""
         ret = ""
         ms = {}
-        for gid in [x[0] for x in sel.db.con.execute("""
-            SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
-            """ % time.time())]:
-                game = dbselectors.GameSelector(sel).single(gid)
-                if game["map"] not in ms:
-                    ms[game["map"]] = 0
-                ms[game["map"]] += 1
+        gs = dbselectors.GameSelector(sel)
+        gs.gamefilter = """
+        (%d - time) < (60 * 60 * 24 * 90)
+        AND mode != %d""" % (time.time(), redeclipse.modes["race"])
+        for game in list(gs.getdict().values()):
+            if game["map"] not in ms:
+                ms[game["map"]] = 0
+            ms[game["map"]] += 1
         for m in sorted(ms, key=lambda x: -ms[x])[:5]:
             ret += "<tr>"
             ret += tdlink("map", m, m)

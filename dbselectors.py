@@ -23,7 +23,7 @@ def basicfilter(k, c="=", s=None):
     e = ""
     return [
         {"key": k, "sql": "%s %s ?%s" % (s, c, e)},
-        {"key": "not-" + k, "sql": "%s NOT %s ?%s" % (s, c, e)}]
+        {"key": "not-" + k, "sql": "NOT %s %s ?%s" % (s, c, e)}]
 
 
 def mathfilter(k, s=None):
@@ -31,7 +31,7 @@ def mathfilter(k, s=None):
         s = k
     return [
         {"key": k, "sql": "%s = ?" % (s)},
-        {"key": "not-" + k, "sql": "%s NOT = ?" % (s)},
+        {"key": "not-" + k, "sql": "NOT %s = ?" % (s)},
         {"key": "lt-" + k, "sql": "%s < ?" % (s)},
         {"key": "gt-" + k, "sql": "%s > ?" % (s)}]
 
@@ -68,7 +68,7 @@ class BaseSelector:
             if not pathid:
                 self.pathid = None
 
-    def makefilters(self):
+    def makefilters(self, where=True):
         sql = []
         opts = []
         for f in self.filters:
@@ -79,7 +79,8 @@ class BaseSelector:
             else:
                 if f['key'] in self.qopt:
                     sql.append(f["sql"])
-        return (("WHERE " if sql else "") + " AND ".join(sql)), opts
+        return (("WHERE " if sql and where else "") + " AND ".join(
+            sql)), tuple(opts)
 
     def copyfrom(self, other):
         self.pathid = other.pathid
@@ -295,12 +296,14 @@ class GameSelector(BaseSelector):
     def getdict(self):
         if self.pathid is not None:
             return self.single(self.pathid)
-        f = self.makefilters()
+        f = self.makefilters(where=False)
         if self.server.dbexists:
             ids = [r[0] for r in
             self.db.con.execute(
                 """SELECT id FROM games
-                %s""" % f[0], f[1])]
+                WHERE %s AND %s""" % (self.gamefilter
+                if hasattr(self, 'gamefilter') else '1 = 1',
+                f[0] if f[0] else "1 = 1"), f[1])]
         else:
             ids = []
         if "recent" in self.qopt:

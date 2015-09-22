@@ -39,13 +39,16 @@ class httpd:
         self.server = server
 
     def __call__(self, environ, start_response):
-        print(((datetime.now().strftime('%D %T')
+        sys.stdout.write(((datetime.now().strftime('%D %T')
         + ': ' + environ['REMOTE_ADDR']
-        + ': ' + environ['PATH_INFO'] + '?' + environ['QUERY_STRING']).strip()))
+        + ': ' + environ['PATH_INFO'] + '?' + environ['QUERY_STRING']).strip()
+        + '...'))
         result = b""
+        t = time.time()
         r = api.make(self.server,
             self.server.db, urllib.parse.parse_qs(
                     environ['QUERY_STRING'], True), environ['PATH_INFO'])
+        sys.stdout.write('...done [%f]\n' % (time.time() - t))
         if len(r) == 3:
             t, status, result = r
             headers = [('Content-type', '%s' % t)]
