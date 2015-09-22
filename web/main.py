@@ -24,7 +24,7 @@ class pt:
                         if player["handle"] not in players:
                             players[player["handle"]] = 0
                         players[player["handle"]] += key(player)
-        for player in sorted(list(players.items()), key=lambda x: -x[1]):
+        for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
             ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
             ret += "<td>%d</td>" % player[1]
@@ -48,7 +48,7 @@ class pt:
                         if player["handle"] not in d:
                             d[player["handle"]] = 0
                         d[player["handle"]] += akey(player)
-        for player in sorted(list(players.items()), key=lambda x: -x[1]):
+        for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
             ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
             ret += "<td>%d</td>" % round(player[1] / d[player[0]])
@@ -65,7 +65,7 @@ class pt:
                 if game["map"] not in ms:
                     ms[game["map"]] = 0
                 ms[game["map"]] += 1
-        for m in sorted(ms, key=lambda x: -ms[x]):
+        for m in sorted(ms, key=lambda x: -ms[x])[:5]:
             ret += "<tr>"
             ret += tdlink("map", m, m)
             ret += "<td>%d</td>" % (ms[m])
