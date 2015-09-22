@@ -444,7 +444,7 @@ def servers(sel):
     s = dbselectors.ServerSelector(sel)
     servers = s.getdict()
     servertable = ""
-    for server in sorted(servers, key=lambda x: -servers[x]["games"][-1]):
+    for server in sorted(servers, key=lambda x: -servers[x]["games"][-1])[:20]:
         server = servers[server]
         firstgame = gs.single(server["games"][0])
         latestgame = gs.single(server["games"][-1])

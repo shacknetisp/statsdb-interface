@@ -7,21 +7,23 @@
 }
 
 .display-table {
-    margin: 4px 0px 4px 0px;
-    text-align: center;
+    margin: 4px 12px 4px 0px;
+}
+
+.float-table {
+    float: left;
 }
 
 .display-table > table {
-    margin-left: auto;
-    margin-right: auto;
-    max-width:95%;
+    max-width: 95%;
+    width: 100%;
 }
 
 .display-table > table > tbody > tr > td,
 .display-table > table > tbody > tr > th {
     border: 2px solid #882222;
     padding: 2px 2px 2px 2px;
-    text-align: center;
+    white-space: nowrap;
 }
 
 a {

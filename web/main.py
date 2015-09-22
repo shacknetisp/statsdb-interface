@@ -15,7 +15,7 @@ class pt:
         ret = ""
         players = {}
         for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 7)
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
         """ % time.time())]:
             game = dbselectors.GameSelector(sel).single(gid)
             if game["mode"] != redeclipse.modes["race"]:
@@ -25,8 +25,10 @@ class pt:
                             players[player["handle"]] = 0
                         players[player["handle"]] += key(player)
         for player in sorted(list(players.items()), key=lambda x: -x[1]):
+            ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
             ret += "<td>%d</td>" % player[1]
+            ret += "</tr>"
         return ret
 
     def gamediv(key, akey, sel):
@@ -34,7 +36,7 @@ class pt:
         players = {}
         d = {}
         for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 7)
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
         """ % time.time())]:
             game = dbselectors.GameSelector(sel).single(gid)
             if game["mode"] != redeclipse.modes["race"]:
@@ -47,8 +49,27 @@ class pt:
                             d[player["handle"]] = 0
                         d[player["handle"]] += akey(player)
         for player in sorted(list(players.items()), key=lambda x: -x[1]):
+            ret += "<tr>"
             ret += tdlink("player", player[0], player[0])
             ret += "<td>%d</td>" % round(player[1] / d[player[0]])
+            ret += "</tr>"
+        return ret
+
+    def mapnum(sel):
+        ret = ""
+        ms = {}
+        for gid in [x[0] for x in sel.db.con.execute("""
+            SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
+            """ % time.time())]:
+                game = dbselectors.GameSelector(sel).single(gid)
+                if game["map"] not in ms:
+                    ms[game["map"]] = 0
+                ms[game["map"]] += 1
+        for m in sorted(ms, key=lambda x: -ms[x]):
+            ret += "<tr>"
+            ret += tdlink("map", m, m)
+            ret += "<td>%d</td>" % (ms[m])
+            ret += "</tr>"
         return ret
 
 
@@ -98,17 +119,72 @@ def page(sel):
         topweapons.append("Most wielded weapon: %s<br>" % (
             alink('weapon', best[0], best[0])))
 
-    topplayer = {
+    ptcounters = {
         "points": pt.game(lambda x: x["score"], sel),
         "captures": pt.game(lambda x: len(x["captures"]), sel),
         "bombings": pt.game(lambda x: len(x["bombings"]), sel),
         "dpm": pt.gamediv(lambda x: x["damage"],
             lambda x: x["timealive"] / 60, sel),
+        "maps": pt.mapnum(sel),
         }
     ret = """
     <h2>Recent Overview</h2>
+    <h3>Last 30 Days</h3>
+    <h5>Players</h5>
+    <div class='display-table float-table'>
+        <h5>DPM</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>DPM</th>
+            </tr>
+            {ptcounters[dpm]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Points</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Points</th>
+            </tr>
+            {ptcounters[points]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Captures</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Captures</th>
+            </tr>
+            {ptcounters[captures]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Bombings</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Bombings</th>
+            </tr>
+            {ptcounters[bombings]}
+        </table>
+    </div>
+    <div style="clear: both;"></div>
+    <div class='display-table float-table'>
+        <h5>Maps</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            </tr>
+            {ptcounters[maps]}
+        </table>
+    </div>
+    <div style="clear: both;"></div>
     <div class='display-table'>
-        <h3>10 Latest Games</h3>
+        <h5>Latest Games</h5>
         <table>
             <tr>
                 <th>ID</th>
@@ -120,39 +196,9 @@ def page(sel):
             </tr>
             {recentgames}
         </table>
-        <h2>Last 7 days:</h2>
-        <h3>Players</h3>
-        <table>
-            <h5>By DPM</h5>
-            <tr>
-                <th>Name</th>
-                <th>DPM</th>
-            </tr>
-            {topplayer[dpm]}
-        </table><table>
-            <h5>By Points</h5>
-            <tr>
-                <th>Name</th>
-                <th>Points</th>
-            </tr>
-            {topplayer[points]}
-        </table><table>
-            <h5>By Captures</h5>
-            <tr>
-                <th>Name</th>
-                <th>Captures</th>
-            </tr>
-            {topplayer[captures]}
-        </table><table>
-            <h5>By Bombings</h5>
-            <tr>
-                <th>Name</th>
-                <th>Bombings</th>
-            </tr>
-            {topplayer[bombings]}
-        </table>
     </div>
+    <div style="clear: both;"></div>
     """.format(recentgames=recentgames,
-        topplayer=topplayer,
+        ptcounters=ptcounters,
         topweapon="\n".join(topweapons))
     return base.page(sel, ret, title="Overview")
