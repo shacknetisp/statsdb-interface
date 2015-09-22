@@ -6,14 +6,18 @@ import redeclipse
 from .base import tdlink
 from .base import alink
 import timeutils
+import time
 
 
 class pt:
 
-    def game(key, games):
+    def game(key, sel):
         ret = ""
         players = {}
-        for gid, game in list(reversed(list(games.items())))[:10]:
+        for gid in [x[0] for x in sel.db.con.execute("""
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 7)
+        """ % time.time())]:
+            game = dbselectors.GameSelector(sel).single(gid)
             if game["mode"] != redeclipse.modes["race"]:
                 for player in game["players"]:
                     if player["handle"]:
@@ -73,14 +77,14 @@ def page(sel):
             alink('weapon', best[0], best[0])))
 
     topplayer = {
-        "points": pt.game(lambda x: x["score"], games),
-        "captures": pt.game(lambda x: len(x["captures"]), games),
-        "bombings": pt.game(lambda x: len(x["bombings"]), games),
+        "points": pt.game(lambda x: x["score"], sel),
+        "captures": pt.game(lambda x: len(x["captures"]), sel),
+        "bombings": pt.game(lambda x: len(x["bombings"]), sel),
         }
     ret = """
-    <h2>Recent Games Overview</h2>
+    <h2>Recent Overview</h2>
     <div class='display-table'>
-        <h3>Recent Games</h3>
+        <h3>10 Latest Games</h3>
         <table>
             <tr>
                 <th>ID</th>
@@ -92,23 +96,24 @@ def page(sel):
             </tr>
             {recentgames}
         </table>
-        <h3>Top Players</h3>
+        <h2>Last 7 days:</h2>
+        <h3>Players</h3>
         <table>
-            <h3>By Points</h3>
+            <h5>By Points</h5>
             <tr>
                 <th>Name</th>
                 <th>Points</th>
             </tr>
             {topplayer[points]}
         </table><table>
-            <h3>By Captures</h3>
+            <h5>By Captures</h5>
             <tr>
                 <th>Name</th>
                 <th>Captures</th>
             </tr>
             {topplayer[captures]}
         </table><table>
-            <h3>By Bombings</h3>
+            <h5>By Bombings</h5>
             <tr>
                 <th>Name</th>
                 <th>Bombings</th>
