@@ -35,12 +35,14 @@ def counterwait(c):
 
 def make(server, db, q, path):
 
-    if path in server.retcache:
-        return server.retcache[path][1]
+    fullpath = str((path, q))
+
+    if fullpath in server.retcache:
+        return server.retcache[fullpath][1]
 
     def sendout(t):
-        if path not in server.retcache:
-            server.retcache[path] = (time.time(), t)
+        if fullpath not in server.retcache:
+            server.retcache[fullpath] = (time.time(), t)
         return t
 
     qopt = Qopt(q)

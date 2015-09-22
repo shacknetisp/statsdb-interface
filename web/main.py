@@ -8,6 +8,24 @@ from .base import alink
 import timeutils
 
 
+class pt:
+
+    def game(key, games):
+        ret = ""
+        players = {}
+        for gid, game in list(reversed(list(games.items())))[:10]:
+            if game["mode"] != redeclipse.modes["race"]:
+                for player in game["players"]:
+                    if player["handle"]:
+                        if player["handle"] not in players:
+                            players[player["handle"]] = 0
+                        players[player["handle"]] += key(player)
+        for player in sorted(list(players.items()), key=lambda x: -x[1]):
+            ret += tdlink("player", player[0], player[0])
+            ret += "<td>%d</td>" % player[1]
+        return ret
+
+
 def page(sel):
     recentgames = ""
     gs = dbselectors.GameSelector()
@@ -32,20 +50,6 @@ def page(sel):
             game["timeplayed"]))
         recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
         recentgames += '</tr>'
-    players = {}
-    for gid, game in list(reversed(list(games.items())))[:25]:
-        if game["mode"] != 6:
-            for player in game["players"]:
-                if player["handle"]:
-                    if player["handle"] not in players:
-                        players[player["handle"]] = 0
-                    players[player["handle"]] += player["score"]
-    if players:
-        best = sorted(list(players.items()), key=lambda x: -x[1])[0]
-        topplayer = "<h3>Top player from recent games: %s [%d]</h3>" % (
-            alink('player', best[0], best[0]), best[1])
-    else:
-        topplayer = ""
 
     ws = dbselectors.WeaponSelector()
     ws.copyfrom(sel)
@@ -61,17 +65,21 @@ def page(sel):
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             weapon[1]["damage1"] / max(weapon[1]["timewielded"], 1) +
             weapon[1]["damage2"] / max(weapon[1]["timewielded"], 1)))[0]
-        topweapons.append("<h3>Most efficient weapon: %s</h3>" % (
+        topweapons.append("Most efficient weapon: %s<br>" % (
             alink('weapon', best[0], best[0])))
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             max(weapon[1]["timewielded"], 1)))[0]
-        topweapons.append("<h3>Most wielded weapon: %s</h3>" % (
+        topweapons.append("Most wielded weapon: %s<br>" % (
             alink('weapon', best[0], best[0])))
+
+    topplayer = {
+        "points": pt.game(lambda x: x["score"], games),
+        "captures": pt.game(lambda x: len(x["captures"]), games),
+        "bombings": pt.game(lambda x: len(x["bombings"]), games),
+        }
     ret = """
-    <h2>Overview</h2>
+    <h2>Recent Games Overview</h2>
     <div class='display-table'>
-        {topplayer}
-        {topweapon}
         <h3>Recent Games</h3>
         <table>
             <tr>
@@ -83,6 +91,29 @@ def page(sel):
                 <th>Played</th>
             </tr>
             {recentgames}
+        </table>
+        <h3>Top Players</h3>
+        <table>
+            <h3>By Points</h3>
+            <tr>
+                <th>Name</th>
+                <th>Points</th>
+            </tr>
+            {topplayer[points]}
+        </table><table>
+            <h3>By Captures</h3>
+            <tr>
+                <th>Name</th>
+                <th>Captures</th>
+            </tr>
+            {topplayer[captures]}
+        </table><table>
+            <h3>By Bombings</h3>
+            <tr>
+                <th>Name</th>
+                <th>Bombings</th>
+            </tr>
+            {topplayer[bombings]}
         </table>
     </div>
     """.format(recentgames=recentgames,

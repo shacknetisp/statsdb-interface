@@ -243,10 +243,21 @@ class GameSelector(BaseSelector):
             "SELECT * FROM game_players WHERE game = %d" % row[0]):
                 player = {
                     "weapons": {},
+                    "captures": [],
+                    "bombings": [],
                     }
                 dictfromrow(player, player_row, [None,
                     "name", "handle",
-                    "score", "timealive", "frags", "deaths"])
+                    "score", "timealive", "frags", "deaths", "id"])
+
+                for capture in captures:
+                    if capture["player"] == player["id"]:
+                        player["captures"].append(capture)
+
+                for bombing in bombings:
+                    if bombing["player"] == player["id"]:
+                        player["bombings"].append(bombing)
+
                 if one:
                     for weapon in redeclipse.weaponlist:
                         w = {'name': weapon}
