@@ -361,18 +361,22 @@ class PlayerSelector(BaseSelector):
         recentsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM
             (SELECT * FROM game_players
-            WHERE game IN (SELECT id FROM games WHERE %s)
+            WHERE game IN (SELECT id FROM games WHERE %s
+            AND mode != {modes[race]})
             AND %s
             AND handle = ?
-            ORDER by ROWID DESC LIMIT %d)""" % (x,
+            ORDER by ROWID DESC LIMIT %d)""".format(
+                modes=redeclipse.modes) % (x,
                 redeclipse.m_laptime_sql[0],
                 self.vlimit(),
                 self.server.cfgval("playerrecentavg")), (handle,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
-            WHERE game IN (SELECT id FROM games WHERE %s)
+            WHERE game IN (SELECT id FROM games WHERE %s
+            AND mode != {modes[race]})
             AND handle = ?
-            AND %s""" % (x,
+            AND %s""".format(
+                modes=redeclipse.modes) % (x,
                 redeclipse.m_laptime_sql[0],
                 self.vlimit()), (handle,)
             ).fetchone()[0]
@@ -417,7 +421,9 @@ class PlayerSelector(BaseSelector):
         alltime["damage"] = self.db.con.execute(
             """SELECT (sum(damage1) + sum(damage2)) FROM game_weapons
                 WHERE %s
-                AND playerhandle = ?""" % (self.vlimit()),
+                AND game IN (SELECT id FROM games WHERE mode != {modes[race]})
+                AND playerhandle = ?""".format(
+                modes=redeclipse.modes) % (self.vlimit()),
                 (ret["handle"],)).fetchone()[0]
 
         if one:
