@@ -15,7 +15,7 @@ class pt:
         ret = ""
         players = {}
         for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
         """ % time.time())]:
             game = dbselectors.GameSelector(sel).single(gid)
             if game["mode"] != redeclipse.modes["race"]:
@@ -36,7 +36,7 @@ class pt:
         players = {}
         d = {}
         for gid in [x[0] for x in sel.db.con.execute("""
-        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
+        SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
         """ % time.time())]:
             game = dbselectors.GameSelector(sel).single(gid)
             if game["mode"] != redeclipse.modes["race"]:
@@ -59,7 +59,7 @@ class pt:
         ret = ""
         ms = {}
         for gid in [x[0] for x in sel.db.con.execute("""
-            SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 30)
+            SELECT id FROM games WHERE (%d - time) < (60 * 60 * 24 * 90)
             """ % time.time())]:
                 game = dbselectors.GameSelector(sel).single(gid)
                 if game["map"] not in ms:
@@ -129,7 +129,7 @@ def page(sel):
         }
     ret = """
     <h2>Recent Overview</h2>
-    <h3>Last 30 Days</h3>
+    <h3>Last 90 Days</h3>
     <h5>Players</h5>
     <div class='display-table float-table'>
         <h5>DPM</h5>
