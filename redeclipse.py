@@ -45,13 +45,13 @@ def scorestr(game, score):
 
 def modeimg(mode, c=24):
     return '''<img class="img%d"
-    title="%s" src="%s" alt="%s"></img>''' % (c, modestr[mode],
+    title="%s" src="%s" alt="%s">''' % (c, modestr[mode],
         "/images/modes/%d.png" % mode,
         modestr[mode])
 
 
 def weaponimg(weap, c=24):
     return '''<img class="img%d"
-    title="%s" src="%s" alt="%s"></img>''' % (c, weap,
+    title="%s" src="%s" alt="%s">''' % (c, weap,
         "/images/weapons/%s.png" % weap,
         weap)

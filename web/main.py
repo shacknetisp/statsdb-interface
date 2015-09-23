@@ -124,17 +124,15 @@ def page(sel):
         weapon = ws.single(name)["recent"]
         weapons[name] = weapon
 
-    topweapons = []
+    topweapons = {}
     if weapons:
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             weapon[1]["damage1"] / max(weapon[1]["timewielded"], 1) +
             weapon[1]["damage2"] / max(weapon[1]["timewielded"], 1)))[0]
-        topweapons.append("Most efficient weapon: %s<br>" % (
-            alink('weapon', best[0], best[0])))
+        topweapons['dpm'] = best[0]
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             max(weapon[1]["timewielded"], 1)))[0]
-        topweapons.append("Most wielded weapon: %s<br>" % (
-            alink('weapon', best[0], best[0])))
+        topweapons['wield'] = best[0]
 
     ptcounters = {
         "points": pt.game(lambda x: x["score"], sel, 7),
@@ -192,7 +190,7 @@ def page(sel):
     <div style="clear: both;"></div>
     <h3>Last 90 Days</h3>
     <div class='display-table float-table'>
-        <h5>Maps</h5>
+        <h5><a href="/display/maps">Maps</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -202,13 +200,26 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5>Servers</h5>
+        <h5><a href="/display/servers">Servers</a></h5>
         <table>
             <tr>
                 <th>Name</th>
                 <th>Games</th>
             </tr>
             {ptcounters[servers]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/display/weapons">Weapons</a></h5>
+        <table>
+            <tr>
+                <td>Best DPM</td>
+                <td>{weapdpm}</td>
+            </tr>
+            <tr>
+                <td>Most Wielded</td>
+                <td>{weapwield}</td>
+            </tr>
         </table>
     </div>
     <div style="clear: both;"></div>
@@ -229,5 +240,9 @@ def page(sel):
     <div style="clear: both;"></div>
     """.format(recentgames=recentgames,
         ptcounters=ptcounters,
-        topweapon="\n".join(topweapons))
+        topweapon="\n".join(topweapons),
+        weapdpm="%s %s" % (redeclipse.weaponimg(topweapons['dpm']),
+            alink('weapon', topweapons['dpm'], topweapons['dpm'])),
+        weapwield="%s %s" % (redeclipse.weaponimg(topweapons['wield']),
+            alink('weapon', topweapons['wield'], topweapons['wield'])))
     return base.page(sel, ret, title="Overview")
