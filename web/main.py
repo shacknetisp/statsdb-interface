@@ -127,12 +127,15 @@ def page(sel):
     topweapons = {}
     if weapons:
         best = sorted(list(weapons.items()), key=lambda weapon: -(
-            weapon[1]["damage1"] / max(weapon[1]["timewielded"], 1) +
-            weapon[1]["damage2"] / max(weapon[1]["timewielded"], 1)))[0]
-        topweapons['dpm'] = best[0]
+            (weapon[1]["damage1"] + weapon[1]["damage2"])
+            / max(weapon[1]["timewielded"], 1)))[0]
+        topweapons['dpm'] = (best[0], (best[1]['damage1'] + best[1]['damage2'])
+            / max(best[1]['timewielded'], 1))
+        topweapons['totalwielded'] = sum([w['timewielded']
+            for w in list(weapons.values())])
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             max(weapon[1]["timewielded"], 1)))[0]
-        topweapons['wield'] = best[0]
+        topweapons['wield'] = (best[0], best[1]["timewielded"])
 
     ptcounters = {
         "points": pt.game(lambda x: x["score"], sel, 7),
@@ -241,8 +244,12 @@ def page(sel):
     """.format(recentgames=recentgames,
         ptcounters=ptcounters,
         topweapon="\n".join(topweapons),
-        weapdpm="%s %s" % (redeclipse.weaponimg(topweapons['dpm']),
-            alink('weapon', topweapons['dpm'], topweapons['dpm'])),
-        weapwield="%s %s" % (redeclipse.weaponimg(topweapons['wield']),
-            alink('weapon', topweapons['wield'], topweapons['wield'])))
+        weapdpm="%s %s [%d DPM]" % (redeclipse.weaponimg(topweapons['dpm'][0]),
+            alink('weapon', topweapons['dpm'][0], topweapons['dpm'][0]),
+            topweapons['dpm'][1]),
+        weapwield="%s %s [%d%%]" % (
+            redeclipse.weaponimg(topweapons['wield'][0]),
+            alink('weapon', topweapons['wield'][0], topweapons['wield'][0]),
+            topweapons['wield'][1]
+                / max(topweapons['totalwielded'], 1) * 100))
     return base.page(sel, ret, title="Overview")
