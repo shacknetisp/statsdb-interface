@@ -69,7 +69,7 @@ def server(sel):
             {server[host]}:{server[port]}</a><br>
             {servergames} games recorded.<br>
             First Recorded: {fgtime} with
-            <a href="/displays/game/{fgid}">Game #{fgid}</a>.<br>
+            <a href="/display/game/{fgid}">Game #{fgid}</a>.<br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
