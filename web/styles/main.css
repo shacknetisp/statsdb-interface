@@ -30,3 +30,13 @@
 a {
     color: #CC8;
 }
+
+.img24 {
+    max-height: 24px;
+    max-width: 24px;
+}
+
+.img32 {
+    max-height: 32px;
+    max-width: 32px;
+}

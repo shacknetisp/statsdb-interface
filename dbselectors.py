@@ -593,6 +593,7 @@ class ModeSelector(BaseSelector):
         if mint not in list(range(len(redeclipse.modestr))):
             return None
         ret = {
+            "id": mint,
             "name": redeclipse.modestr[mint],
             "recentgames": {},
             }

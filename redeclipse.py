@@ -41,3 +41,17 @@ def scorestr(game, score):
     if game["mode"] == modes["race"] and game["mutators"] & mutators["timed"]:
         return timeutils.durstr(score / 1000, dec=True)
     return str(score)
+
+
+def modeimg(mode, c=24):
+    return '''<img class="img%d"
+    title="%s" src="%s" alt="%s"></img>''' % (c, modestr[mode],
+        "/images/modes/%d.png" % mode,
+        modestr[mode])
+
+
+def weaponimg(weap, c=24):
+    return '''<img class="img%d"
+    title="%s" src="%s" alt="%s"></img>''' % (c, weap,
+        "/images/weapons/%s.png" % weap,
+        weap)

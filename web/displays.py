@@ -12,7 +12,9 @@ def tableweapon(weapon, totalwielded):
     weap = cgi.escape(weapon["name"])
     weapons = ""
     weapons += "<tr>"
-    weapons += "%s" % tdlink("weapon", weap, weap)
+    weapons += "%s" % tdlink("weapon", weap,
+        '%s %s' % (redeclipse.weaponimg(weap), cgi.escape(weap)),
+        e=False)
     weapons += "<td>%d%%</td>" % (
         weapon["timeloadout"] / max(1, totalwielded) * 100)
     weapons += "<td>%d%%</td>" % (
@@ -29,7 +31,7 @@ def tableweapon(weapon, totalwielded):
 
 def tableweaponlabels():
     return """
-        <th>Name</th>
+        <th>Weapon</th>
         <th>Loadout</th>
         <th>Wielded</th>
         <th><abbr title="Damage Per Minute">DPM </abbr></th>
@@ -53,7 +55,7 @@ def server(sel):
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
                 game["mode"],
-                redeclipse.modestr[game["mode"]])
+                redeclipse.modeimg(game["mode"]), e=False)
             recentgames += tdlink('map', game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
@@ -261,7 +263,7 @@ def game(sel):
         </div>
         """.format(
             modestr=alink("mode", game["mode"],
-                redeclipse.modestr[game["mode"]]),
+                redeclipse.modeimg(game["mode"], 32), e=False),
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
@@ -298,8 +300,11 @@ def player(sel):
                 if p["handle"] == player["handle"]][0]
                 recentgames += '<tr>'
                 recentgames += tdlink("game", gid,
-                    "#%d (%s on %s)" % (gid, redeclipse.modestr[game["mode"]],
-                        game["map"]))
+                    "Game #%d" % gid)
+                recentgames += tdlink("mode",
+                    game["mode"],
+                    redeclipse.modeimg(game["mode"]), e=False)
+                recentgames += tdlink("map", game["map"], game["map"])
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
                 recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
                 recentgames += '<td>%s</td>' % redeclipse.scorestr(game,
@@ -344,6 +349,8 @@ def player(sel):
                 <table>
                     <tr>
                         <th>Game</th>
+                        <th>Mode</th>
+                        <th>Map</th>
                         <th>Time</th>
                         <th>Played As</th>
                         <th>Score</th>
@@ -500,7 +507,7 @@ def map(sel):
                 recentgames += tdlink("game", gid, "Game #%d" % gid)
                 recentgames += tdlink("mode",
                     game["mode"],
-                    redeclipse.modestr[game["mode"]])
+                    redeclipse.modeimg(game["mode"]), e=False)
                 recentgames += '<td>%s</td>' % timeutils.durstr(round(
                     game["timeplayed"]))
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
@@ -556,7 +563,7 @@ def mode(sel):
                 recentgames += '</tr>'
         ret += """
         <div class="center">
-            <h2>{mode[name]}</h2>
+            <h2>{modeimg} {mode[name]}</h2>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -570,7 +577,9 @@ def mode(sel):
                 </table>
             </div>
         </div>
-        """.format(mode=mode,
+        """.format(
+            modeimg=redeclipse.modeimg(mode["id"], 32),
+            mode=mode,
             recentgames=recentgames)
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["mode"] = mode

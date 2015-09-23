@@ -3,8 +3,7 @@ from . import base
 import api
 import dbselectors
 import redeclipse
-from .base import tdlink
-from .base import alink
+from .base import tdlink, alink
 import timeutils
 import time
 
@@ -105,7 +104,7 @@ def page(sel):
         recentgames += tdlink("game", gid, "Game #%d" % gid)
         recentgames += tdlink("mode",
             game["mode"],
-            redeclipse.modestr[game["mode"]])
+            redeclipse.modeimg(game["mode"]), e=False)
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
