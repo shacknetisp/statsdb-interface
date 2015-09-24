@@ -289,7 +289,7 @@ displays["game"] = game
 
 
 def games(sel):
-    listcount = 2
+    listcount = 20
     if sel.pathid:
         global game
         return game(sel)
