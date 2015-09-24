@@ -582,10 +582,18 @@ class MapSelector(BaseSelector):
                     rtime["gameplayer"] = p
                     rtime["game"] = game
                     racetimes.append(rtime)
-        racetimes = sorted(racetimes, key=lambda x: x["time"])[:10]
+        racetimes = sorted(racetimes, key=lambda x: x["time"])
+        tmpracetimes = []
+        handles = []
+        for rtime in racetimes:
+            if rtime["gameplayer"]["handle"] and (
+                rtime["gameplayer"]["handle"] not in handles):
+                handles.append(rtime["gameplayer"]["handle"])
+                tmpracetimes.append(rtime)
+        racetimes = tmpracetimes
         if racetimes:
             ret["toprace"] = racetimes[0]
-        ret["topraces"] = racetimes
+        ret["topraces"] = racetimes[:10]
         return ret
 
     def getdict(self):

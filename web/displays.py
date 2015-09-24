@@ -637,7 +637,7 @@ def gmap(sel):
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
             recentgames += '</tr>'
         toprace = ""
-        for race in gamemap["topraces"][:3]:
+        for race in gamemap["topraces"][:5]:
             toprace += "<tr>"
             toprace += "<td>%s</td>" % (
                 timeutils.durstr(race["time"] / 1000, dec=True,
@@ -651,7 +651,7 @@ def gmap(sel):
             toprace += "</tr>"
         racetimes = """
             <div class='display-table small-table'>
-                <h3>Top 3 Race Times</h3>
+                <h3>Top Race Times</h3>
                 <table>
                     <tr>
                         <th>Time</th>
