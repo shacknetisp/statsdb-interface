@@ -471,7 +471,7 @@ class PlayerSelector(BaseSelector):
         ids = [r[0] for r in
         self.db.con.execute(
             """SELECT DISTINCT handle FROM game_players
-            %s""" % f[0], f[1])]
+            %s""" % f[0], f[1]) if r[0]]
         ret = {}
         for gid in ids:
             v = self.single(gid, False)
