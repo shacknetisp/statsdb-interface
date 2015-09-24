@@ -722,6 +722,9 @@ def gmap(sel):
             toprace += tdlinkp("player",
                 race["gameplayer"]["handle"],
                 race["gameplayer"]["name"])
+            toprace += tdlinkp("player",
+                race["gameplayer"]["handle"],
+                race["gameplayer"]["handle"] or "-")
             toprace += tdlink("game", race["game"]["id"],
                     "Game #%d" % race["game"]["id"])
             toprace += "<td>%s</td>" % timeutils.agohtml(race["game"]["time"])
@@ -733,6 +736,7 @@ def gmap(sel):
                     <tr>
                         <th>Time</th>
                         <th>Player</th>
+                        <th>Handle</th>
                         <th>Game</th>
                         <th>When</th>
                     </tr>
