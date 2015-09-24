@@ -40,3 +40,24 @@ a {
     max-height: 32px;
     max-width: 32px;
 }
+
+ul.pagelist {
+    margin-top: 4px;
+    padding-left: 0;
+    text-align:left;
+}
+ul.pagelist li {
+    display:inline;
+    padding:0 3px;
+}
+ul.pagelist a {
+    display:inline-block;
+    padding:0px 10px;
+    border:1px solid #000000;
+    text-decoration:none;
+}
+ul.pagelist a:hover,
+ul.pagelist a.current {
+    background:#0d7963;
+    color:#fff;
+}

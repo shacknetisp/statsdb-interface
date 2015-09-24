@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import base
 from .base import tdlink, alink, tdlinkp, alinkp
+from . import page
 import dbselectors
 import redeclipse
 import cgi
@@ -285,6 +286,58 @@ def game(sel):
             """ % teamsstr) if teamsstr else "")
     return base.page(sel, ret, title="Game %s" % sel.pathid)
 displays["game"] = game
+
+
+def games(sel):
+    listcount = 2
+    if sel.pathid:
+        global game
+        return game(sel)
+    ret = ""
+    gs = dbselectors.GameSelector(sel)
+    currentpage = page.calc(sel, gs.numgames(), listcount)
+    gamestext = ""
+    for gid in page.getlist(currentpage, listcount):
+        try:
+            gid = gs.getrid()[-(gid + 1)]
+        except IndexError:
+            break
+        game = gs.single(gid)
+        gamestext += '<tr>'
+        gamestext += tdlink("game", gid, "Game #%d" % gid)
+        gamestext += tdlink("mode",
+            game["mode"],
+            redeclipse.modeimg(game["mode"]), e=False)
+        ss = dbselectors.ServerSelector()
+        ss.copyfrom(sel)
+        desc = ss.single(game["server"])["desc"]
+        gamestext += tdlink('server', game["server"], desc)
+        gamestext += tdlink('map', game["map"], game["map"])
+        gamestext += '<td>%s</td>' % timeutils.durstr(round(
+            game["timeplayed"]))
+        gamestext += '<td>%s</td>' % timeutils.agohtml(game["time"])
+        gamestext += '</tr>'
+    ret += """
+    <div class="center display-table">
+        <h2>Games</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Mode</th>
+                <th>Server</th>
+                <th>Map</th>
+                <th>Duration</th>
+                <th>Played</th>
+            </tr>
+            {games}
+        </table>
+        {pages}
+    </div>
+    """.format(games=gamestext, pages=page.make(
+        sel.webpath, currentpage, gs.numgames(), listcount
+        ))
+    return base.page(sel, ret, title="Games")
+displays["games"] = games
 
 
 def player(sel):

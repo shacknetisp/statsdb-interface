@@ -52,6 +52,7 @@ def make(server, db, q, path):
     sel.server = server
     sel.db = db
     sel.qopt = qopt
+    sel.webpath = path
     if paths[0] == 'get':
         ret = {"error": "Invalid Query"}
         if not server.dbexists:

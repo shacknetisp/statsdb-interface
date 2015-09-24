@@ -231,7 +231,7 @@ def page(sel):
     </div>
     <div style="clear: both;"></div>
     <div class='display-table'>
-        <h5>Latest Games</h5>
+        <h5><a href="/display/games">Latest Games</a></h5>
         <table>
             <tr>
                 <th>ID</th>

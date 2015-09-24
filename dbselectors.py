@@ -319,6 +319,16 @@ class GameSelector(BaseSelector):
                 ret[gid] = v
         return ret
 
+    def numgames(self):
+        if not self.server.dbexists:
+            return 0
+        return self.db.con.execute("SELECT count(id) FROM games").fetchone()[0]
+
+    def getrid(self):
+        if not self.server.dbexists:
+            return []
+        return [r[0] for r in self.db.con.execute("SELECT id FROM games")]
+
 
 class PlayerSelector(BaseSelector):
 
