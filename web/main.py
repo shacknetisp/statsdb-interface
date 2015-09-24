@@ -127,10 +127,14 @@ def page(sel):
     topweapons = {}
     if weapons:
         best = sorted(list(weapons.items()), key=lambda weapon: -(
-            (weapon[1]["damage1"] + weapon[1]["damage2"])
-            / max(weapon[1]["timewielded"], 1)))[0]
-        topweapons['dpm'] = (best[0], (best[1]['damage1'] + best[1]['damage2'])
-            / max(best[1]['timewielded'], 1))
+            weapon[1]["damage1"]
+            / (max(weapon[1]["timewielded"], 1) / 60) +
+            weapon[1]["damage2"]
+            / (max(weapon[1]["timewielded"], 1) / 60)))[0]
+        topweapons['dpm'] = (best[0], (best[1]["damage1"]
+            / (max(best[1]["timewielded"], 1) / 60) +
+            best[1]["damage2"]
+            / (max(best[1]["timewielded"], 1) / 60)))
         topweapons['totalwielded'] = sum([w['timewielded']
             for w in list(weapons.values())])
         best = sorted(list(weapons.items()), key=lambda weapon: -(
