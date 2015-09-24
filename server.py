@@ -107,7 +107,7 @@ class Server:
             #Clear old cached pages
             todel = []
             for k, v in list(self.retcache.items()):
-                if time.time() - v[0] >= 60 * 5:
+                if time.time() - v[0] >= 60 * 1:
                     todel.append(k)
             for k in todel:
                 del self.retcache[k]
