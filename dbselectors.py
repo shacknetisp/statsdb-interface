@@ -209,13 +209,29 @@ class GameSelector(BaseSelector):
         ret["server"] = self.db.con.execute(
             """SELECT handle FROM game_servers
             WHERE game = %d""" % ret['id']).fetchone()[0]
+        # Minimal Sets
         if self.minimal == "basicserver":
             return ret
+        if self.minimal == "basicplayer":
+            for player_row in self.db.con.execute(
+                "SELECT * FROM game_players WHERE game = %d" % row[0]):
+                    player = {
+                        "weapons": {},
+                        "captures": [],
+                        "bombings": [],
+                        }
+                    dictfromrow(player, player_row, [None,
+                        "name", "handle",
+                        "score", "timealive", "frags", "deaths", "id"])
+                    ret["players"].append(player)
+            return ret
+        # Teams
         for team_row in self.db.con.execute(
             "SELECT * FROM game_teams WHERE game = %d" % row[0]):
                 team = {}
                 dictfromrow(team, team_row, [None, "team", "score", "name"])
                 ret["teams"][team["name"]] = team
+        #Affinities
         captures = []
         for capture_row in self.db.con.execute(
             "SELECT * FROM game_captures WHERE game = %d" % row[0]):
@@ -234,7 +250,7 @@ class GameSelector(BaseSelector):
                 bombings.append(bombing)
         if bombings:
             ret['bombings'] = bombings
-
+        #Rounds
         if one:
             ffarounds = []
             for ffaround_row in self.db.con.execute(
@@ -245,7 +261,7 @@ class GameSelector(BaseSelector):
                     ffarounds.append(ffaround)
             if ffarounds:
                 ret['ffarounds'] = ffarounds
-
+        #Full Players
         for player_row in self.db.con.execute(
             "SELECT * FROM game_players WHERE game = %d" % row[0]):
                 player = {

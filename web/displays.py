@@ -47,11 +47,18 @@ def server(sel):
     if server is None:
         ret = "<div class='center'><h2>No such server.</h2></div>"
     else:
+        listcount = 20
         gs = dbselectors.GameSelector(sel)
+        gs.minimal = "basic"
         firstgame = gs.single(server["games"][0])
         recentgames = ""
-        for gid, game in sorted(list(server["recentgames"].items()),
-            key=lambda x: -x[0])[:10]:
+        currentpage = page.calc(sel, len(server["games"]), listcount)
+        for gid in page.getlist(currentpage, listcount):
+            try:
+                gid = server["games"][-(gid + 1)]
+            except IndexError:
+                break
+            game = gs.single(gid)
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
@@ -85,11 +92,15 @@ def server(sel):
                     </tr>
                     {recentgames}
                 </table>
+                {pages}
             </div>
         </div>
         """.format(server=server, recentgames=recentgames,
             servergames=len(server["games"]),
-            fgtime=timeutils.agohtml(firstgame["time"]), fgid=firstgame["id"])
+            fgtime=timeutils.agohtml(firstgame["time"]), fgid=firstgame["id"],
+            pages=page.make(
+            sel.webpath, currentpage, len(server["games"]), listcount
+            ))
     return base.page(sel, ret, title="Server %s" % sel.pathid)
 displays["server"] = server
 
@@ -415,6 +426,9 @@ def player(sel):
                     </tr>
                     {recentgames}
                 </table>
+                <h5 style="text-align: left;">
+                <a href="/display/playergames/{player[handle]}">
+                All Games...</a></h5>
             </div>
             <div class='display-table'>
                 <h3>Weapon Statistics</h3>
@@ -432,8 +446,71 @@ def player(sel):
             recentweapons=recentweapons,
             tableweaponlabels=tableweaponlabels(),
             dpm=dpm)
-    return base.page(sel, ret, title="Game %s" % sel.pathid)
+    return base.page(sel, ret, title="%s" % sel.pathid)
 displays["player"] = player
+
+
+def playergames(sel):
+    listcount = 20
+    ret = ""
+    gs = dbselectors.PlayerSelector(sel)
+    gamesel = dbselectors.GameSelector(sel)
+    player = gs.single(sel.pathid)
+    if player is None:
+        ret = "<div class='center'><h2>No such player.</h2></div>"
+    else:
+        player["name"] = cgi.escape(player["name"])
+        recentgames = ""
+        currentpage = page.calc(sel, len(player["games"]), listcount)
+        for gid in page.getlist(currentpage, listcount):
+            try:
+                gid = player["games"][-(gid + 1)]
+            except IndexError:
+                break
+            gamesel.minimal = "basicplayer"
+            game = gamesel.single(gid)
+            entry = [p for p in game["players"]
+            if p["handle"] == player["handle"]][0]
+            recentgames += '<tr>'
+            recentgames += tdlink("game", gid,
+                "Game #%d" % gid)
+            recentgames += tdlink("mode",
+                game["mode"],
+                redeclipse.modeimg(game["mode"]), e=False)
+            recentgames += tdlink("map", game["map"], game["map"])
+            recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
+            recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
+            recentgames += '<td>%s</td>' % redeclipse.scorestr(game,
+                entry["score"])
+            recentgames += '<td>%d</td>' % entry["frags"]
+            recentgames += '<td>%d</td>' % entry["deaths"]
+            recentgames += '</tr>'
+        ret += """
+        <div class="center">
+            <h2><a href="/display/player/{player[handle]}">
+            {player[handle]}</a>: Games</h2>
+            <div class='display-table'>
+                <table>
+                    <tr>
+                        <th>Game</th>
+                        <th>Mode</th>
+                        <th>Map</th>
+                        <th>Time</th>
+                        <th>Played As</th>
+                        <th>Score</th>
+                        <th>Frags</th>
+                        <th>Deaths</th>
+                    </tr>
+                    {recentgames}
+                </table>
+                {pages}
+            </div>
+        </div>
+        """.format(recentgames=recentgames, player=player, pages=page.make(
+        sel.webpath, currentpage, len(player["games"]), listcount
+        ))
+    return base.page(sel, ret, title="%s: Games" % sel.pathid)
+displays["playergames"] = playergames
 
 
 def weapon_disp(sel):
