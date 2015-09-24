@@ -568,6 +568,7 @@ def players(sel):
     for player in sorted(players, key=lambda x: -players[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         player = players[player]
+        gs.minimal = True
         firstgame = gs.single(player["games"][0])
         latestgame = gs.single(player["games"][-1])
         playertable += "<tr>"
@@ -683,6 +684,7 @@ def maps(sel):
     for mapname in sorted(maps, key=lambda x: -maps[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         gamemap = maps[mapname]
+        gs.minimal = True
         firstgame = gs.single(gamemap["games"][0])
         latestgame = gs.single(gamemap["games"][-1])
         maptable += "<tr>"

@@ -202,6 +202,8 @@ class GameSelector(BaseSelector):
         dictfromrow(ret, row, ["id", "time",
             "map", "mode", "mutators",
             "timeplayed"])
+        if hasattr(self, 'minimal') and self.minimal:
+            return ret
         ret["server"] = self.db.con.execute(
             """SELECT handle FROM game_servers
             WHERE game = %d""" % ret['id']).fetchone()[0]
