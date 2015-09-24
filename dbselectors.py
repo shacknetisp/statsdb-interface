@@ -550,6 +550,7 @@ class MapSelector(BaseSelector):
                 "gameplayer": None,
                 "time": 0,
                 },
+            "topraces": [],
             }
         ret["games"] = [r[0] for r in
         self.db.con.execute(
@@ -563,6 +564,7 @@ class MapSelector(BaseSelector):
                 gs = GameSelector(self)
                 game = gs.single(gid, one=False)
                 ret["recentgames"][gid] = game
+        racetimes = []
         for row in self.db.con.execute(
             """SELECT id FROM games
             WHERE map = ?
@@ -574,17 +576,16 @@ class MapSelector(BaseSelector):
                 game = gs.single(row[0], one=False)
                 finishedplayers = [
                     p for p in game["players"] if p["score"] > 0]
-                bestplayer = None
                 for p in finishedplayers:
-                    if not bestplayer or p["score"] <= bestplayer["score"]:
-                        bestplayer = p
-                if bestplayer:
-                    if bestplayer["score"] <= ret[
-                        "toprace"]["time"] or ret["toprace"]["time"] == 0:
-                            ret["toprace"]["time"] = bestplayer["score"]
-                            ret["toprace"]["gameplayer"] = bestplayer
-                            ret["toprace"]["game"] = game
-
+                    rtime = {}
+                    rtime["time"] = p["score"]
+                    rtime["gameplayer"] = p
+                    rtime["game"] = game
+                    racetimes.append(rtime)
+        racetimes = sorted(racetimes, key=lambda x: x["time"])[:10]
+        if racetimes:
+            ret["toprace"] = racetimes[0]
+        ret["topraces"] = racetimes
         return ret
 
     def getdict(self):

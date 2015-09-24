@@ -637,19 +637,36 @@ def gmap(sel):
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
             recentgames += '</tr>'
         toprace = ""
-        if gamemap["toprace"]["time"]:
-            toprace = """<h3>Best Time: %s by %s (%s)</h3>""" % (
-                timeutils.durstr(gamemap["toprace"]["time"] / 1000, dec=True,
-                    full=True),
-                alinkp("player", gamemap["toprace"]["gameplayer"]["handle"],
-                    gamemap["toprace"]["gameplayer"]["name"]),
-                alink("game", gamemap["toprace"]["game"]["id"],
-                    "Game #%d" % gamemap["toprace"]["game"]["id"]),
-                )
+        for race in gamemap["topraces"][:3]:
+            toprace += "<tr>"
+            toprace += "<td>%s</td>" % (
+                timeutils.durstr(race["time"] / 1000, dec=True,
+                    full=True))
+            toprace += tdlinkp("player",
+                race["gameplayer"]["handle"],
+                race["gameplayer"]["name"])
+            toprace += tdlink("game", race["game"]["id"],
+                    "Game #%d" % race["game"]["id"])
+            toprace += "<td>%s</td>" % timeutils.agohtml(race["game"]["time"])
+            toprace += "</tr>"
+        racetimes = """
+            <div class='display-table small-table'>
+                <h3>Top 3 Race Times</h3>
+                <table>
+                    <tr>
+                        <th>Time</th>
+                        <th>Player</th>
+                        <th>Game</th>
+                        <th>When</th>
+                    </tr>
+                    {toprace}
+                </table>
+            </div>
+        """.format(toprace=toprace)
         ret += """
         <div class="center">
             <h2>{map[name]}</h2>
-            {toprace}
+            {racetimes}
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -665,7 +682,9 @@ def gmap(sel):
             </div>
         </div>
         """.format(map=gamemap,
-            recentgames=recentgames, toprace=toprace, pages=page.make(
+            recentgames=recentgames,
+            racetimes=racetimes if gamemap["toprace"]["time"] else '',
+            pages=page.make(
             sel.webpath, currentpage, len(gamemap['games']), listcount
             ))
     return base.page(sel, ret, title="Map %s" % sel.pathid)
