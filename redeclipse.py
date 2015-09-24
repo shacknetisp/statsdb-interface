@@ -55,3 +55,10 @@ def weaponimg(weap, c=24):
     title="%s" src="%s" alt="%s">''' % (c, weap,
         "/images/weapons/%s.png" % weap,
         weap)
+
+
+def teamimg(t, c=24):
+    return '''<img class="img%d"
+    title="%s" src="%s" alt="%s">''' % (c, t,
+        "/images/teams/%s.png" % t,
+        t)

@@ -117,7 +117,9 @@ def game(sel):
                 team = game["teams"][team]
                 teamlist[team["team"]] = team
                 teamsstr += "<tr>"
-                teamsstr += "<td>%s</td>" % cgi.escape(team["name"])
+                teamsstr += "<td>%s %s</td>" % (
+                    redeclipse.teamimg(team["team"]),
+                    cgi.escape(team["name"]))
                 teamsstr += "<td>%s</td>" % (redeclipse.scorestr(game,
                     team["score"]))
                 teamsstr += "</tr>"
@@ -342,10 +344,10 @@ def player(sel):
             <h3>{player[handle]}</h3>
             First appeared: {firstago}<br>
             Last appeared: {lastago}<br>
+            <h3>Recent Games</h3>
             Frag Ratio: {fratio}<br>
             DPM: {dpm}<br>
             <div class='display-table'>
-                <h3>Recent Games</h3>
                 <table>
                     <tr>
                         <th>Game</th>
@@ -489,8 +491,55 @@ def servers(sel):
         </div>
     </div>
     """.format(servertable=servertable)
-    return base.page(sel, ret, title="Weapons")
+    return base.page(sel, ret, title="Servers")
 displays["servers"] = servers
+
+
+def players(sel):
+    if sel.pathid:
+        global player
+        return player(sel)
+    ret = ""
+    gs = dbselectors.GameSelector(sel)
+    s = dbselectors.PlayerSelector(sel)
+    players = s.getdict()
+    playertable = ""
+    for player in sorted(players, key=lambda x: -players[x]["games"][-1])[:20]:
+        player = players[player]
+        firstgame = gs.single(player["games"][0])
+        latestgame = gs.single(player["games"][-1])
+        playertable += "<tr>"
+        playertable += tdlink("player", player["handle"],
+            "%s" % (cgi.escape(player["name"])), False)
+        playertable += tdlink("player", player["handle"],
+            "%s" % (cgi.escape(player["handle"])), False)
+        playertable += "<td>%d</td>" % len(player["games"])
+        playertable += "<td>%s: %s</td>" % (alink("game", firstgame["id"],
+            "#%d" % (firstgame["id"]), False),
+                timeutils.agohtml(firstgame["time"]))
+        playertable += "<td>%s: %s</td>" % (alink("game", latestgame["id"],
+            "#%d" % (latestgame["id"]), False),
+                timeutils.agohtml(latestgame["time"]))
+        playertable += "</tr>"
+    ret += """
+    <div class="center">
+        <h2>Players</h2>
+        <div class='display-table'>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Handle</th>
+                    <th>Games</th>
+                    <th>First Game</th>
+                    <th>Latest Game</th>
+                </tr>
+                {playertable}
+            </table>
+        </div>
+    </div>
+    """.format(playertable=playertable)
+    return base.page(sel, ret, title="Players")
+displays["players"] = players
 
 
 def map(sel):
@@ -540,7 +589,7 @@ def map(sel):
         </div>
         """.format(map=gamemap,
             recentgames=recentgames, toprace=toprace)
-    return base.page(sel, ret, title="Game %s" % sel.pathid)
+    return base.page(sel, ret, title="Map %s" % sel.pathid)
 displays["map"] = map
 
 
@@ -581,5 +630,5 @@ def mode(sel):
             modeimg=redeclipse.modeimg(mode["id"], 32),
             mode=mode,
             recentgames=recentgames)
-    return base.page(sel, ret, title="Game %s" % sel.pathid)
+    return base.page(sel, ret, title="Mode %s" % sel.pathid)
 displays["mode"] = mode

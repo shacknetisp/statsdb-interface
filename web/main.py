@@ -153,7 +153,7 @@ def page(sel):
     ret = """
     <h2>Recent Overview</h2>
     <h3>Last 7 Days</h3>
-    <h5>Players</h5>
+    <h5><a href="/display/players">Players</a></h5>
     <div class='display-table float-table'>
         <h5>DPM</h5>
         <table>
