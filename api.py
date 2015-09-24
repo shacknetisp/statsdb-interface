@@ -101,5 +101,8 @@ def make(server, db, q, path):
     elif paths[0] == 'apidocs':
         return sendout(('redirect',
         'https://github.com/shacknetisp/statsdb-interface#api-points'))
+    elif paths[0] == 'source':
+        return sendout(('redirect',
+        'https://github.com/shacknetisp/statsdb-interface'))
     return sendout((
         'text/html', '404 Not Found', web.err404.page(sel).encode()))

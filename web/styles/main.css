@@ -41,6 +41,23 @@ a {
     max-width: 32px;
 }
 
+div.sourcelinks {
+    text-align: center;
+    border-top: 2px solid #400;
+}
+
+ul.sourcelinks li{
+    text-align: center;
+    display:inline;
+    padding:0 8px;
+    background: black;
+}
+
+ul.sourcelinks a {
+    display:inline-block;
+    padding:0px 10px;
+}
+
 ul.pagelist {
     margin-top: 4px;
     padding-left: 0;
@@ -54,7 +71,6 @@ ul.pagelist a {
     display:inline-block;
     padding:0px 10px;
     border:1px solid #000000;
-    text-decoration:none;
 }
 ul.pagelist a:hover,
 ul.pagelist a.current {
