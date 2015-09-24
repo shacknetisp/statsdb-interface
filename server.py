@@ -11,6 +11,8 @@ import api
 import urllib.parse
 import time
 import os
+import traceback
+import web
 import dbselectors
 
 if len(sys.argv) < 2:
@@ -45,9 +47,16 @@ class httpd:
         + '...'))
         result = b""
         t = time.time()
-        r = api.make(self.server,
-            self.server.db, urllib.parse.parse_qs(
-                    environ['QUERY_STRING'], True), environ['PATH_INFO'])
+        try:
+            r = api.make(self.server,
+                self.server.db, urllib.parse.parse_qs(
+                        environ['QUERY_STRING'], True), environ['PATH_INFO'])
+        except:
+            r = (
+            'text/html',
+            '500 Internal Server Error',
+            web.err500.page(dbselectors.BaseSelector()).encode())
+            print((traceback.format_exc()))
         sys.stdout.write('...done [%f]\n' % (time.time() - t))
         if len(r) == 3:
             t, status, result = r
