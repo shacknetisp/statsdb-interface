@@ -602,10 +602,10 @@ class MapSelector(BaseSelector):
         tmpracetimes = []
         handles = []
         for rtime in racetimes:
-            if rtime["gameplayer"]["handle"] and (
-                rtime["gameplayer"]["handle"] not in handles):
-                handles.append(rtime["gameplayer"]["handle"])
+            if rtime["gameplayer"]["handle"] not in handles:
                 tmpracetimes.append(rtime)
+            if rtime["gameplayer"]["handle"]:
+                handles.append(rtime["gameplayer"]["handle"])
         racetimes = tmpracetimes
         if racetimes:
             ret["toprace"] = racetimes[0]
