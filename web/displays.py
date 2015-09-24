@@ -502,6 +502,7 @@ displays["weapons"] = weapons
 
 
 def servers(sel):
+    listcount = 20
     if sel.pathid:
         global server
         return server(sel)
@@ -510,7 +511,9 @@ def servers(sel):
     s = dbselectors.ServerSelector(sel)
     servers = s.getdict()
     servertable = ""
-    for server in sorted(servers, key=lambda x: -servers[x]["games"][-1])[:20]:
+    currentpage = page.calc(sel, len(servers), listcount)
+    for server in sorted(servers, key=lambda x: -servers[x]["games"][-1])[
+        currentpage:currentpage + listcount]:
         server = servers[server]
         firstgame = gs.single(server["games"][0])
         latestgame = gs.single(server["games"][-1])
@@ -541,14 +544,18 @@ def servers(sel):
                 </tr>
                 {servertable}
             </table>
+            {pages}
         </div>
     </div>
-    """.format(servertable=servertable)
+    """.format(servertable=servertable, pages=page.make(
+        sel.webpath, currentpage, len(servers), listcount
+        ))
     return base.page(sel, ret, title="Servers")
 displays["servers"] = servers
 
 
 def players(sel):
+    listcount = 20
     if sel.pathid:
         global player
         return player(sel)
@@ -557,7 +564,9 @@ def players(sel):
     s = dbselectors.PlayerSelector(sel)
     players = s.getdict()
     playertable = ""
-    for player in sorted(players, key=lambda x: -players[x]["games"][-1])[:20]:
+    currentpage = page.calc(sel, len(players), listcount)
+    for player in sorted(players, key=lambda x: -players[x]["games"][-1])[
+        currentpage:currentpage + listcount]:
         player = players[player]
         firstgame = gs.single(player["games"][0])
         latestgame = gs.single(player["games"][-1])
@@ -588,9 +597,12 @@ def players(sel):
                 </tr>
                 {playertable}
             </table>
+            {pages}
         </div>
     </div>
-    """.format(playertable=playertable)
+    """.format(playertable=playertable, pages=page.make(
+        sel.webpath, currentpage, len(players), listcount
+        ))
     return base.page(sel, ret, title="Players")
 displays["players"] = players
 
