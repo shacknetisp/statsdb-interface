@@ -549,6 +549,8 @@ class MapSelector(BaseSelector):
         self.db.con.execute(
             """SELECT id FROM games
             WHERE map = ?""", (mapname,))]
+        if not ret["games"]:
+            return None
         if one:
             for gid in list(reversed(ret["games"]))[
                 :self.server.cfgval("maprecent")]:

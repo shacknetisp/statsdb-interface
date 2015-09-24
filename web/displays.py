@@ -636,7 +636,8 @@ def gmap(sel):
         toprace = ""
         if gamemap["toprace"]["time"]:
             toprace = """<h3>Best Time: %s by %s (%s)</h3>""" % (
-                timeutils.durstr(gamemap["toprace"]["time"] / 1000, dec=True),
+                timeutils.durstr(gamemap["toprace"]["time"] / 1000, dec=True,
+                    full=True),
                 alinkp("player", gamemap["toprace"]["gameplayer"]["handle"],
                     gamemap["toprace"]["gameplayer"]["name"]),
                 alink("game", gamemap["toprace"]["game"]["id"],
@@ -685,7 +686,7 @@ def maps(sel):
         firstgame = gs.single(gamemap["games"][0])
         latestgame = gs.single(gamemap["games"][-1])
         maptable += "<tr>"
-        maptable += tdlink("player", gamemap["name"],
+        maptable += tdlink("map", gamemap["name"],
             "%s" % (cgi.escape(gamemap["name"])), False)
         maptable += "<td>%d</td>" % len(gamemap["games"])
         maptable += "<td>%s: %s</td>" % (alink("game", firstgame["id"],
@@ -694,6 +695,11 @@ def maps(sel):
         maptable += "<td>%s: %s</td>" % (alink("game", latestgame["id"],
             "#%d" % (latestgame["id"]), False),
                 timeutils.agohtml(latestgame["time"]))
+        if gamemap["toprace"]["time"]:
+            maptable += "<td>%s</td>" % timeutils.durstr(
+                gamemap["toprace"]["time"] / 1000, dec=True, full=True)
+        else:
+            maptable += "<td></td>"
         maptable += "</tr>"
     ret += """
     <div class="center">
@@ -705,6 +711,7 @@ def maps(sel):
                     <th>Games</th>
                     <th>First Game</th>
                     <th>Latest Game</th>
+                    <th>Best Time</th>
                 </tr>
                 {maptable}
             </table>
