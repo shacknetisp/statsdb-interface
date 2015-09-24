@@ -630,7 +630,7 @@ class ModeSelector(BaseSelector):
             %s""" % f[0], f[1])]
         ret = {}
         for mode in modes:
-            ret[modes] = self.single(modes, False)
+            ret[mode] = self.single(mode, False)
         return ret
 
 selectors = {

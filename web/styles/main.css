@@ -76,4 +76,5 @@ ul.pagelist a:hover,
 ul.pagelist a.current {
     background:#0d7963;
     color:#fff;
+    text-decoration: none;
 }

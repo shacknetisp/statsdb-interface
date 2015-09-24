@@ -607,28 +607,35 @@ def players(sel):
 displays["players"] = players
 
 
-def map(sel):
+def gmap(sel):
+    listcount = 20
     ret = ""
     gs = dbselectors.MapSelector(sel)
+    gamesel = dbselectors.GameSelector(sel)
     gamemap = gs.single(sel.pathid)
     if gamemap is None:
         ret = "<div class='center'><h2>No such Map.</h2></div>"
     else:
         recentgames = ""
-        for gid, game in sorted(list(gamemap["recentgames"].items()),
-            key=lambda x: -x[0])[:10]:
-                recentgames += '<tr>'
-                recentgames += tdlink("game", gid, "Game #%d" % gid)
-                recentgames += tdlink("mode",
-                    game["mode"],
-                    redeclipse.modeimg(game["mode"]), e=False)
-                recentgames += '<td>%s</td>' % timeutils.durstr(round(
-                    game["timeplayed"]))
-                recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
-                recentgames += '</tr>'
+        currentpage = page.calc(sel, len(gamemap["games"]), listcount)
+        for gid in page.getlist(currentpage, listcount):
+            try:
+                gid = gamemap["games"][gid]
+            except IndexError:
+                break
+            game = gamesel.single(gid)
+            recentgames += '<tr>'
+            recentgames += tdlink("game", gid, "Game #%d" % gid)
+            recentgames += tdlink("mode",
+                game["mode"],
+                redeclipse.modeimg(game["mode"]), e=False)
+            recentgames += '<td>%s</td>' % timeutils.durstr(round(
+                game["timeplayed"]))
+            recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
+            recentgames += '</tr>'
         toprace = ""
         if gamemap["toprace"]["time"]:
-            toprace = """<h3>%s by %s (%s)</h3>""" % (
+            toprace = """<h3>Best Time: %s by %s (%s)</h3>""" % (
                 timeutils.durstr(gamemap["toprace"]["time"] / 1000, dec=True),
                 alinkp("player", gamemap["toprace"]["gameplayer"]["handle"],
                     gamemap["toprace"]["gameplayer"]["name"]),
@@ -650,31 +657,91 @@ def map(sel):
                     </tr>
                     {recentgames}
                 </table>
+                {pages}
             </div>
         </div>
         """.format(map=gamemap,
-            recentgames=recentgames, toprace=toprace)
+            recentgames=recentgames, toprace=toprace, pages=page.make(
+            sel.webpath, currentpage, len(gamemap['games']), listcount
+            ))
     return base.page(sel, ret, title="Map %s" % sel.pathid)
-displays["map"] = map
+displays["map"] = gmap
+
+
+def maps(sel):
+    listcount = 20
+    if sel.pathid:
+        global gmap
+        return gmap(sel)
+    ret = ""
+    gs = dbselectors.GameSelector(sel)
+    s = dbselectors.MapSelector(sel)
+    maps = s.getdict()
+    maptable = ""
+    currentpage = page.calc(sel, len(maps), listcount)
+    for mapname in sorted(maps, key=lambda x: -maps[x]["games"][-1])[
+        currentpage:currentpage + listcount]:
+        gamemap = maps[mapname]
+        firstgame = gs.single(gamemap["games"][0])
+        latestgame = gs.single(gamemap["games"][-1])
+        maptable += "<tr>"
+        maptable += tdlink("player", gamemap["name"],
+            "%s" % (cgi.escape(gamemap["name"])), False)
+        maptable += "<td>%d</td>" % len(gamemap["games"])
+        maptable += "<td>%s: %s</td>" % (alink("game", firstgame["id"],
+            "#%d" % (firstgame["id"]), False),
+                timeutils.agohtml(firstgame["time"]))
+        maptable += "<td>%s: %s</td>" % (alink("game", latestgame["id"],
+            "#%d" % (latestgame["id"]), False),
+                timeutils.agohtml(latestgame["time"]))
+        maptable += "</tr>"
+    ret += """
+    <div class="center">
+        <h2>Maps</h2>
+        <div class='display-table'>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Games</th>
+                    <th>First Game</th>
+                    <th>Latest Game</th>
+                </tr>
+                {maptable}
+            </table>
+            {pages}
+        </div>
+    </div>
+    """.format(maptable=maptable, pages=page.make(
+        sel.webpath, currentpage, len(maps), listcount
+        ))
+    return base.page(sel, ret, title="Maps")
+displays["maps"] = maps
 
 
 def mode(sel):
+    listcount = 20
     ret = ""
     gs = dbselectors.ModeSelector(sel, True)
+    gamesel = dbselectors.GameSelector(sel)
     mode = gs.single(sel.pathid)
     if mode is None:
         ret = "<div class='center'><h2>No such Mode.</h2></div>"
     else:
         recentgames = ""
-        for gid, game in sorted(list(mode["recentgames"].items()),
-            key=lambda x: -x[0])[:10]:
-                recentgames += '<tr>'
-                recentgames += tdlink("game", gid, "Game #%d" % gid)
-                recentgames += tdlink("map", game["map"], game["map"])
-                recentgames += '<td>%s</td>' % timeutils.durstr(round(
-                    game["timeplayed"]))
-                recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
-                recentgames += '</tr>'
+        currentpage = page.calc(sel, len(mode["games"]), listcount)
+        for gid in page.getlist(currentpage, listcount):
+            try:
+                gid = mode["games"][gid]
+            except IndexError:
+                break
+            game = gamesel.single(gid)
+            recentgames += '<tr>'
+            recentgames += tdlink("game", gid, "Game #%d" % gid)
+            recentgames += tdlink("map", game["map"], game["map"])
+            recentgames += '<td>%s</td>' % timeutils.durstr(round(
+                game["timeplayed"]))
+            recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
+            recentgames += '</tr>'
         ret += """
         <div class="center">
             <h2>{modeimg} {mode[name]}</h2>
@@ -689,11 +756,14 @@ def mode(sel):
                     </tr>
                     {recentgames}
                 </table>
+                {pages}
             </div>
         </div>
         """.format(
             modeimg=redeclipse.modeimg(mode["id"], 32),
             mode=mode,
-            recentgames=recentgames)
+            recentgames=recentgames, pages=page.make(
+            sel.webpath, currentpage, len(mode['games']), listcount
+            ))
     return base.page(sel, ret, title="Mode %s" % sel.pathid)
 displays["mode"] = mode
