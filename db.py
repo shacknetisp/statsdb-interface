@@ -38,5 +38,3 @@ def flushdir(dir, maxage):
         if os.stat(fullpath).st_mtime < (now - maxage):
             if os.path.isfile(fullpath):
                 os.remove(fullpath)
-            elif os.path.isdir(fullpath):
-                flushdir(fullpath)
