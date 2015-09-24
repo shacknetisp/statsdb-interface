@@ -102,15 +102,18 @@ class Server:
                         self.httpd.handle_request()
 
     def tick(self):
+        #Clear old cached pages
+        todel = []
+        for k, v in list(self.retcache.items()):
+            dt = 5
+            if v[1][0] in ['text/html', 'text/json']:
+                dt = 1
+            if time.time() - v[0] >= 60 * dt:
+                todel.append(k)
+        for k in todel:
+            del self.retcache[k]
         if time.time() - self.lasttick >= 60 * 1:
             self.lasttick = time.time()
-            #Clear old cached pages
-            todel = []
-            for k, v in list(self.retcache.items()):
-                if time.time() - v[0] >= 60 * 1:
-                    todel.append(k)
-            for k in todel:
-                del self.retcache[k]
             #Determine if the database exists
             with self.db:
                 self.dbexists = self.db.con.execute(
