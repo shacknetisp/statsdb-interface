@@ -189,6 +189,8 @@ class GameSelector(BaseSelector):
     xfilters.append(xfilter_mutators)
 
     def single(self, num, one=True):
+        if not hasattr(self, 'minimal'):
+            self.minimal = False
         row = self.db.con.execute(
             """SELECT * FROM games
             WHERE id = ?""", (num,)).fetchone()
@@ -202,11 +204,13 @@ class GameSelector(BaseSelector):
         dictfromrow(ret, row, ["id", "time",
             "map", "mode", "mutators",
             "timeplayed"])
-        if hasattr(self, 'minimal') and self.minimal:
+        if self.minimal == "basic":
             return ret
         ret["server"] = self.db.con.execute(
             """SELECT handle FROM game_servers
             WHERE game = %d""" % ret['id']).fetchone()[0]
+        if self.minimal == "basicserver":
+            return ret
         for team_row in self.db.con.execute(
             "SELECT * FROM game_teams WHERE game = %d" % row[0]):
                 team = {}

@@ -302,6 +302,7 @@ def games(sel):
             gid = gs.getrid()[-(gid + 1)]
         except IndexError:
             break
+        gs.minimal = "basicserver"
         game = gs.single(gid)
         gamestext += '<tr>'
         gamestext += tdlink("game", gid, "Game #%d" % gid)
@@ -515,6 +516,7 @@ def servers(sel):
     for server in sorted(servers, key=lambda x: -servers[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         server = servers[server]
+        gs.minimal = "basic"
         firstgame = gs.single(server["games"][0])
         latestgame = gs.single(server["games"][-1])
         servertable += "<tr>"
@@ -568,7 +570,7 @@ def players(sel):
     for player in sorted(players, key=lambda x: -players[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         player = players[player]
-        gs.minimal = True
+        gs.minimal = "basic"
         firstgame = gs.single(player["games"][0])
         latestgame = gs.single(player["games"][-1])
         playertable += "<tr>"
@@ -684,7 +686,7 @@ def maps(sel):
     for mapname in sorted(maps, key=lambda x: -maps[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         gamemap = maps[mapname]
-        gs.minimal = True
+        gs.minimal = "basic"
         firstgame = gs.single(gamemap["games"][0])
         latestgame = gs.single(gamemap["games"][-1])
         maptable += "<tr>"
@@ -743,6 +745,7 @@ def mode(sel):
                 gid = mode["games"][gid]
             except IndexError:
                 break
+            gamesel.minimal = "basic"
             game = gamesel.single(gid)
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
