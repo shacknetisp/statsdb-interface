@@ -62,3 +62,7 @@ def teamimg(t, c=24):
     title="%s" src="%s" alt="%s">''' % (c, t,
         "/images/teams/%s.png" % t,
         t)
+
+
+def versions():
+    return "version GLOB '1.5.*'"

@@ -13,7 +13,5 @@
 "playerrecent": 5,
 "playerrecentavg": 100,
 
-"weaponrecentavg": 1000,
-
-"recordversion": "1.5.*"
+"weaponrecentavg": 1000
 }

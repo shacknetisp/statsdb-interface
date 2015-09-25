@@ -92,8 +92,8 @@ class BaseSelector:
         if "allversions" in self.qopt:
             return "1 = 1"
         return """%s IN (SELECT game FROM game_servers
-        WHERE version GLOB '%s')""" % (i,
-            self.server.cfgval("recordversion").replace("'", "''")
+        WHERE %s)""" % (i,
+            redeclipse.versions(),
             )
 
 

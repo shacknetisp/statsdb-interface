@@ -386,14 +386,13 @@ def player(sel):
                 max(1, player["recent"]["deaths"]))
         except TypeError:
             fratio = "-"
-        try:
-            totalwielded = sum([w['timewielded']
-                for w in list(player['recent']['weapons'].values())])
-            for weap in redeclipse.weaponlist:
-                weapon = player['recent']['weapons'][weap]
+        totalwielded = sum([w['timewielded']
+            for w in list(player['recent']['weapons'].values())
+            if w['timewielded'] is not None])
+        for weap in redeclipse.weaponlist:
+            weapon = player['recent']['weapons'][weap]
+            if weapon['timeloadout'] is not None:
                 recentweapons += tableweapon(weapon, totalwielded)
-        except TypeError:
-            pass
         gs = dbselectors.GameSelector(sel)
         firstago = '<a href="/display/game/%d">%s</a>' % (min(player["games"]),
             timeutils.agohtml(gs.single(min(player["games"]))["time"]))
