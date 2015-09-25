@@ -399,10 +399,12 @@ def player(sel):
         lastago = '<a href="/display/game/%d">%s</a>' % (max(player["games"]),
             timeutils.agohtml(gs.single(max(player["games"]))["time"]))
         try:
-            dpm = round(player["recent"]["damage"]
-            / (player["recent"]["timealive"] / 60))
+            dpm = "%d [Recent: %d]" % (round(player["alltime"]["damage"]
+            / (player["alltime"]["timealive"] / 60)),
+                round(player["recent"]["damage"]
+            / (player["recent"]["timealive"] / 60)))
         except:
-            dpm = 0
+            dpm = "-"
         ret += """
         <div class="center">
             <h2>{player[name]}</h2>

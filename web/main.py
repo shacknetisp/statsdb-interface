@@ -2,6 +2,7 @@
 from . import base
 import api
 import dbselectors
+import caches
 import redeclipse
 from .base import tdlink, alink
 import timeutils
@@ -60,15 +61,14 @@ def page(sel):
         topweapons['wield'] = (best[0], best[1]["timewielded"])
 
     ptcounters = {
-        "score": pt.game(lambda x: x["score"], sel, 7),
-        "captures": pt.game(lambda x: len(x["captures"]), sel, 7),
-        "bombings": pt.game(lambda x: len(x["bombings"]), sel, 7),
-        "dpm": pt.gamediv(lambda x: x["damage"],
-            lambda x: x["timealive"] / 60, sel, 7),
-        "spm": pt.gamediv(lambda x: x["score"],
-            lambda x: x["timealive"] / 60, sel, 7),
-        "fpm": pt.gamediv(lambda x: x["frags"],
-            lambda x: x["timealive"] / 60, sel, 7),
+        "score": pt.gamelist(caches.caches["plsingle"].get("score", 7), num=5),
+        "captures": pt.gamelist(caches.caches["plsingle"].get(
+            "captures", 7), num=5),
+        "bombings": pt.gamelist(caches.caches["plsingle"].get(
+            "bombings", 7), num=5),
+        "dpm": pt.gamedivlist(*caches.caches["spm"].get("dpm", 30), num=5),
+        "spm": pt.gamedivlist(*caches.caches["spm"].get("spm", 30), num=5),
+        "fpm": pt.gamedivlist(*caches.caches["spm"].get("fpm", 30), num=5),
         "maps": pt.mapnum(sel, 90),
         "servers": pt.servernum(sel, 90),
         }
@@ -109,7 +109,8 @@ def page(sel):
     <div style="clear: both;"></div>
     <h3>Last 30 Days</h3>
     <div class='display-table float-table'>
-        <h5><abbr title="Score Per Minute">SPM</abbr></h5>
+        <h5><a href="/display/ranks/spm"
+        title="Score Per Minute">SPM</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -119,7 +120,8 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><abbr title="Damage Per Minute">DPM</abbr></h5>
+        <h5><a href="/display/ranks/dpm"
+        title="Damage Per Minute">DPM</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -129,7 +131,8 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><abbr title="Frags Per Minute">FPM</abbr></h5>
+        <h5><a href="/display/ranks/fpm"
+        title="Frags Per Minute">FPM</a></h5>
         <table>
             <tr>
                 <th>Name</th>

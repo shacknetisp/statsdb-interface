@@ -26,27 +26,22 @@ def game(key, sel, days):
     return ret
 
 
-def gamediv(key, akey, sel, days):
+def gamelist(l, num):
     ret = ""
-    players = {}
-    d = {}
-    gs = dbselectors.GameSelector(sel)
-    gs.gamefilter = """
-    (%d - time) < (60 * 60 * 24 * %d)
-    AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
-    for game in list(gs.getdict().values()):
-        for player in game["players"]:
-            if player["handle"]:
-                if player["handle"] not in players:
-                    players[player["handle"]] = 0
-                players[player["handle"]] += key(player)
-                if player["handle"] not in d:
-                    d[player["handle"]] = 0
-                d[player["handle"]] += akey(player)
-    for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
+    for e in l[:num]:
         ret += "<tr>"
-        ret += tdlink("player", player[0], player[0])
-        ret += "<td>%d</td>" % round(player[1] / d[player[0]])
+        ret += tdlink("player", e[0], e[0])
+        ret += "<td>%d</td>" % e[1]
+        ret += "</tr>"
+    return ret
+
+
+def gamedivlist(l, d, num):
+    ret = ""
+    for e in l[:num]:
+        ret += "<tr>"
+        ret += tdlink("player", e[0], e[0])
+        ret += "<td>%d</td>" % round(e[1] / d[e[0]])
         ret += "</tr>"
     return ret
 

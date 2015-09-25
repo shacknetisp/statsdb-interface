@@ -212,17 +212,19 @@ class GameSelector(BaseSelector):
         # Minimal Sets
         if self.minimal == "basicserver":
             return ret
-        if self.minimal == "basicplayer":
+        if self.minimal in ["basicplayer", "basicplayer2"]:
             for player_row in self.db.con.execute(
                 "SELECT * FROM game_players WHERE game = %d" % row[0]):
-                    player = {
-                        "weapons": {},
-                        "captures": [],
-                        "bombings": [],
-                        }
+                    player = {}
                     dictfromrow(player, player_row, [None,
                         "name", "handle",
                         "score", "timealive", "frags", "deaths", "id"])
+                    if self.minimal == 'basicplayer2':
+                        player["damage"] = self.db.con.execute(
+                            """SELECT (sum(damage1) + sum(damage2))
+                            FROM game_weapons
+                            WHERE game = %d AND player = %s""" % (
+                                row[0], player["id"])).fetchone()[0]
                     ret["players"].append(player)
             return ret
         # Teams

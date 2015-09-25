@@ -14,6 +14,7 @@ import os
 import traceback
 import web
 import dbselectors
+import caches
 
 if len(sys.argv) < 2:
     print("Usage: python3 server.py <master server home directory>")
@@ -88,6 +89,12 @@ class Server:
         self.httpd = make_server(cfgval("host"), cfgval("port"),
             httpd(self),
             handler_class=httphandler)
+        sel = dbselectors.BaseSelector()
+        sel.pathid = None
+        sel.server = self
+        sel.db = self.db
+        sel.qopt = api.Qopt({})
+        caches.make(sel)
         self.tick()
         thread = Thread(target=Server.do_http, args=(self, ))
         thread.setDaemon(True)
@@ -102,6 +109,10 @@ class Server:
                         self.httpd.handle_request()
 
     def tick(self):
+        #Calculate caches
+        with self.db:
+            for c in caches.classes:
+                c[0].calcall()
         #Clear old cached pages
         todel = []
         for k, v in list(self.retcache.items()):
