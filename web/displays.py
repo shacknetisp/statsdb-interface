@@ -6,6 +6,7 @@ import dbselectors
 import redeclipse
 import cgi
 import timeutils
+import caches
 displays = {}
 
 
@@ -881,3 +882,45 @@ def mode(sel):
             ))
     return base.page(sel, ret, title="Mode %s" % sel.pathid)
 displays["mode"] = mode
+
+
+def ranks(sel):
+    listcount = 20
+    ret = ""
+    ranktext = ""
+    try:
+        ranks = caches.caches["spm"].get(sel.pathid)
+    except KeyError:
+        ret = "<div class='center'><h2>No such Ranking</h2></div>"
+        return base.page(sel, ret, title="Ranks")
+    currentpage = page.calc(sel, len(ranks), listcount)
+    for i, e in enumerate(ranks[currentpage:currentpage + listcount]):
+        ranktext += "<tr>"
+        ranktext += "<td>%d</td>" % (1 + i + (currentpage * listcount))
+        ranktext += tdlink("player", e[0], e[0])
+        ranktext += "<td>%d</td>" % e[1]
+        ranktext += "</tr>"
+    ret += """
+    <div class="center">
+        <h2>{rank}</h2>
+        <div class='display-table'>
+            <table>
+                <tr>
+                    <th>Rank</th>
+                    <th>Handle</th>
+                    <th>Score</th>
+                </tr>
+                {ranktext}
+            </table>
+            {pages}
+        </div>
+    </div>
+    """.format(
+        rank={'spm': 'Score per Minute',
+            'dpm': 'Damage per Minute',
+            'fpm': 'Frags per Minute'}[sel.pathid],
+        ranktext=ranktext, pages=page.make(
+        sel.webpath, currentpage, len(ranks), listcount
+        ))
+    return base.page(sel, ret, title="Ranks")
+displays["ranks"] = ranks

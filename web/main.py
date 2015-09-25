@@ -66,9 +66,9 @@ def page(sel):
             "captures", 7), num=5),
         "bombings": pt.gamelist(caches.caches["plsingle"].get(
             "bombings", 7), num=5),
-        "dpm": pt.gamedivlist(*caches.caches["spm"].get("dpm", 30), num=5),
-        "spm": pt.gamedivlist(*caches.caches["spm"].get("spm", 30), num=5),
-        "fpm": pt.gamedivlist(*caches.caches["spm"].get("fpm", 30), num=5),
+        "dpm": pt.gamelist(caches.caches["spm"].get("dpm", 30), num=5),
+        "spm": pt.gamelist(caches.caches["spm"].get("spm", 30), num=5),
+        "fpm": pt.gamelist(caches.caches["spm"].get("fpm", 30), num=5),
         "maps": pt.mapnum(sel, 90),
         "servers": pt.servernum(sel, 90),
         }

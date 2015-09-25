@@ -36,12 +36,12 @@ def gamelist(l, num):
     return ret
 
 
-def gamedivlist(l, d, num):
+def gamedivlist(l, num):
     ret = ""
     for e in l[:num]:
         ret += "<tr>"
         ret += tdlink("player", e[0], e[0])
-        ret += "<td>%d</td>" % round(e[1] / d[e[0]])
+        ret += "<td>%d</td>" % e[1]
         ret += "</tr>"
     return ret
 

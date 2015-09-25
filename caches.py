@@ -50,7 +50,10 @@ class spm(base):
                     if player["handle"] not in d:
                         d[player["handle"]] = 0
                     d[player["handle"]] += key[1](player)
-        return sorted(list(players.items()), key=sortkey), d
+        for p in players:
+            players[p] /= max(1, d[p])
+            players[p] = round(players[p])
+        return sorted(list(players.items()), key=sortkey)
 
     def calc(self, what, days):
         idx = '%s%d' % (what, days)
