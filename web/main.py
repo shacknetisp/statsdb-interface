@@ -66,8 +66,11 @@ def page(sel):
             "captures", 7), num=5),
         "bombings": pt.gamelist(caches.caches["plsingle"].get(
             "bombings", 7), num=5),
+        "games": pt.gamelist(caches.caches["plsingle"].get(
+            "games"), num=5),
         "dpm": pt.gamelist(caches.caches["spm"].get("dpm", 30), num=5),
         "spm": pt.gamelist(caches.caches["spm"].get("spm", 30), num=5),
+        "spmat": pt.gamelist(caches.caches["spm"].get("spm"), num=5),
         "fpm": pt.gamelist(caches.caches["spm"].get("fpm", 30), num=5),
         "maps": pt.mapnum(sel, 90),
         "servers": pt.servernum(sel, 90),
@@ -174,6 +177,28 @@ def page(sel):
                 <td>Most Wielded</td>
                 <td>{weapwield}</td>
             </tr>
+        </table>
+    </div>
+    <div style="clear: both;"></div>
+    <h3>All Time</h3>
+    <div class='display-table float-table'>
+        <h5><a href="/display/ranks/games">Games</a></h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            </tr>
+            {ptcounters[games]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/display/ranks/spm">SPM</a></h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            </tr>
+            {ptcounters[spmat]}
         </table>
     </div>
     <div style="clear: both;"></div>

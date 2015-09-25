@@ -86,6 +86,7 @@ class plsingle(base):
     def calc(self, what, days):
         idx = '%s%d' % (what, days)
         self.cache[idx] = self.makelist({
+            'games': lambda x: 1,
             'score': lambda x: x['score'],
             'captures': lambda x: len(x['captures']),
             'bombings': lambda x: len(x['bombings']),
