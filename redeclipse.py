@@ -18,6 +18,7 @@ modes = {
     "race": 6,
     }
 mutators = {
+    "ffa": 2,
     "duel": 64,
     "survivor": 128,
     "timed": 32768,

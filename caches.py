@@ -93,8 +93,38 @@ class plsingle(base):
             }[what], days)
 
 
+class plwinner(base):
+
+    def makelist(self, key, days=0, sortkey=lambda x: -x[1]):
+        players = {}
+        gs = dbselectors.GameSelector(self.sel)
+        if days:
+            gs.gamefilter = """
+            (%d - time) < (60 * 60 * 24 * %d)
+            AND mode != %d AND %s
+            """ % (time.time(), days, redeclipse.modes["race"],
+                {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa']}[key])
+        else:
+            gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
+        for game in list(gs.getdict().values()):
+            best = sorted(
+                game["players"], key=lambda x: -x["score"])[0]["score"]
+            for player in game["players"]:
+                if player["handle"]:
+                    if player["handle"] not in players:
+                        players[player["handle"]] = 0
+                    players[player["handle"]
+                        ] += 1 if player["score"] >= best else 0
+        return sorted(list(players.items()), key=sortkey)
+
+    def calc(self, what, days):
+        idx = '%s%d' % (what, days)
+        self.cache[idx] = self.makelist(what, days)
+
+
 def make(sel):
     classes.append((spm(sel), "spm"))
     classes.append((plsingle(sel), "plsingle"))
+    classes.append((plwinner(sel), "plwinner"))
     for c in classes:
         caches[c[1]] = c[0]

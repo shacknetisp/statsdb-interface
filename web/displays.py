@@ -888,9 +888,11 @@ def ranks(sel):
     ret = ""
     ranktext = ""
     if sel.pathid in ["spm", "dpm", "fpm"]:
-        ranks = caches.caches["spm"].get(sel.pathid)
+        ranks = caches.caches["spm"].get(sel.pathid, 180)
     elif sel.pathid in ["games"]:
         ranks = caches.caches["plsingle"].get(sel.pathid)
+    elif sel.pathid in ["ffa"]:
+        ranks = caches.caches["plwinner"].get(sel.pathid, 180)
     else:
         ret = "<div class='center'><h2>No such Ranking</h2></div>"
         return base.page(sel, ret, title="Ranks")
@@ -917,14 +919,16 @@ def ranks(sel):
         </div>
     </div>
     """.format(
-        rank={'spm': 'Score per Minute',
-            'dpm': 'Damage per Minute',
-            'fpm': 'Frags per Minute',
-            'games': 'Games'}[sel.pathid],
+        rank={'spm': 'Score per Minute [Last 180 Days]',
+            'dpm': 'Damage per Minute [Last 180 Days]',
+            'fpm': 'Frags per Minute [Last 180 Days]',
+            'games': 'Games [All Time]',
+            'ffa': 'FFA Winners [Last 180 Days]'}[sel.pathid],
         number={'spm': 'SPM',
             'dpm': 'DPM',
             'fpm': 'FPM',
-            'games': 'Games'}[sel.pathid],
+            'games': 'Games',
+            'ffa': 'Wins'}[sel.pathid],
         ranktext=ranktext, pages=page.make(
         sel.webpath, currentpage, len(ranks), listcount
         ))
