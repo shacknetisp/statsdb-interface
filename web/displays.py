@@ -255,7 +255,14 @@ def game(sel):
                     ))
                 bombings += "</tr>"
             bombings += "</table></div>"
-
+        weapontext = ""
+        totalwielded = sum([w['timewielded']
+            for w in list(game['weapons'].values())
+            if w['timewielded'] is not None])
+        for weap in redeclipse.weaponlist:
+            weapon = game['weapons'][weap]
+            if weapon['timeloadout'] is not None:
+                weapontext += tableweapon(weapon, totalwielded)
         ret += """
         <div class="center">
             <h2>Game #{game[id]}: {modestr} on {mapstr}</h2>
@@ -284,6 +291,15 @@ def game(sel):
             {captures}
             {bombings}
             {ffarounds}
+            <div class='display-table small-table'>
+                <h3>Weapon Statistics</h3>
+                <table>
+                    <tr>
+                        {tableweaponlabels}
+                    </tr>
+                    {weapons}
+                </table>
+            </div>
         </div>
         """.format(
             modestr=alink("mode", game["mode"],
@@ -293,6 +309,7 @@ def game(sel):
             duration=timeutils.durstr(game["timeplayed"]),
             game=game, server=server, players=playersstr,
             captures=captures, bombings=bombings, ffarounds=ffarounds,
+            weapons=weapontext, tableweaponlabels=tableweaponlabels(),
             teamtable=("""
             <div class='display-table'>
                 <h3>Teams</h3>
@@ -441,7 +458,7 @@ def player(sel):
                 <a href="/display/playergames/{player[handle]}">
                 All Games...</a></h5>
             </div>
-            <div class='display-table'>
+            <div class='display-table small-table'>
                 <h3>Weapon Statistics</h3>
                 <table>
                     <tr>
