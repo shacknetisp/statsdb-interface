@@ -38,6 +38,7 @@ class spm(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
+            AND uniqueplayers >= 3
             AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
@@ -72,6 +73,7 @@ class plsingle(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
+            AND uniqueplayers >= 3
             AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
@@ -101,6 +103,7 @@ class plwinner(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
+            AND uniqueplayers >= 3
             AND mode != %d AND %s
             """ % (time.time(), days, redeclipse.modes["race"],
                 {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa']}[key])
