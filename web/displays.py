@@ -431,12 +431,24 @@ def player(sel):
             / (player["recent"]["timealive"] / 60)))
         except:
             dpm = "-"
+        topmap = "-"
+        maps = {}
+        for row in sel.db.con.execute('''SELECT map FROM games
+            WHERE id IN (SELECT game
+            FROM game_players WHERE handle = ?)''', (player["handle"],)):
+                if row[0] not in maps:
+                    maps[row[0]] = 0
+                maps[row[0]] += 1
+        if maps:
+            t = sorted(maps, key=lambda x: -maps[x])[0]
+            topmap = alink("map", t, t)
         ret += """
         <div class="center">
             <h2>{player[name]}</h2>
             <h3>{player[handle]}</h3>
             First appeared: {firstago}<br>
             Last appeared: {lastago}<br>
+            Most played map: {topmap}<br>
             <h3>Recent Games</h3>
             Frag Ratio: {fratio}<br>
             DPM: {dpm}<br>
@@ -473,7 +485,7 @@ def player(sel):
             fratio=fratio,
             recentweapons=recentweapons,
             tableweaponlabels=tableweaponlabels(),
-            dpm=dpm)
+            dpm=dpm, topmap=topmap)
     return base.page(sel, ret, title="%s" % sel.pathid)
 displays["player"] = player
 
@@ -917,7 +929,7 @@ def ranks(sel):
         ranks = caches.caches["spm"].get(sel.pathid, 180)
     elif sel.pathid in ["games"]:
         ranks = caches.caches["plsingle"].get(sel.pathid)
-    elif sel.pathid in ["ffa"]:
+    elif sel.pathid in ["ffa", "ffasurv"]:
         ranks = caches.caches["plwinner"].get(sel.pathid, 180)
     else:
         ret = "<div class='center'><h2>No such Ranking</h2></div>"
@@ -949,12 +961,14 @@ def ranks(sel):
             'dpm': 'Damage per Minute [Last 180 Days]',
             'fpm': 'Frags per Minute [Last 180 Days]',
             'games': 'Games [All Time]',
-            'ffa': 'FFA Winners [Last 180 Days]'}[sel.pathid],
+            'ffa': 'FFA Winners [Last 180 Days]',
+            'ffasurv': 'FFA Survivor Winners [Last 180 Days]'}[sel.pathid],
         number={'spm': 'SPM',
             'dpm': 'DPM',
             'fpm': 'FPM',
             'games': 'Games',
-            'ffa': 'Wins'}[sel.pathid],
+            'ffa': 'Wins',
+            'ffasurv': 'Wins'}[sel.pathid],
         ranktext=ranktext, pages=page.make(
         sel.webpath, currentpage, len(ranks), listcount
         ))

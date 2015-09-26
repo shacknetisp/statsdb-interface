@@ -75,6 +75,8 @@ def page(sel):
         "servers": pt.servernum(sel, 90),
         "ffa": pt.gamelist(caches.caches["plwinner"].get(
             "ffa", 90), num=5),
+        "ffasurv": pt.gamelist(caches.caches["plwinner"].get(
+            "ffasurv", 90), num=5),
         }
     ret = """
     <h2>Recent Overview</h2>
@@ -198,6 +200,16 @@ def page(sel):
                 <th>Games</th>
             </tr>
             {ptcounters[ffa]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/display/ranks/ffasurv">FFA Survivor Winners</a></h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Games</th>
+            </tr>
+            {ptcounters[ffasurv]}
         </table>
     </div>
     <div style="clear: both;"></div>

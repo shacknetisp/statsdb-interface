@@ -108,9 +108,13 @@ class plwinner(base):
             AND mode != %d AND %s
             """ % (time.time(),
                 days,
-                {'ffa': 2}[key],
+                {'ffa': 2,
+                'ffasurv': 2}[key],
                 redeclipse.modes["race"],
-                {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa']}[key])
+                {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa'],
+                    'ffasurv': '''(mutators & %d)
+                    AND (mutators & %d)''' % (redeclipse.mutators['ffa'],
+                        redeclipse.mutators['survivor'])}[key])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
         for game in list(gs.getdict().values()):
