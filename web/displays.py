@@ -147,12 +147,13 @@ def game(sel):
                 timeutils.durstr(player["timealive"]))
             playersstr += "<td>%d</td>" % player["frags"]
             playersstr += "<td>%d</td>" % player["deaths"]
-            playersstr += "<td>%d</td>" % (player["score"] /
-                (player["timealive"] / 60))
-            playersstr += "<td>%d</td>" % (player["damage"] /
-                (player["timealive"] / 60))
-            playersstr += "<td>%d</td>" % (player["frags"] /
-                (player["timealive"] / 60))
+            if game["mode"] != redeclipse.modes["race"]:
+                playersstr += "<td>%d</td>" % (player["score"] /
+                    (player["timealive"] / 60))
+                playersstr += "<td>%d</td>" % (player["damage"] /
+                    (player["timealive"] / 60))
+                playersstr += "<td>%d</td>" % (player["frags"] /
+                    (player["timealive"] / 60))
             playersstr += "</tr>"
 
         ffarounds = ""
@@ -281,9 +282,7 @@ def game(sel):
                         <th>Alive</th>
                         <th>Frags</th>
                         <th>Deaths</th>
-                        <th>SPM</th>
-                        <th>DPM</th>
-                        <th>FPM</th>
+                        {pms}
                     </tr>
                     {players}
                 </table>
@@ -310,8 +309,13 @@ def game(sel):
             game=game, server=server, players=playersstr,
             captures=captures, bombings=bombings, ffarounds=ffarounds,
             weapons=weapontext, tableweaponlabels=tableweaponlabels(),
+            pms="""
+            <th>SPM</th>
+            <th>DPM</th>
+            <th>FPM</th>
+            """ if game["mode"] != redeclipse.modes["race"] else "",
             teamtable=("""
-            <div class='display-table'>
+            <div class='display-table small-table'>
                 <h3>Teams</h3>
                 <table>
                     <tr>
