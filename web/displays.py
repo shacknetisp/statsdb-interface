@@ -939,8 +939,11 @@ def ranks(sel):
         ranktext += "<tr>"
         ranktext += "<td>%d</td>" % (1 + i + (currentpage * listcount))
         ranktext += tdlink("player", e[0], e[0])
-        ranktext += "<td>%d [%d/%d]</td>" % (
-            (e[1][0] / max(1, e[1][1])), e[1][0], e[1][1])
+        if type(e) is list:
+            ranktext += "<td>%d [%d/%d]</td>" % (
+                (e[1][0] / max(1, e[1][1])), e[1][0], e[1][1])
+        else:
+            ranktext += "<td>%d</td>" % e[1]
         ranktext += "</tr>"
     ret += """
     <div class="center">
