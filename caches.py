@@ -53,7 +53,10 @@ class spm(base):
                     d[player["handle"]] += key[1](player)
         for p in players:
             players[p] /= max(1, d[p])
-            players[p] = round(players[p])
+            if len(key) == 2:
+                players[p] = round(players[p])
+            else:
+                players[p] = round(players[p], key[2])
         return sorted(list(players.items()), key=sortkey)
 
     def calc(self, what, days):
@@ -62,6 +65,7 @@ class spm(base):
             'dpm': (lambda x: x['damage'], lambda x: x['timealive'] / 60),
             'fpm': (lambda x: x['frags'], lambda x: x['timealive'] / 60),
             'spm': (lambda x: x['score'], lambda x: x['timealive'] / 60),
+            'spf': (lambda x: x['score'], lambda x: x['frags'], 1),
             }[what], days)
 
 

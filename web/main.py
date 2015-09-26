@@ -66,6 +66,7 @@ def page(sel):
             "captures", 7), num=5),
         "bombings": pt.gamelist(caches.caches["plsingle"].get(
             "bombings", 7), num=5),
+        "spf": pt.gamelist(caches.caches["spm"].get("spf", 7), num=5),
         "games": pt.gamelist(caches.caches["plsingle"].get(
             "games", 30), num=5),
         "dpm": pt.gamelist(caches.caches["spm"].get("dpm", 30), num=5),
@@ -90,6 +91,16 @@ def page(sel):
                 <th>Score</th>
             </tr>
             {ptcounters[score]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Score/Frags</h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>S/F Ratio</th>
+            </tr>
+            {ptcounters[spf]}
         </table>
     </div>
     <div class='display-table float-table'>

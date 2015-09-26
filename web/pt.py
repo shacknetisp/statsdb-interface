@@ -31,7 +31,10 @@ def gamelist(l, num):
     for e in l[:num]:
         ret += "<tr>"
         ret += tdlink("player", e[0], e[0])
-        ret += "<td>%d</td>" % e[1]
+        if type(e[1]) is float:
+            ret += "<td>%.1f</td>" % e[1]
+        else:
+            ret += "<td>%d</td>" % e[1]
         ret += "</tr>"
     return ret
 
