@@ -844,8 +844,11 @@ def maps(sel):
             "#%d" % (latestgame["id"]), False),
                 timeutils.agohtml(latestgame["time"]))
         if gamemap["toprace"]["time"]:
-            maptable += "<td>%s</td>" % timeutils.durstr(
-                gamemap["toprace"]["time"] / 1000, dec=True, full=True)
+            maptable += "<td>%s by %s</td>" % (timeutils.durstr(
+                gamemap["toprace"]["time"] / 1000, dec=True, full=True),
+                    alinkp("player", gamemap["toprace"]["gameplayer"]["handle"],
+                        gamemap["toprace"]["gameplayer"]["handle"]
+                        or gamemap["toprace"]["gameplayer"]["name"]))
         else:
             maptable += "<td></td>"
         maptable += "</tr>"
