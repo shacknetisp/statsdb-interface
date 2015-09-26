@@ -744,7 +744,7 @@ def gmap(sel):
         currentpage = page.calc(sel, len(gamemap["games"]), listcount)
         for gid in page.getlist(currentpage, listcount):
             try:
-                gid = gamemap["games"][gid]
+                gid = gamemap["games"][-(gid + 1)]
             except IndexError:
                 break
             game = gamesel.single(gid)
@@ -886,7 +886,7 @@ def mode(sel):
         currentpage = page.calc(sel, len(mode["games"]), listcount)
         for gid in page.getlist(currentpage, listcount):
             try:
-                gid = mode["games"][gid]
+                gid = mode["games"][-(gid + 1)]
             except IndexError:
                 break
             gamesel.minimal = "basic"
