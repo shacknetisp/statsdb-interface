@@ -363,6 +363,7 @@ def games(sel):
     ret += """
     <div class="center display-table">
         <h2>Games</h2>
+        <h3>{gamenum} Recorded</h3>
         <table>
             <tr>
                 <th>ID</th>
@@ -378,7 +379,7 @@ def games(sel):
     </div>
     """.format(games=gamestext, pages=page.make(
         sel.webpath, currentpage, gs.numgames(), listcount
-        ))
+        ), gamenum=gs.numgames())
     return base.page(sel, ret, title="Games")
 displays["games"] = games
 
