@@ -38,7 +38,7 @@ class spm(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
-            AND uniqueplayers >= 3
+            AND uniqueplayers >= 2
             AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
@@ -73,8 +73,9 @@ class plsingle(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
-            AND uniqueplayers >= 3
-            AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
+            AND uniqueplayers >= %d
+            AND mode != %d""" % (time.time(), days,
+                key[0], redeclipse.modes["race"])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
         for game in list(gs.getdict().values()):
@@ -82,16 +83,16 @@ class plsingle(base):
                 if player["handle"]:
                     if player["handle"] not in players:
                         players[player["handle"]] = 0
-                    players[player["handle"]] += key(player)
+                    players[player["handle"]] += key[1](player)
         return sorted(list(players.items()), key=sortkey)
 
     def calc(self, what, days):
         idx = '%s%d' % (what, days)
         self.cache[idx] = self.makelist({
-            'games': lambda x: 1,
-            'score': lambda x: x['score'],
-            'captures': lambda x: len(x['captures']),
-            'bombings': lambda x: len(x['bombings']),
+            'games': (0, lambda x: 1),
+            'score': (2, lambda x: x['score']),
+            'captures': (4, lambda x: len(x['captures'])),
+            'bombings': (4, lambda x: len(x['bombings'])),
             }[what], days)
 
 
@@ -103,9 +104,12 @@ class plwinner(base):
         if days:
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
-            AND uniqueplayers >= 3
+            AND uniqueplayers >= %d
             AND mode != %d AND %s
-            """ % (time.time(), days, redeclipse.modes["race"],
+            """ % (time.time(),
+                days,
+                {'ffa': 2}[key],
+                redeclipse.modes["race"],
                 {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa']}[key])
         else:
             gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
