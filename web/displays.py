@@ -939,7 +939,8 @@ def ranks(sel):
         ranktext += "<tr>"
         ranktext += "<td>%d</td>" % (1 + i + (currentpage * listcount))
         ranktext += tdlink("player", e[0], e[0])
-        ranktext += "<td>%d</td>" % e[1]
+        ranktext += "<td>%d [%d/%d]</td>" % (
+            (e[1][0] / max(1, e[1][1])), e[1][0], e[1][1])
         ranktext += "</tr>"
     ret += """
     <div class="center">
@@ -961,14 +962,14 @@ def ranks(sel):
             'dpm': 'Damage per Minute [Last 180 Days]',
             'fpm': 'Frags per Minute [Last 180 Days]',
             'games': 'Games [All Time]',
-            'ffa': 'FFA Winners [Last 180 Days]',
-            'ffasurv': 'FFA Survivor Winners [Last 180 Days]'}[sel.pathid],
+            'ffa': 'FFA Win Ratio [Last 180 Days]',
+            'ffasurv': 'FFA Survivor Win Ratio [Last 180 Days]'}[sel.pathid],
         number={'spm': 'SPM',
             'dpm': 'DPM',
             'fpm': 'FPM',
             'games': 'Games',
-            'ffa': 'Wins',
-            'ffasurv': 'Wins'}[sel.pathid],
+            'ffa': 'Wins/Losses',
+            'ffasurv': 'Wins/Losses'}[sel.pathid],
         ranktext=ranktext, pages=page.make(
         sel.webpath, currentpage, len(ranks), listcount
         ))

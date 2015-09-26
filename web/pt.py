@@ -41,7 +41,8 @@ def gamedivlist(l, num):
     for e in l[:num]:
         ret += "<tr>"
         ret += tdlink("player", e[0], e[0])
-        ret += "<td>%d</td>" % e[1]
+        ret += "<td>%d [%d/%d]</td>" % (
+            (e[1][0] / max(1, e[1][1])), e[1][0], e[1][1])
         ret += "</tr>"
     return ret
 

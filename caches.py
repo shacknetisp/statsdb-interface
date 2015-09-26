@@ -98,7 +98,7 @@ class plsingle(base):
 
 class plwinner(base):
 
-    def makelist(self, key, days=0, sortkey=lambda x: -x[1]):
+    def makelist(self, key, days=0):
         players = {}
         gs = dbselectors.GameSelector(self.sel)
         if days:
@@ -123,10 +123,13 @@ class plwinner(base):
             for player in game["players"]:
                 if player["handle"]:
                     if player["handle"] not in players:
-                        players[player["handle"]] = 0
-                    players[player["handle"]
-                        ] += 1 if player["score"] >= best else 0
-        return sorted(list(players.items()), key=sortkey)
+                        players[player["handle"]] = [0, 0]
+                    if player["score"] >= best:
+                        players[player["handle"]][0] += 1
+                    else:
+                        players[player["handle"]][1] += 1
+        return sorted(list(players.items()),
+            key=lambda x: -(x[1][0] / max(x[1][1], 1)))
 
     def calc(self, what, days):
         idx = '%s%d' % (what, days)

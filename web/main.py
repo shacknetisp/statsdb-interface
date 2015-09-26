@@ -73,9 +73,9 @@ def page(sel):
         "fpm": pt.gamelist(caches.caches["spm"].get("fpm", 30), num=5),
         "maps": pt.mapnum(sel, 90),
         "servers": pt.servernum(sel, 90),
-        "ffa": pt.gamelist(caches.caches["plwinner"].get(
+        "ffa": pt.gamedivlist(caches.caches["plwinner"].get(
             "ffa", 90), num=5),
-        "ffasurv": pt.gamelist(caches.caches["plwinner"].get(
+        "ffasurv": pt.gamedivlist(caches.caches["plwinner"].get(
             "ffasurv", 90), num=5),
         }
     ret = """
@@ -193,7 +193,7 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/ffa">FFA Winners</a></h5>
+        <h5><a href="/display/ranks/ffa">FFA Win Ratio</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -203,7 +203,7 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/ffasurv">FFA Survivor Winners</a></h5>
+        <h5><a href="/display/ranks/ffasurv">FFA Survivor Win Ratio</a></h5>
         <table>
             <tr>
                 <th>Name</th>
