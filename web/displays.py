@@ -147,6 +147,12 @@ def game(sel):
                 timeutils.durstr(player["timealive"]))
             playersstr += "<td>%d</td>" % player["frags"]
             playersstr += "<td>%d</td>" % player["deaths"]
+            playersstr += "<td>%d</td>" % (player["score"] /
+                (player["timealive"] / 60))
+            playersstr += "<td>%d</td>" % (player["damage"] /
+                (player["timealive"] / 60))
+            playersstr += "<td>%d</td>" % (player["frags"] /
+                (player["timealive"] / 60))
             playersstr += "</tr>"
 
         ffarounds = ""
@@ -268,6 +274,9 @@ def game(sel):
                         <th>Alive</th>
                         <th>Frags</th>
                         <th>Deaths</th>
+                        <th>SPM</th>
+                        <th>DPM</th>
+                        <th>FPM</th>
                     </tr>
                     {players}
                 </table>
