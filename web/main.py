@@ -72,6 +72,8 @@ def page(sel):
         "bombings": pt.gamelist(caches.caches["plsingle"].get(
             "bombings", 7), num=5),
         "spf": pt.gamelist(caches.caches["spm"].get("spf", 7), num=5),
+        "mvp": pt.gamedivlist(caches.caches["plwinner"].get(
+            "mvp", 7), num=5),
         "games": pt.gamelist(caches.caches["plsingle"].get(
             "games", 30), num=5),
         "dpm": pt.gamelist(caches.caches["spm"].get("dpm", 30), num=5),
@@ -130,6 +132,16 @@ def page(sel):
                 <th>Bombings</th>
             </tr>
             {ptcounters[bombings]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/display/ranks/mvp">MVP</a></h5>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Wins</th>
+            </tr>
+            {ptcounters[mvp]}
         </table>
     </div>
     <div class='display-table float-table'>

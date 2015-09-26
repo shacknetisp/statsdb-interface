@@ -937,7 +937,7 @@ def ranks(sel):
         ranks = caches.caches["spm"].get(sel.pathid, 180)
     elif sel.pathid in ["games"]:
         ranks = caches.caches["plsingle"].get(sel.pathid)
-    elif sel.pathid in ["ffa", "ffasurv"]:
+    elif sel.pathid in ["ffa", "ffasurv", "mvp"]:
         ranks = caches.caches["plwinner"].get(sel.pathid, 180)
     else:
         ret = "<div class='center'><h2>No such Ranking</h2></div>"
@@ -947,7 +947,7 @@ def ranks(sel):
         ranktext += "<tr>"
         ranktext += "<td>%d</td>" % (1 + i + (currentpage * listcount))
         ranktext += tdlink("player", e[0], e[0])
-        if type(e) is list:
+        if type(e[1]) is list:
             ranktext += "<td>%d [%d/%d]</td>" % (
                 (e[1][0] / max(1, e[1][1])), e[1][0], e[1][1])
         else:
@@ -974,13 +974,16 @@ def ranks(sel):
             'fpm': 'Frags per Minute [Last 180 Days]',
             'games': 'Games [All Time]',
             'ffa': 'FFA Win Ratio [Last 180 Days]',
-            'ffasurv': 'FFA Survivor Win Ratio [Last 180 Days]'}[sel.pathid],
+            'ffasurv': 'FFA Survivor Win Ratio [Last 180 Days]',
+            'mvp': 'Team Game Win Ratio [Last 180 Days]'}[sel.pathid],
         number={'spm': 'SPM',
             'dpm': 'DPM',
             'fpm': 'FPM',
             'games': 'Games',
             'ffa': 'Wins/Losses',
-            'ffasurv': 'Wins/Losses'}[sel.pathid],
+            'ffasurv': 'Wins/Losses',
+            'mvp': 'Wins/Losses',
+            }[sel.pathid],
         ranktext=ranktext, pages=page.make(
         sel.webpath, currentpage, len(ranks), listcount
         ))

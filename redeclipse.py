@@ -15,6 +15,10 @@ for a in ['damage',
         weapcols += [a + '1', a + '2']
 
 modes = {
+    "dm": 2,
+    "ctf": 3,
+    "dac": 4,
+    "bb": 5,
     "race": 6,
     }
 mutators = {

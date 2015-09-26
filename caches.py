@@ -107,22 +107,26 @@ class plwinner(base):
     def makelist(self, key, days=0):
         players = {}
         gs = dbselectors.GameSelector(self.sel)
-        if days:
-            gs.gamefilter = """
-            (%d - time) < (60 * 60 * 24 * %d)
-            AND uniqueplayers >= %d
-            AND mode != %d AND %s
-            """ % (time.time(),
-                days,
-                {'ffa': 2,
-                'ffasurv': 2}[key],
-                redeclipse.modes["race"],
-                {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa'],
-                    'ffasurv': '''(mutators & %d)
-                    AND (mutators & %d)''' % (redeclipse.mutators['ffa'],
-                        redeclipse.mutators['survivor'])}[key])
-        else:
-            gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
+        gs.gamefilter = """
+        ((%d - time) < (60 * 60 * 24 * %d) OR %d = 0)
+        AND uniqueplayers >= %d
+        AND mode != %d AND %s
+        """ % (time.time(),
+            days, days,
+            {'ffa': 2,
+            'ffasurv': 2,
+            'mvp': 4}[key],
+            redeclipse.modes["race"],
+            {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa'],
+            'mvp': '(NOT (mutators & %d)) AND mode in (%d, %d, %d, %d)' % (
+                redeclipse.mutators['ffa'],
+                redeclipse.modes['dm'],
+                redeclipse.modes['ctf'],
+                redeclipse.modes['dac'],
+                redeclipse.modes['bb']),
+            'ffasurv': '''(mutators & %d)
+            AND (mutators & %d)''' % (redeclipse.mutators['ffa'],
+                redeclipse.mutators['survivor'])}[key])
         for game in list(gs.getdict().values()):
             best = sorted(
                 game["players"], key=lambda x: -x["score"])[0]["score"]
