@@ -261,7 +261,7 @@ def game(sel):
             if w['timewielded'] is not None])
         for weap in redeclipse.weaponlist:
             weapon = game['weapons'][weap]
-            if weapon['timeloadout'] is not None:
+            if weapon['timeloadout']:
                 weapontext += tableweapon(weapon, totalwielded)
         ret += """
         <div class="center">
