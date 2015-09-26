@@ -77,7 +77,9 @@ class plsingle(base):
             AND mode != %d""" % (time.time(), days,
                 key[0], redeclipse.modes["race"] if key[0] else 0)
         else:
-            gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
+            gs.gamefilter = """uniqueplayers >= %d AND mode != %d""" % (
+                key[0],
+                redeclipse.modes["race"] if key[0] else 0)
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
