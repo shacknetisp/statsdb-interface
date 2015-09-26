@@ -317,7 +317,7 @@ class GameSelector(BaseSelector):
                 ret['weapons'][weapon] = w
         return ret
 
-    def getdict(self):
+    def getdict(self, one=False):
         if self.pathid is not None:
             return self.single(self.pathid)
         f = self.makefilters(where=False)
@@ -334,7 +334,7 @@ class GameSelector(BaseSelector):
             ids = list(reversed(ids))[:self.server.cfgval("gamerecent")]
         ret = {}
         for gid in ids:
-            v = self.single(gid, False)
+            v = self.single(gid, one)
             for f in self.xfilters:
                 if v is not None:
                     if not f(self, v):

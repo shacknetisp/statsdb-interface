@@ -610,7 +610,7 @@ def weapons(sel):
     ret += """
     <div class="center">
         <h2>Weapons</h2>
-        <div class='display-table'>
+        <div class='display-table small-table'>
             <table>
                 <tr>
                     {tableweaponlabels}

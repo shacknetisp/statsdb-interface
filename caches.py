@@ -142,9 +142,48 @@ class plwinner(base):
         self.cache[idx] = self.makelist(what, days)
 
 
+class plweapon(base):
+
+    def makelist(self, key, days=0):
+        gs = dbselectors.GameSelector(self.sel)
+        if days:
+            gs.gamefilter = """
+            (%d - time) < (60 * 60 * 24 * %d)
+            AND uniqueplayers >= 0
+            """ % (time.time(),
+                days)
+        else:
+            gs.gamefilter = """
+            AND uniqueplayers >= 2
+            """
+        players = {}
+        for game in list(gs.getdict(True).values()):
+            for p in game["players"]:
+                if p['handle']:
+                    if p['handle'] not in players:
+                        players[p['handle']] = 0
+                    if key[1] == 0:
+                        players[p['handle']] += (
+                            p['weapons'][key[0]]['damage1']
+                            + p['weapons'][key[0]]['damage2']
+                            + ((p['weapons'][key[0]]['frags1']
+                            + p['weapons'][key[0]]['frags2']) * 100))
+                    else:
+                        players[p['handle']] += (
+                            p['weapons'][key[0]]['damage%d' % key[1]]
+                            + ((p['weapons'][key[0]][
+                                'frags%d' % key[1]]) * 100))
+        return sorted(list(players.items()), key=lambda x: -x[1])
+
+    def calc(self, what, days):
+        idx = '%s%d' % (what, days)
+        self.cache[idx] = self.makelist(what, days)
+
+
 def make(sel):
     classes.append((spm(sel), "spm"))
     classes.append((plsingle(sel), "plsingle"))
     classes.append((plwinner(sel), "plwinner"))
+    classes.append((plweapon(sel), "plweapon"))
     for c in classes:
         caches[c[1]] = c[0]

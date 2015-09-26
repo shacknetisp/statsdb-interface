@@ -60,6 +60,11 @@ def page(sel):
             max(weapon[1]["timewielded"], 1)))[0]
         topweapons['wield'] = (best[0], best[1]["timewielded"])
 
+    def makeweapbest(e):
+        if not e:
+            return ""
+        return alink("player", e[0][0], e[0][0])
+
     ptcounters = {
         "score": pt.gamelist(caches.caches["plsingle"].get("score", 7), num=5),
         "captures": pt.gamelist(caches.caches["plsingle"].get(
@@ -78,6 +83,10 @@ def page(sel):
             "ffa", 90), num=5),
         "ffasurv": pt.gamedivlist(caches.caches["plwinner"].get(
             "ffasurv", 90), num=5),
+        "sword": makeweapbest(
+            caches.caches['plweapon'].get(('sword', 0), 7)),
+        "sniper": makeweapbest(
+            caches.caches['plweapon'].get(('rifle', 2), 7))
         }
     ret = """
     <h2>Recent Overview</h2>
@@ -121,6 +130,19 @@ def page(sel):
                 <th>Bombings</th>
             </tr>
             {ptcounters[bombings]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Weapon Bests</h5>
+        <table>
+            <tr>
+                <td>Best Sword</td>
+                <td>{ptcounters[sword]}</td>
+            </tr>
+            <tr>
+                <td>Best Sniper</td>
+                <td>{ptcounters[sniper]}</td>
+            </tr>
         </table>
     </div>
     <div style="clear: both;"></div>
