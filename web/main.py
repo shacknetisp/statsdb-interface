@@ -136,11 +136,11 @@ def page(sel):
         <h5>Weapon Bests</h5>
         <table>
             <tr>
-                <td>Best Sword</td>
+                <td>Sword</td>
                 <td>{ptcounters[sword]}</td>
             </tr>
             <tr>
-                <td>Best Sniper</td>
+                <td>Sniper</td>
                 <td>{ptcounters[sniper]}</td>
             </tr>
         </table>
