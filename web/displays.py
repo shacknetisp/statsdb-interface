@@ -270,7 +270,7 @@ def game(sel):
         ret += """
         <div class="center">
             <h2>Game #{game[id]}: {modestr} on {mapstr}</h2>
-            Mutators: {mutsstr}<br>
+            {mutsstr}
             Duration: {duration}<br>
             Played: {agohtml}<br>
             Server: <a
@@ -307,7 +307,8 @@ def game(sel):
         """.format(
             modestr="%s" % (alink("mode", game["mode"],
                 redeclipse.modeimg(game["mode"], 32), e=False)),
-            mutsstr=redeclipse.mutslist(game, True, True),
+            mutsstr=("Mutators: %s<br>" % redeclipse.mutslist(game, True, True))
+            if game['mutators'] else '',
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
