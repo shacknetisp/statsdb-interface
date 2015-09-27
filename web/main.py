@@ -173,7 +173,7 @@ Sniper</span></td>
     <div style="clear: both;"></div>
     <h3>Last 30 Days</h3>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/spm"
+        <h5><a href="/display/ranks/spm" class="explain
         title="Score Per Minute">SPM</a></h5>
         <table>
             <tr>
@@ -184,7 +184,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/dpm"
+        <h5><a href="/display/ranks/dpm" class="explain
         title="Damage Per Minute">DPM</a></h5>
         <table>
             <tr>
@@ -195,7 +195,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/fpm"
+        <h5><a class="explain" href="/display/ranks/fpm"
         title="Frags Per Minute">FPM</a></h5>
         <table>
             <tr>
