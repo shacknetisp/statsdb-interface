@@ -65,6 +65,8 @@ def server(sel):
             recentgames += tdlink("mode",
                 game["mode"],
                 redeclipse.modeimg(game["mode"]), e=False)
+            recentgames += "<td>%s</td>" % (
+                redeclipse.mutslist(game, True) or '-')
             recentgames += tdlink('map', game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
@@ -87,6 +89,7 @@ def server(sel):
                     <tr>
                         <th>ID</th>
                         <th>Mode</th>
+                        <th>Mutators</th>
                         <th>Map</th>
                         <th>Duration</th>
                         <th>Played</th>
@@ -267,6 +270,7 @@ def game(sel):
         ret += """
         <div class="center">
             <h2>Game #{game[id]}: {modestr} on {mapstr}</h2>
+            Mutators: {mutsstr}<br>
             Duration: {duration}<br>
             Played: {agohtml}<br>
             Server: <a
@@ -301,8 +305,9 @@ def game(sel):
             </div>
         </div>
         """.format(
-            modestr=alink("mode", game["mode"],
-                redeclipse.modeimg(game["mode"], 32), e=False),
+            modestr="%s" % (alink("mode", game["mode"],
+                redeclipse.modeimg(game["mode"], 32), e=False)),
+            mutsstr=redeclipse.mutslist(game, True, True),
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
             duration=timeutils.durstr(game["timeplayed"]),
@@ -351,6 +356,9 @@ def games(sel):
         gamestext += tdlink("mode",
             game["mode"],
             redeclipse.modeimg(game["mode"]), e=False)
+        gamestext += "<td>%s</td>" % (redeclipse.mutslist(
+            game, True
+            ) or '-')
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
@@ -368,6 +376,7 @@ def games(sel):
             <tr>
                 <th>ID</th>
                 <th>Mode</th>
+                <th>Mutators</th>
                 <th>Server</th>
                 <th>Map</th>
                 <th>Duration</th>
@@ -403,6 +412,10 @@ def player(sel):
                 recentgames += tdlink("mode",
                     game["mode"],
                     redeclipse.modeimg(game["mode"]), e=False)
+                recentgames += "<td>%s</td>" % (
+                    redeclipse.mutslist(
+                    game, True
+                    ) or '-')
                 recentgames += tdlink("map", game["map"], game["map"])
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
                 recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
@@ -462,6 +475,7 @@ def player(sel):
                     <tr>
                         <th>Game</th>
                         <th>Mode</th>
+                        <th>Mutators</th>
                         <th>Map</th>
                         <th>Time</th>
                         <th>Played As</th>
@@ -522,6 +536,9 @@ def playergames(sel):
             recentgames += tdlink("mode",
                 game["mode"],
                 redeclipse.modeimg(game["mode"]), e=False)
+            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+                game, True
+                ) or '-')
             recentgames += tdlink("map", game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
             recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
@@ -539,6 +556,7 @@ def playergames(sel):
                     <tr>
                         <th>Game</th>
                         <th>Mode</th>
+                        <th>Mutators</th>
                         <th>Map</th>
                         <th>Time</th>
                         <th>Played As</th>
@@ -754,6 +772,9 @@ def gmap(sel):
             recentgames += tdlink("mode",
                 game["mode"],
                 redeclipse.modeimg(game["mode"]), e=False)
+            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+                game, True
+                ) or '-')
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
@@ -799,6 +820,7 @@ def gmap(sel):
                     <tr>
                         <th>ID</th>
                         <th>Mode</th>
+                        <th>Mutators</th>
                         <th>Duration</th>
                         <th>Played</th>
                     </tr>
@@ -897,6 +919,9 @@ def mode(sel):
             game = gamesel.single(gid)
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
+            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+                game, True
+                ) or '-')
             recentgames += tdlink("map", game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
@@ -910,6 +935,7 @@ def mode(sel):
                 <table>
                     <tr>
                         <th>ID</th>
+                        <th>Mutators</th>
                         <th>Map</th>
                         <th>Duration</th>
                         <th>Played</th>

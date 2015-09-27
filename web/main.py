@@ -24,6 +24,8 @@ def page(sel):
         recentgames += tdlink("mode",
             game["mode"],
             redeclipse.modeimg(game["mode"]), e=False)
+        recentgames += "<td>%s</td>" % (
+            redeclipse.mutslist(game, True) or '-')
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
@@ -277,6 +279,7 @@ Sniper</span></td>
             <tr>
                 <th>ID</th>
                 <th>Mode</th>
+                <th>Mutators</th>
                 <th>Server</th>
                 <th>Map</th>
                 <th>Duration</th>

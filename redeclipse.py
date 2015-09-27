@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import cgi
 # Red Eclipse settings that may change in later releases.
 
 # Weapon Lists
@@ -21,13 +22,62 @@ modes = {
     "bb": 5,
     "race": 6,
     }
-mutators = {
-    "ffa": 2,
-    "duel": 64,
-    "survivor": 128,
-    "freestyle": 1024,
-    "timed": 32768,
+
+
+def tomuts(l, a=0):
+    ret = {}
+    for i, mut in enumerate(l):
+        ret[mut] = 1 << (i + a)
+    return ret
+
+#Mutators
+mutators = {}
+basemuts = ["multi", "ffa", "coop", "insta", "kaboom",
+    "duel", "survivor", "classic", "onslaught", "freestyle", "vampire",
+    "resize", "hard", "basic", "gsp"]
+gspmuts = {
+    modes["ctf"]: ["quick", "defend", "protect"],
+    modes["dac"]: ["quick", "king"],
+    modes["bb"]: ["hold", "basket", "attack"],
+    modes["race"]: ["marathon", "timed", "gauntlet"],
     }
+gspnum = basemuts.index("gsp")
+basemuts = tomuts(basemuts)
+del basemuts["gsp"]
+mutators.update(basemuts)
+for mode, modemuts in list(gspmuts.items()):
+    modemuts = tomuts(modemuts, gspnum)
+    gspmuts[mode] = modemuts
+    mutators.update(modemuts)
+
+
+def mutslist(game, html=False, short=False):
+    muts = []
+
+    def chunks(l, n):
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
+    for m in basemuts:
+        if (game["mutators"] & basemuts[m]):
+            muts.append(m)
+
+    if game['mode'] in gspmuts:
+        for m in gspmuts[game['mode']]:
+            if (game["mutators"] & gspmuts[game['mode']][m]):
+                muts.append(m)
+    if html:
+        if short:
+            out = []
+            for m in muts:
+                out.append(m)
+            return cgi.escape('-'.join(out))
+        outl = chunks(muts, 3)
+        htmll = []
+        for chunk in outl:
+            htmll.append(cgi.escape(" ".join(chunk)))
+        return "<br>".join(htmll)
+    return muts
 
 # SQL Filters, [<is not>, <is>]
 m_laptime_sql = ("mode != %d OR (mutators & %d) = 0" % (modes["race"],
