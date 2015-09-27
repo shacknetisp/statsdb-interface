@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import cgi
+from collections import OrderedDict
 # Red Eclipse settings that may change in later releases.
 
 # Weapon Lists
@@ -25,7 +26,7 @@ modes = {
 
 
 def tomuts(l, a=0):
-    ret = {}
+    ret = OrderedDict()
     for i, mut in enumerate(l):
         ret[mut] = 1 << (i + a)
     return ret
