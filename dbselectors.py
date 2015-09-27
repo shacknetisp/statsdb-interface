@@ -588,8 +588,9 @@ class MapSelector(BaseSelector):
             WHERE map = ?
             AND %s
             AND %s
-            AND (mutators & 1024) = 0""" % (self.vlimit("id"),
-                redeclipse.m_laptime_sql[1]), (mapname,)):
+            AND (mutators & %d) = 0""" % (self.vlimit("id"),
+                redeclipse.m_laptime_sql[1],
+                redeclipse.mutators['freestyle']), (mapname,)):
                 gs = GameSelector(self)
                 game = gs.single(row[0], one=False)
                 finishedplayers = [
