@@ -33,7 +33,7 @@ def tomuts(l, a=0):
 
 #Mutators
 mutators = {}
-basemuts = ["multi", "ffa", "coop", "insta", "kaboom",
+basemuts = ["multi", "ffa", "coop", "insta", "medieval", "kaboom",
     "duel", "survivor", "classic", "onslaught", "freestyle", "vampire",
     "resize", "hard", "basic", "gsp"]
 gspmuts = {
