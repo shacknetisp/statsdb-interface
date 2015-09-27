@@ -42,7 +42,7 @@ gspmuts = {
     modes["bb"]: ["hold", "basket", "attack"],
     modes["race"]: ["marathon", "timed", "gauntlet"],
     }
-gspnum = basemuts.index("gsp")
+gspnum = basemuts.index("gsp") - 1
 basemuts = tomuts(basemuts)
 del basemuts["gsp"]
 mutators.update(basemuts)
