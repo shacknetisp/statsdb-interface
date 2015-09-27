@@ -40,10 +40,15 @@ def page(sel):
 
     weapons = {}
     for name in redeclipse.loadoutweaponlist:
-        weapon = ws.single(name)["recent"]
-        weapons[name] = weapon
+        if sel.server.dbexists:
+            weapon = ws.single(name)["recent"]
+            weapons[name] = weapon
 
-    topweapons = {}
+    topweapons = {
+        'wield': ('melee', 0),
+        'dpm': ('melee', 0),
+        'totalwielded': 0,
+        }
     if weapons:
         best = sorted(list(weapons.items()), key=lambda weapon: -(
             weapon[1]["damage1"]
@@ -66,14 +71,15 @@ def page(sel):
         return alink("player", e[0][0], e[0][0])
 
     ptcounters = {
-        "score": pt.gamelist(caches.caches["plsingle"].get("score", 7), num=5),
         "captures": pt.gamelist(caches.caches["plsingle"].get(
             "captures", 7), num=5),
         "bombings": pt.gamelist(caches.caches["plsingle"].get(
             "bombings", 7), num=5),
         "spf": pt.gamelist(caches.caches["spm"].get("spf", 7), num=5),
-        "mvp": pt.gamedivlist(caches.caches["plwinner"].get(
-            "mvp", 7), num=5),
+        "affmvp": pt.gamelist(caches.caches["mvp"].get(
+            "affmvp", 7), num=5),
+        "dmmvp": pt.gamelist(caches.caches["mvp"].get(
+            "dmmvp", 7), num=5),
         "games": pt.gamelist(caches.caches["plsingle"].get(
             "games", 30), num=5),
         "dpm": pt.gamelist(caches.caches["spm"].get("dpm", 30), num=5),
@@ -95,16 +101,6 @@ def page(sel):
     <h5><a href="/display/players">Players</a></h5>
     <h3>Last 7 Days</h3>
     <div class='display-table float-table'>
-        <h5>Score</h5>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Score</th>
-            </tr>
-            {ptcounters[score]}
-        </table>
-    </div>
-    <div class='display-table float-table'>
         <h5>Score/Frags</h5>
         <table>
             <tr>
@@ -115,7 +111,8 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5>Captures</h5>
+        <h5>
+        <span class="explain" title="Most Flag Captures">Captures</span></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -125,7 +122,8 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5>Bombings</h5>
+        <h5>
+        <span class="explain" title="Most Base Bombings">Bombings</span></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -135,24 +133,39 @@ def page(sel):
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/mvp">MVP</a></h5>
+        <h5><span class="explain"
+        title="Scores from CTF and BB">CTF/BB Team Scores</span></h5>
         <table>
             <tr>
                 <th>Name</th>
-                <th>Wins</th>
+                <th>Score</th>
             </tr>
-            {ptcounters[mvp]}
+            {ptcounters[affmvp]}
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5>Weapon Bests</h5>
+        <h5><span class="explain"
+        title="Scores from DM">DM Team Scores</span></h5>
         <table>
             <tr>
-                <td>Sword</td>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+            {ptcounters[dmmvp]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>Best</h5>
+        <table>
+            <tr>
+                <td><span class="explain"
+title="Best Damage and Frags with the Sword per minute">Knight</span></td>
                 <td>{ptcounters[sword]}</td>
             </tr>
             <tr>
-                <td>Sniper</td>
+                <td><span class="explain"
+title="Best Damage and Frags with the Rifle Secondary per minute">
+Sniper</span></td>
                 <td>{ptcounters[sniper]}</td>
             </tr>
         </table>

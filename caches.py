@@ -96,10 +96,51 @@ class plsingle(base):
         idx = '%s%d' % (what, days)
         self.cache[idx] = self.makelist({
             'games': (0, lambda x: 1),
-            'score': (2, lambda x: x['score']),
             'captures': (4, lambda x: len(x['captures'])),
             'bombings': (4, lambda x: len(x['bombings'])),
             }[what], days)
+
+
+class mvp(base):
+
+    def makelist(self, key, days=0):
+        players = {}
+        gs = dbselectors.GameSelector(self.sel)
+        gs.gamefilter = """
+        ((%d - time) < (60 * 60 * 24 * %d) OR %d = 0)
+        AND uniqueplayers >= %d
+        AND mode != %d AND %s
+        """ % (time.time(),
+            days, days,
+            4,
+            redeclipse.modes["race"],
+            {'affmvp': '''(NOT (mutators & %d)
+            OR (mutators & %d))
+            AND mode in (%d, %d)''' % (
+                redeclipse.mutators['survivor'],
+                redeclipse.mutators['duel'],
+                redeclipse.modes['ctf'],
+                redeclipse.modes['bb']),
+            'dmmvp': '''(NOT (mutators & %d)
+            OR (mutators & %d)
+            OR (mutators & %d))
+            AND mode = %d''' % (
+                redeclipse.mutators['ffa'],
+                redeclipse.mutators['survivor'],
+                redeclipse.mutators['duel'],
+                redeclipse.modes['dm'])}[key])
+        for game in list(gs.getdict().values()):
+            for player in game["players"]:
+                if player["handle"]:
+                    if player["handle"] not in players:
+                        players[player["handle"]] = 0
+                    players[player["handle"]] += player["score"]
+        return sorted(list(players.items()),
+            key=lambda x: -x[1])
+
+    def calc(self, what, days):
+        idx = '%s%d' % (what, days)
+        self.cache[idx] = self.makelist(what, days)
 
 
 class plwinner(base):
@@ -118,8 +159,13 @@ class plwinner(base):
             'mvp': 4}[key],
             redeclipse.modes["race"],
             {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa'],
-            'mvp': '(NOT (mutators & %d)) AND mode in (%d, %d, %d, %d)' % (
+            'mvp': '''(NOT (mutators & %d)
+            OR (mutators & %d)
+            OR (mutators & %d))
+            AND mode in (%d, %d, %d, %d)''' % (
                 redeclipse.mutators['ffa'],
+                redeclipse.mutators['survivor'],
+                redeclipse.mutators['duel'],
                 redeclipse.modes['dm'],
                 redeclipse.modes['ctf'],
                 redeclipse.modes['dac'],
@@ -161,11 +207,15 @@ class plweapon(base):
             AND uniqueplayers >= 2
             """
         players = {}
+        d = {}
         for game in list(gs.getdict(True).values()):
             for p in game["players"]:
                 if p['handle']:
                     if p['handle'] not in players:
                         players[p['handle']] = 0
+                    if p['handle'] not in d:
+                        d[p['handle']] = 0
+                    d[p['handle']] += p['timealive'] / 60
                     if key[1] == 0:
                         players[p['handle']] += (
                             p['weapons'][key[0]]['damage1']
@@ -177,6 +227,9 @@ class plweapon(base):
                             p['weapons'][key[0]]['damage%d' % key[1]]
                             + ((p['weapons'][key[0]][
                                 'frags%d' % key[1]]) * 100))
+        for p in players:
+            players[p] /= max(1, d[p])
+            players[p] = round(players[p])
         return sorted(list(players.items()), key=lambda x: -x[1])
 
     def calc(self, what, days):
@@ -189,5 +242,6 @@ def make(sel):
     classes.append((plsingle(sel), "plsingle"))
     classes.append((plwinner(sel), "plwinner"))
     classes.append((plweapon(sel), "plweapon"))
+    classes.append((mvp(sel), "mvp"))
     for c in classes:
         caches[c[1]] = c[0]

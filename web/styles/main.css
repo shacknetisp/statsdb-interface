@@ -1,5 +1,9 @@
 .ago-title {
-    border-bottom: 1px dotted gray;
+    border-bottom: 1px dashed gray;
+}
+
+.explain {
+    border-bottom: 1px dashed gray;
 }
 
 .center {

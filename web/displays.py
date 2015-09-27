@@ -974,15 +974,13 @@ def ranks(sel):
             'fpm': 'Frags per Minute [Last 180 Days]',
             'games': 'Games [All Time]',
             'ffa': 'FFA Win Ratio [Last 180 Days]',
-            'ffasurv': 'FFA Survivor Win Ratio [Last 180 Days]',
-            'mvp': 'Team Game Win Ratio [Last 180 Days]'}[sel.pathid],
+            'ffasurv': 'FFA Survivor Win Ratio [Last 180 Days]'}[sel.pathid],
         number={'spm': 'SPM',
             'dpm': 'DPM',
             'fpm': 'FPM',
             'games': 'Games',
             'ffa': 'Wins/Losses',
             'ffasurv': 'Wins/Losses',
-            'mvp': 'Wins/Losses',
             }[sel.pathid],
         ranktext=ranktext, pages=page.make(
         sel.webpath, currentpage, len(ranks), listcount
