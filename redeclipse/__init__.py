@@ -3,6 +3,10 @@ defaultversion = ""
 from fnmatch import fnmatch
 import importlib
 cache = {}
+fcache = {
+    "mode": {},
+    "mut": {},
+    }
 functions = []
 
 
@@ -29,19 +33,24 @@ class sql_re_mode:
 
     numparams = 2
     name = "re_mode"
+    cache = {}
 
     def __init__(self, db):
         self.db = db
 
     def __call__(self, gameid, mode):
         try:
+            if (gameid, mode) in fcache["mode"]:
+                return fcache["mode"][(gameid, mode)]
             version = self.db.con.execute(
                 "SELECT version FROM game_servers WHERE game = %d" % (
                     gameid)).fetchone()[0]
-            return redeclipse(version).modes[mode]
+            fcache["mode"][(gameid, mode)] = redeclipse(version).modes[mode]
+            return fcache["mode"][(gameid, mode)]
         except:
             import traceback
             traceback.print_exc()
+            raise
 
 
 @functions.append
@@ -49,16 +58,21 @@ class sql_re_mut:
 
     numparams = 2
     name = "re_mut"
+    cache = {}
 
     def __init__(self, db):
         self.db = db
 
-    def __call__(self, gameid, mode):
+    def __call__(self, gameid, mut):
         try:
+            if (gameid, mut) in fcache["mut"]:
+                return fcache["mut"][(gameid, mut)]
             version = self.db.con.execute(
                 "SELECT version FROM game_servers WHERE game = %d" % (
                     gameid)).fetchone()[0]
-            return redeclipse(version).mutators[mode]
+            fcache["mut"][(gameid, mut)] = redeclipse(version).mutators[mut]
+            return fcache["mut"][(gameid, mut)]
         except:
             import traceback
             traceback.print_exc()
+            raise
