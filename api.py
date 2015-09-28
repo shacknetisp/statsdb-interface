@@ -22,6 +22,9 @@ paliases = {
     'mode': 'display/mode',
     'modes': 'display/modes',
 
+    'weapon': 'display/weapon',
+    'weapons': 'display/weapons',
+
     'ranks': 'display/ranks',
 }
 
