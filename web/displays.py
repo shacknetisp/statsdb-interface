@@ -759,6 +759,7 @@ def gmap(sel):
     ret = ""
     gs = dbselectors.MapSelector(sel)
     gamesel = dbselectors.GameSelector(sel)
+    gamesel.minimal = "basic"
     gamemap = gs.single(sel.pathid)
     if gamemap is None:
         ret = "<div class='center'><h2>No such Map.</h2></div>"
@@ -908,6 +909,7 @@ def mode(sel):
     ret = ""
     gs = dbselectors.ModeSelector(sel, True)
     gamesel = dbselectors.GameSelector(sel)
+    gamesel.minimal = "basic"
     mode = gs.single(sel.pathid)
     if mode is None:
         ret = "<div class='center'><h2>No such Mode.</h2></div>"
@@ -919,7 +921,6 @@ def mode(sel):
                 gid = mode["games"][-(gid + 1)]
             except IndexError:
                 break
-            gamesel.minimal = "basic"
             game = gamesel.single(gid)
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
