@@ -8,11 +8,14 @@ def page(sel,
     title="-",
     css="",
     ):
+        db = ""
+        if hasattr(sel, 'server'):
+            db = """
+            Time: %fs
+            """.strip() % (time.time() - sel.server.starttime)
         ret = open("web/base.html").read().format(
             content=content,
-            title=title, css=css, debuginfo="""
-            Time: %fs
-            """.strip() % (time.time() - sel.server.starttime))
+            title=title, css=css, debuginfo=db)
         return ret
 
 

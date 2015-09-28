@@ -18,7 +18,7 @@ def page(sel):
         "recent": [True],
         })
     games = gs.getdict(last=10)
-    for gid, game in list(games.items())[:10]:
+    for gid, game in sorted(list(games.items()), key=lambda x: -x[0]):
         recentgames += '<tr>'
         recentgames += tdlink("game", gid, "Game #%d" % gid)
         recentgames += tdlink("mode",

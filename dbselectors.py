@@ -334,7 +334,7 @@ class GameSelector(BaseSelector):
         if "recent" in self.qopt:
             ids = list(reversed(ids))[:self.server.cfgval("gamerecent")]
         if last:
-            ids = ids[:last]
+            ids = list(reversed(ids))[:last]
         ret = {}
         for gid in ids:
             v = self.single(gid, one)
