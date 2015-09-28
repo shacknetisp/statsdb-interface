@@ -1,25 +1,17 @@
 User-agent: *
-
 Disallow: /display/
-
 Disallow: /game/
 Disallow: /games/
 Disallow: /g/
-
 Disallow: /player/
 Disallow: /players/
 Disallow: /p/
-
 Disallow: /server/
 Disallow: /servers/
-
 Disallow: /map/
 Disallow: /maps/
-
 Disallow: /mode/
 Disallow: /modes/
-
 Disallow: /weapon/
 Disallow: /weapons/
-
 Disallow: /ranks/
