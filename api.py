@@ -74,9 +74,8 @@ def make(server, db, q, path):
     sel.db = db
     sel.qopt = qopt
     sel.webpath = path
-    for _ in range(2):
-        if paths[0] in paliases:
-            paths = paliases[paths[0]].split('/') + paths[1:]
+    if paths[0] in paliases:
+        paths = paliases[paths[0]].split('/') + paths[1:]
     if paths[0] == 'get':
         ret = {"error": "Invalid Query"}
         if not server.dbexists:
