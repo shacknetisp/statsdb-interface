@@ -100,6 +100,8 @@ def scorestr(game, score):
     """Display score as a str, as time or points depending on the game."""
     import timeutils
     if game["mode"] == modes["race"] and game["mutators"] & mutators["timed"]:
+        if score == 0:
+            return '-'
         return timeutils.durstr(score / 1000, dec=True, full=True)
     return str(score)
 
