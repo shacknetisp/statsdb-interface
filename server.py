@@ -103,7 +103,12 @@ class Server:
         thread = Thread(target=Server.do_http, args=(self, ))
         thread.setDaemon(True)
         thread.start()
-        print("Web server running.")
+        self.starttime = 0
+        with self.dblock:
+            with self.db:
+                api.make(self,
+                        self.db, {}, "/")
+        print("Created initial cache, server running.")
 
     def do_http(self):
         while True:
