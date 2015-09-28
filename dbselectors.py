@@ -524,7 +524,8 @@ class PlayerSelector(BaseSelector):
         if not self.server.dbexists:
             return 0
         return self.db.con.execute(
-            "SELECT DISTINCT count(handle) FROM game_players").fetchone()[0]
+            """SELECT DISTINCT count(handle) FROM game_players
+            WHERE handle != ''""").fetchone()[0]
 
 
 class WeaponSelector(BaseSelector):
