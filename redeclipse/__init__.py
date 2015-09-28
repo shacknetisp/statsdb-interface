@@ -7,6 +7,7 @@ fcache = {
     "mode": {},
     "mut": {},
     }
+vcache = {}
 functions = []
 
 
@@ -42,9 +43,13 @@ class sql_re_mode:
         try:
             if (gameid, mode) in fcache["mode"]:
                 return fcache["mode"][(gameid, mode)]
-            version = self.db.con.execute(
-                "SELECT version FROM game_servers WHERE game = %d" % (
-                    gameid)).fetchone()[0]
+            if gameid in vcache:
+                version = vcache[gameid]
+            else:
+                version = self.db.con.execute(
+                    "SELECT version FROM game_servers WHERE game = %d" % (
+                        gameid)).fetchone()[0]
+                vcache[gameid] = version
             fcache["mode"][(gameid, mode)] = redeclipse(version).modes[mode]
             return fcache["mode"][(gameid, mode)]
         except:
@@ -67,9 +72,13 @@ class sql_re_mut:
         try:
             if (gameid, mut) in fcache["mut"]:
                 return fcache["mut"][(gameid, mut)]
-            version = self.db.con.execute(
-                "SELECT version FROM game_servers WHERE game = %d" % (
-                    gameid)).fetchone()[0]
+            if gameid in vcache:
+                version = vcache[gameid]
+            else:
+                version = self.db.con.execute(
+                    "SELECT version FROM game_servers WHERE game = %d" % (
+                        gameid)).fetchone()[0]
+                vcache[gameid] = version
             fcache["mut"][(gameid, mut)] = redeclipse(version).mutators[mut]
             return fcache["mut"][(gameid, mut)]
         except:
