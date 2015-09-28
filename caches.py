@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import dbselectors
-import redeclipse
 import time
 caches = {}
 classes = []
