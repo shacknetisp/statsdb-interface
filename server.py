@@ -51,6 +51,7 @@ class httpd:
         + '...'))
         result = b""
         t = time.time()
+        self.server.starttime = t
         try:
             r = api.make(self.server,
                 self.server.db, urllib.parse.parse_qs(

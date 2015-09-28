@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import cgi
+import time
 
 
 def page(sel,
@@ -9,7 +10,9 @@ def page(sel,
     ):
         ret = open("web/base.html").read().format(
             content=content,
-            title=title, css=css)
+            title=title, css=css, debuginfo="""
+            Time: %fms
+            """.strip() % (time.time() - sel.server.starttime))
         return ret
 
 
