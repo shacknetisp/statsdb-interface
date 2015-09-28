@@ -20,24 +20,24 @@ def page(sel,
 
 
 def tdlink(t, i, d, e=True):
-    return '<td><a href="/display/%s/%s">%s</a></td>' % (t, str(i),
+    return '<td><a href="/%s/%s">%s</a></td>' % (t, str(i),
         cgi.escape(str(d)) if e else str(d))
 
 
 def alink(t, i, d, e=True):
-    return '<a href="/display/%s/%s">%s</a>' % (t, str(i),
+    return '<a href="/%s/%s">%s</a>' % (t, str(i),
         cgi.escape(str(d)) if e else str(d))
 
 
 def tdlinkp(t, i, d, e=True):
     if not str(i):
         return '<td>%s</td>' % cgi.escape(str(d))
-    return '<td><a href="/display/%s/%s">%s</a></td>' % (t, str(i),
+    return '<td><a href="/%s/%s">%s</a></td>' % (t, str(i),
         cgi.escape(str(d)) if e else str(d))
 
 
 def alinkp(t, i, d, e=True):
     if not str(i):
         return '%s' % cgi.escape(str(d))
-    return '<a href="/display/%s/%s">%s</a>' % (t, str(i),
+    return '<a href="/%s/%s">%s</a>' % (t, str(i),
         cgi.escape(str(d)) if e else str(d))

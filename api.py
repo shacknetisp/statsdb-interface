@@ -4,6 +4,27 @@ import time
 import dbselectors
 import web
 
+paliases = {
+    'player': 'display/player',
+    'players': 'display/player',
+    'p': 'display/player',
+
+    'game': 'display/game',
+    'games': 'display/game',
+    'g': 'display/game',
+
+    'server': 'display/server',
+    'servers': 'display/server',
+
+    'map': 'display/map',
+    'maps': 'display/maps',
+
+    'mode': 'display/mode',
+    'modes': 'display/mode',
+
+    'ranks': 'display/ranks',
+}
+
 
 def chunks(l, n):
     for i in range(0, len(l), n):
@@ -53,6 +74,8 @@ def make(server, db, q, path):
     sel.db = db
     sel.qopt = qopt
     sel.webpath = path
+    if paths[0] in paliases:
+        paths = paliases[paths[0]].split('/') + paths[1:]
     if paths[0] == 'get':
         ret = {"error": "Invalid Query"}
         if not server.dbexists:
@@ -104,5 +127,8 @@ def make(server, db, q, path):
     elif paths[0] == 'source':
         return sendout(('redirect',
         'https://github.com/shacknetisp/statsdb-interface'))
+    elif paths[0] == 'robots.txt':
+        return sendout(('text/plain', '200 OK',
+        open('web/robots.txt').read().encode()))
     return sendout((
         'text/html', '404 Not Found', web.err404.page(sel).encode()))
