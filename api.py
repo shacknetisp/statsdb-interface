@@ -6,21 +6,21 @@ import web
 
 paliases = {
     'player': 'display/player',
-    'players': 'display/player',
+    'players': 'display/players',
     'p': 'display/player',
 
     'game': 'display/game',
-    'games': 'display/game',
+    'games': 'display/games',
     'g': 'display/game',
 
     'server': 'display/server',
-    'servers': 'display/server',
+    'servers': 'display/servers',
 
     'map': 'display/map',
     'maps': 'display/maps',
 
     'mode': 'display/mode',
-    'modes': 'display/mode',
+    'modes': 'display/modes',
 
     'ranks': 'display/ranks',
 }
@@ -74,8 +74,9 @@ def make(server, db, q, path):
     sel.db = db
     sel.qopt = qopt
     sel.webpath = path
-    if paths[0] in paliases:
-        paths = paliases[paths[0]].split('/') + paths[1:]
+    for _ in range(2):
+        if paths[0] in paliases:
+            paths = paliases[paths[0]].split('/') + paths[1:]
     if paths[0] == 'get':
         ret = {"error": "Invalid Query"}
         if not server.dbexists:

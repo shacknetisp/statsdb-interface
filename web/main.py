@@ -100,7 +100,7 @@ def page(sel):
         }
     ret = """
     <h2>Recent Overview</h2>
-    <h5><a href="/display/players">Players</a></h5>
+    <h5><a href="/players">Players</a></h5>
     <h3>Last 7 Days</h3>
     <div class='display-table float-table'>
         <h5>Score/Frags</h5>
@@ -175,7 +175,7 @@ Sniper</span></td>
     <div style="clear: both;"></div>
     <h3>Last 30 Days</h3>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/spm" class="explain
+        <h5><a href="/ranks/spm" class="explain
         title="Score Per Minute">SPM</a></h5>
         <table>
             <tr>
@@ -186,7 +186,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/dpm" class="explain
+        <h5><a href="/ranks/dpm" class="explain
         title="Damage Per Minute">DPM</a></h5>
         <table>
             <tr>
@@ -197,7 +197,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a class="explain" href="/display/ranks/fpm"
+        <h5><a class="explain" href="/ranks/fpm"
         title="Frags Per Minute">FPM</a></h5>
         <table>
             <tr>
@@ -208,7 +208,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/games">Games</a></h5>
+        <h5><a href="/ranks/games">Games</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -220,7 +220,7 @@ Sniper</span></td>
     <div style="clear: both;"></div>
     <h3>Last 90 Days</h3>
     <div class='display-table float-table'>
-        <h5><a href="/display/maps">Maps</a></h5>
+        <h5><a href="/maps">Maps</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -230,7 +230,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/servers">Servers</a></h5>
+        <h5><a href="/servers">Servers</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -240,7 +240,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/weapons">Weapons</a></h5>
+        <h5><a href="/weapons">Weapons</a></h5>
         <table>
             <tr>
                 <td>Best DPM</td>
@@ -253,7 +253,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/ffa">FFA Win Ratio</a></h5>
+        <h5><a href="/ranks/ffa">FFA Win Ratio</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -263,7 +263,7 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/display/ranks/ffasurv">FFA Survivor Win Ratio</a></h5>
+        <h5><a href="/ranks/ffasurv">FFA Survivor Win Ratio</a></h5>
         <table>
             <tr>
                 <th>Name</th>
@@ -274,7 +274,7 @@ Sniper</span></td>
     </div>
     <div style="clear: both;"></div>
     <div class='display-table'>
-        <h5><a href="/display/games">Latest Games</a></h5>
+        <h5><a href="/games">Latest Games</a></h5>
         <table>
             <tr>
                 <th>ID</th>

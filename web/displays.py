@@ -82,7 +82,7 @@ def server(sel):
             {server[host]}:{server[port]}</a><br>
             {servergames} games recorded.<br>
             First Recorded: {fgtime} with
-            <a href="/display/game/{fgid}">Game #{fgid}</a>.<br>
+            <a href="/game/{fgid}">Game #{fgid}</a>.<br>
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 <table>
@@ -274,7 +274,7 @@ def game(sel):
             Duration: {duration}<br>
             Played: {agohtml}<br>
             Server: <a
-            href="/display/server/{server[handle]}">{server[desc]}</a><br>
+            href="/server/{server[handle]}">{server[desc]}</a><br>
             {teamtable}
             <div class='display-table'>
                 <h3>Players</h3>
@@ -441,9 +441,9 @@ def player(sel):
                 recentweapons += tableweapon(weapon, totalwielded)
         gs = dbselectors.GameSelector(sel)
         gs.minimal = "basic"
-        firstago = '<a href="/display/game/%d">%s</a>' % (min(player["games"]),
+        firstago = '<a href="/game/%d">%s</a>' % (min(player["games"]),
             timeutils.agohtml(gs.single(min(player["games"]))["time"]))
-        lastago = '<a href="/display/game/%d">%s</a>' % (max(player["games"]),
+        lastago = '<a href="/game/%d">%s</a>' % (max(player["games"]),
             timeutils.agohtml(gs.single(max(player["games"]))["time"]))
         try:
             dpm = "%d [Recent: %d]" % (round(player["alltime"]["damage"]
@@ -552,7 +552,7 @@ def playergames(sel):
             recentgames += '</tr>'
         ret += """
         <div class="center">
-            <h2><a href="/display/player/{player[handle]}">
+            <h2><a href="/player/{player[handle]}">
             {player[handle]}</a>: Games</h2>
             <div class='display-table'>
                 <table>
