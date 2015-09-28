@@ -11,7 +11,7 @@ def page(sel,
         ret = open("web/base.html").read().format(
             content=content,
             title=title, css=css, debuginfo="""
-            Time: %fms
+            Time: %fs
             """.strip() % (time.time() - sel.server.starttime))
         return ret
 
