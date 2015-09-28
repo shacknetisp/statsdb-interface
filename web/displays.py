@@ -706,9 +706,10 @@ def players(sel):
     ret = ""
     gs = dbselectors.GameSelector(sel)
     s = dbselectors.PlayerSelector(sel)
+    s.minimal = "basic"
     players = s.getdict()
     playertable = ""
-    currentpage = page.calc(sel, len(players), listcount)
+    currentpage = page.calc(sel, s.numplayers(), listcount)
     for player in sorted(players, key=lambda x: -players[x]["games"][-1])[
         currentpage:currentpage + listcount]:
         player = players[player]
@@ -746,7 +747,7 @@ def players(sel):
         </div>
     </div>
     """.format(playertable=playertable, pages=page.make(
-        sel.webpath, currentpage, len(players), listcount
+        sel.webpath, currentpage, s.numplayers(), listcount
         ))
     return base.page(sel, ret, title="Players")
 displays["players"] = players

@@ -318,7 +318,7 @@ class GameSelector(BaseSelector):
                 ret['weapons'][weapon] = w
         return ret
 
-    def getdict(self, one=False):
+    def getdict(self, one=False, last=None):
         if self.pathid is not None:
             return self.single(self.pathid)
         f = self.makefilters(where=False)
@@ -333,6 +333,8 @@ class GameSelector(BaseSelector):
             ids = []
         if "recent" in self.qopt:
             ids = list(reversed(ids))[:self.server.cfgval("gamerecent")]
+        if last:
+            ids = ids[:last]
         ret = {}
         for gid in ids:
             v = self.single(gid, one)
@@ -362,6 +364,7 @@ class PlayerSelector(BaseSelector):
         ]
 
     def single(self, handle, one=True):
+        minimal = self.minimal if hasattr(self, 'minimal') else None
         row = self.db.con.execute(
             """SELECT * FROM game_players
             WHERE handle = ?
@@ -379,6 +382,8 @@ class PlayerSelector(BaseSelector):
         self.db.con.execute(
             """SELECT game FROM game_players
             WHERE handle = ?""", (handle,))]
+        if minimal == "basic":
+            return ret
         for gid in list(reversed(ret["games"]))[
             :self.server.cfgval("playerrecent")]:
             gs = GameSelector(self)
@@ -514,6 +519,12 @@ class PlayerSelector(BaseSelector):
             if v is not None:
                 ret[gid] = v
         return ret
+
+    def numplayers(self):
+        if not self.server.dbexists:
+            return 0
+        return self.db.con.execute(
+            "SELECT DISTINCT count(handle) FROM game_players").fetchone()[0]
 
 
 class WeaponSelector(BaseSelector):
