@@ -326,15 +326,15 @@ class GameSelector(BaseSelector):
             ids = [r[0] for r in
             self.db.con.execute(
                 """SELECT id FROM games
-                WHERE %s AND %s""" % (self.gamefilter
+                WHERE %s AND %s ORDER BY id DESC""" % (self.gamefilter
                 if hasattr(self, 'gamefilter') else '1 = 1',
                 f[0] if f[0] else "1 = 1"), f[1])]
         else:
             ids = []
         if "recent" in self.qopt:
-            ids = list(reversed(ids))[:self.server.cfgval("gamerecent")]
+            ids = ids[:self.server.cfgval("gamerecent")]
         if last:
-            ids = list(reversed(ids))[:last]
+            ids = ids[:last]
         ret = {}
         for gid in ids:
             v = self.single(gid, one)
@@ -524,7 +524,7 @@ class PlayerSelector(BaseSelector):
         if not self.server.dbexists:
             return 0
         return self.db.con.execute(
-            """SELECT DISTINCT count(handle) FROM game_players
+            """SELECT count(DISTINCT handle) FROM game_players
             WHERE length(handle)""").fetchone()[0]
 
 
