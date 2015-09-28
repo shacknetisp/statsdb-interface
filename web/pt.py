@@ -1,29 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import dbselectors
-import redeclipse
 from .base import tdlink
-
-
-def game(key, sel, days):
-    ret = ""
-    players = {}
-    gs = dbselectors.GameSelector(sel)
-    gs.gamefilter = """
-    (%d - time) < (60 * 60 * 24 * %d)
-    AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
-    for game in list(gs.getdict().values()):
-        for player in game["players"]:
-            if player["handle"]:
-                if player["handle"] not in players:
-                    players[player["handle"]] = 0
-                players[player["handle"]] += key(player)
-    for player in sorted(list(players.items()), key=lambda x: -x[1])[:5]:
-        ret += "<tr>"
-        ret += tdlink("player", player[0], player[0])
-        ret += "<td>%d</td>" % player[1]
-        ret += "</tr>"
-    return ret
 
 
 def gamelist(l, num):

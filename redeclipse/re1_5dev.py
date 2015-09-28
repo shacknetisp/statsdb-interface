@@ -24,6 +24,10 @@ modes = {
     "race": 6,
     }
 
+cmodestr = {}
+for k, v in list(modes.items()):
+    cmodestr[v] = k
+
 
 def tomuts(l, a=0):
     ret = OrderedDict()
@@ -119,7 +123,3 @@ def teamimg(t, c=24):
     title="%s" src="%s" alt="%s">''' % (c, t,
         "/images/teams/%s.png" % t,
         t)
-
-
-def versions():
-    return "version GLOB '1.5.*'"

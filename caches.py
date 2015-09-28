@@ -39,9 +39,9 @@ class spm(base):
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
             AND uniqueplayers >= 2
-            AND mode != %d""" % (time.time(), days, redeclipse.modes["race"])
+            AND mode != re_mode(id, 'race')""" % (time.time(), days)
         else:
-            gs.gamefilter = """mode != %d""" % (redeclipse.modes["race"])
+            gs.gamefilter = """mode != re_mode(id, 'race')"""
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
@@ -78,12 +78,12 @@ class plsingle(base):
             gs.gamefilter = """
             (%d - time) < (60 * 60 * 24 * %d)
             AND uniqueplayers >= %d
-            AND mode != %d""" % (time.time(), days,
-                key[0], redeclipse.modes["race"] if key[0] else 0)
+            AND %s""" % (time.time(), days,
+                key[0], "mode != re_mode(id, 'race')" if key[0] else "1")
         else:
-            gs.gamefilter = """uniqueplayers >= %d AND mode != %d""" % (
+            gs.gamefilter = """uniqueplayers >= %d AND %s""" % (
                 key[0],
-                redeclipse.modes["race"] if key[0] else 0)
+                "mode != re_mode(id, 'race')" if key[0] else "1")
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
@@ -109,26 +109,18 @@ class mvp(base):
         gs.gamefilter = """
         ((%d - time) < (60 * 60 * 24 * %d) OR %d = 0)
         AND uniqueplayers >= %d
-        AND mode != %d AND %s
+        AND mode != re_mode(id, 'race') AND %s
         """ % (time.time(),
             days, days,
             4,
-            redeclipse.modes["race"],
-            {'affmvp': '''(NOT (mutators & %d)
-            OR (mutators & %d))
-            AND mode in (%d, %d)''' % (
-                redeclipse.mutators['survivor'],
-                redeclipse.mutators['duel'],
-                redeclipse.modes['ctf'],
-                redeclipse.modes['bb']),
-            'dmmvp': '''(NOT (mutators & %d)
-            OR (mutators & %d)
-            OR (mutators & %d))
-            AND mode = %d''' % (
-                redeclipse.mutators['ffa'],
-                redeclipse.mutators['survivor'],
-                redeclipse.mutators['duel'],
-                redeclipse.modes['dm'])}[key])
+            {'affmvp': '''(NOT (mutators & re_mut(id, 'survivor'))
+            OR (mutators & re_mut(id, 'duel')))
+            AND mode in (re_mode(id, 'ctf'), re_mode(id, 'bb'))''',
+
+            'dmmvp': '''(NOT (mutators & re_mut(id, 'ffa'))
+            OR (mutators & re_mut(id, 'duel'))
+            OR (mutators & re_mut(id, 'survivor')))
+            AND mode = re_mode(id, 'dm')'''}[key])
         for game in list(gs.getdict().values()):
             for player in game["players"]:
                 if player["handle"]:
@@ -151,28 +143,20 @@ class plwinner(base):
         gs.gamefilter = """
         ((%d - time) < (60 * 60 * 24 * %d) OR %d = 0)
         AND uniqueplayers >= %d
-        AND mode != %d AND %s
+        AND mode != re_mode(id, 'race') AND %s
         """ % (time.time(),
             days, days,
             {'ffa': 2,
             'ffasurv': 2,
             'mvp': 4}[key],
-            redeclipse.modes["race"],
-            {'ffa': '(mutators & %d)' % redeclipse.mutators['ffa'],
-            'mvp': '''(NOT (mutators & %d)
-            OR (mutators & %d)
-            OR (mutators & %d))
-            AND mode in (%d, %d, %d, %d)''' % (
-                redeclipse.mutators['ffa'],
-                redeclipse.mutators['survivor'],
-                redeclipse.mutators['duel'],
-                redeclipse.modes['dm'],
-                redeclipse.modes['ctf'],
-                redeclipse.modes['dac'],
-                redeclipse.modes['bb']),
-            'ffasurv': '''(mutators & %d)
-            AND (mutators & %d)''' % (redeclipse.mutators['ffa'],
-                redeclipse.mutators['survivor'])}[key])
+            {'ffa': "(mutators & re_mut(id, 'ffa'))",
+            'mvp': '''(NOT (mutators & re_mut(id, 'ffa'))
+            OR (mutators & re_mut(id, 'survivor'))
+            OR (mutators & re_mut(id, 'duel')))
+            AND mode in (re_mut(id, 'dm'), re_mut(id, 'ctf'),
+                re_mut(id, 'dac'), re_mut(id, 'bb'))''',
+            'ffasurv': '''(mutators & re_mut(id, 'ffa'))
+            AND (mutators & re_mut(id, 'survivor'))'''}[key])
         for game in list(gs.getdict().values()):
             best = sorted(
                 game["players"], key=lambda x: -x["score"])[0]["score"]

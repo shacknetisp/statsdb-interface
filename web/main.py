@@ -3,7 +3,7 @@ from . import base
 import api
 import dbselectors
 import caches
-import redeclipse
+from redeclipse import redeclipse
 from .base import tdlink, alink
 import timeutils
 from . import pt
@@ -23,9 +23,9 @@ def page(sel):
         recentgames += tdlink("game", gid, "Game #%d" % gid)
         recentgames += tdlink("mode",
             game["mode"],
-            redeclipse.modeimg(game["mode"]), e=False)
+            redeclipse(game).modeimg(game["mode"]), e=False)
         recentgames += "<td>%s</td>" % (
-            redeclipse.mutslist(game, True) or '-')
+            redeclipse(game).mutslist(game, True) or '-')
         ss = dbselectors.ServerSelector()
         ss.copyfrom(sel)
         desc = ss.single(game["server"])["desc"]
@@ -41,7 +41,7 @@ def page(sel):
     ws.pathid = None
 
     weapons = {}
-    for name in redeclipse.loadoutweaponlist:
+    for name in redeclipse().loadoutweaponlist:
         if sel.server.dbexists:
             weapon = ws.single(name)["recent"]
             weapons[name] = weapon
@@ -292,11 +292,12 @@ Sniper</span></td>
     """.format(recentgames=recentgames,
         ptcounters=ptcounters,
         topweapon="\n".join(topweapons),
-        weapdpm="%s %s [%d DPM]" % (redeclipse.weaponimg(topweapons['dpm'][0]),
+        weapdpm="%s %s [%d DPM]" % (
+            redeclipse().weaponimg(topweapons['dpm'][0]),
             alink('weapon', topweapons['dpm'][0], topweapons['dpm'][0]),
             topweapons['dpm'][1]),
         weapwield="%s %s [%d%%]" % (
-            redeclipse.weaponimg(topweapons['wield'][0]),
+            redeclipse().weaponimg(topweapons['wield'][0]),
             alink('weapon', topweapons['wield'][0], topweapons['wield'][0]),
             topweapons['wield'][1]
                 / max(topweapons['totalwielded'], 1) * 100))

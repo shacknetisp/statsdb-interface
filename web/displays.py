@@ -3,7 +3,7 @@ from . import base
 from .base import tdlink, alink, tdlinkp, alinkp
 from . import page
 import dbselectors
-import redeclipse
+from redeclipse import redeclipse
 import cgi
 import timeutils
 import caches
@@ -15,7 +15,7 @@ def tableweapon(weapon, totalwielded):
     weapons = ""
     weapons += "<tr>"
     weapons += "%s" % tdlink("weapon", weap,
-        '%s %s' % (redeclipse.weaponimg(weap), cgi.escape(weap)),
+        '%s %s' % (redeclipse().weaponimg(weap), cgi.escape(weap)),
         e=False)
     weapons += "<td>%d%%</td>" % (
         weapon["timeloadout"] / max(1, totalwielded) * 100)
@@ -64,9 +64,9 @@ def server(sel):
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
                 game["mode"],
-                redeclipse.modeimg(game["mode"]), e=False)
+                redeclipse().modeimg(game["mode"]), e=False)
             recentgames += "<td>%s</td>" % (
-                redeclipse.mutslist(game, True) or '-')
+                redeclipse().mutslist(game, True) or '-')
             recentgames += tdlink('map', game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
                 game["timeplayed"]))
@@ -126,31 +126,31 @@ def game(sel):
             for team in sorted(sorted(game["teams"],
                 key=lambda x: game["teams"][x]["score"] * (
                     1 if
-                    game["mode"] == redeclipse.modes["race"]
-                    and (game["mutators"] & redeclipse.mutators["timed"])
+                    game["mode"] == redeclipse(game).modes["race"]
+                    and (game["mutators"] & redeclipse(game).mutators["timed"])
                     else -1
                     )), key=lambda x: game["teams"][x]["score"] == 0):
                 team = game["teams"][team]
                 teamlist[team["team"]] = team
                 teamsstr += "<tr>"
                 teamsstr += "<td>%s %s</td>" % (
-                    redeclipse.teamimg(team["team"]),
+                    redeclipse(game).teamimg(team["team"]),
                     cgi.escape(team["name"]))
-                teamsstr += "<td>%s</td>" % (redeclipse.scorestr(game,
+                teamsstr += "<td>%s</td>" % (redeclipse(game).scorestr(game,
                     team["score"]))
                 teamsstr += "</tr>"
         playersstr = ""
         for player in game["players"]:
             playersstr += "<tr>"
             playersstr += tdlinkp("player", player["handle"], player["name"])
-            playersstr += "<td>%s</td>" % (redeclipse.scorestr(game,
+            playersstr += "<td>%s</td>" % (redeclipse(game).scorestr(game,
                 player["score"]))
             playersstr += tdlinkp("player", player["handle"], player["handle"])
             playersstr += "<td>%s</td>" % (
                 timeutils.durstr(player["timealive"]))
             playersstr += "<td>%d</td>" % player["frags"]
             playersstr += "<td>%d</td>" % player["deaths"]
-            if game["mode"] != redeclipse.modes["race"]:
+            if game["mode"] != redeclipse(game).modes["race"]:
                 playersstr += "<td>%d</td>" % (player["score"] /
                     (player["timealive"] / 60))
                 playersstr += "<td>%d</td>" % (player["damage"] /
@@ -263,7 +263,7 @@ def game(sel):
         totalwielded = sum([w['timewielded']
             for w in list(game['weapons'].values())
             if w['timewielded'] is not None])
-        for weap in redeclipse.weaponlist:
+        for weap in redeclipse().weaponlist:
             weapon = game['weapons'][weap]
             if weapon['timeloadout']:
                 weapontext += tableweapon(weapon, totalwielded)
@@ -306,8 +306,9 @@ def game(sel):
         </div>
         """.format(
             modestr="%s" % (alink("mode", game["mode"],
-                redeclipse.modeimg(game["mode"], 32), e=False)),
-            mutsstr=("Mutators: %s<br>" % redeclipse.mutslist(game, True, True))
+                redeclipse(game).modeimg(game["mode"], 32), e=False)),
+            mutsstr=("Mutators: %s<br>" % redeclipse(game).mutslist(
+                game, True, True))
             if game['mutators'] else '',
             mapstr=alink("map", game["map"], game["map"]),
             agohtml=timeutils.agohtml(game["time"]),
@@ -319,7 +320,7 @@ def game(sel):
             <th>SPM</th>
             <th>DPM</th>
             <th>FPM</th>
-            """ if game["mode"] != redeclipse.modes["race"] else "",
+            """ if game["mode"] != redeclipse(game).modes["race"] else "",
             teamtable=("""
             <div class='display-table small-table'>
                 <h3>Teams</h3>
@@ -356,8 +357,8 @@ def games(sel):
         gamestext += tdlink("game", gid, "Game #%d" % gid)
         gamestext += tdlink("mode",
             game["mode"],
-            redeclipse.modeimg(game["mode"]), e=False)
-        gamestext += "<td>%s</td>" % (redeclipse.mutslist(
+            redeclipse(game).modeimg(game["mode"]), e=False)
+        gamestext += "<td>%s</td>" % (redeclipse(game).mutslist(
             game, True
             ) or '-')
         ss = dbselectors.ServerSelector()
@@ -412,15 +413,15 @@ def player(sel):
                     "Game #%d" % gid)
                 recentgames += tdlink("mode",
                     game["mode"],
-                    redeclipse.modeimg(game["mode"]), e=False)
+                    redeclipse(game).modeimg(game["mode"]), e=False)
                 recentgames += "<td>%s</td>" % (
-                    redeclipse.mutslist(
+                    redeclipse(game).mutslist(
                     game, True
                     ) or '-')
                 recentgames += tdlink("map", game["map"], game["map"])
                 recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
                 recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
-                recentgames += '<td>%s</td>' % redeclipse.scorestr(game,
+                recentgames += '<td>%s</td>' % redeclipse(game).scorestr(game,
                     entry["score"])
                 recentgames += '<td>%d</td>' % entry["frags"]
                 recentgames += '<td>%d</td>' % entry["deaths"]
@@ -434,7 +435,7 @@ def player(sel):
         totalwielded = sum([w['timewielded']
             for w in list(player['recent']['weapons'].values())
             if w['timewielded'] is not None])
-        for weap in redeclipse.weaponlist:
+        for weap in redeclipse().weaponlist:
             weapon = player['recent']['weapons'][weap]
             if weapon['timeloadout'] is not None:
                 recentweapons += tableweapon(weapon, totalwielded)
@@ -583,7 +584,7 @@ def weapon_disp(sel):
     totalwielded = sum([w['alltime']['timewielded']
         for w in list(gs.getdict().values())])
     weapon = gs.single(sel.pathid)["alltime"]
-    if weapon is None or sel.pathid not in redeclipse.weaponlist:
+    if weapon is None or sel.pathid not in redeclipse().weaponlist:
         ret = "<div class='center'><h2>No such weapon.</h2></div>"
     else:
         weapons = ""
@@ -620,7 +621,7 @@ def weapons(sel):
     weapons = ""
     totalwielded = sum([w['alltime']['timewielded']
         for w in list(gs.getdict().values())])
-    for name in redeclipse.weaponlist:
+    for name in redeclipse().weaponlist:
         weapon = gs.single(name)["alltime"]
         try:
             weapons += tableweapon(weapon, totalwielded)
@@ -772,8 +773,8 @@ def gmap(sel):
             recentgames += tdlink("game", gid, "Game #%d" % gid)
             recentgames += tdlink("mode",
                 game["mode"],
-                redeclipse.modeimg(game["mode"]), e=False)
-            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+                redeclipse(game).modeimg(game["mode"]), e=False)
+            recentgames += "<td>%s</td>" % (redeclipse(game).mutslist(
                 game, True
                 ) or '-')
             recentgames += '<td>%s</td>' % timeutils.durstr(round(
@@ -920,7 +921,7 @@ def mode(sel):
             game = gamesel.single(gid)
             recentgames += '<tr>'
             recentgames += tdlink("game", gid, "Game #%d" % gid)
-            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+            recentgames += "<td>%s</td>" % (redeclipse(game).mutslist(
                 game, True
                 ) or '-')
             recentgames += tdlink("map", game["map"], game["map"])
@@ -947,7 +948,7 @@ def mode(sel):
             </div>
         </div>
         """.format(
-            modeimg=redeclipse.modeimg(mode["id"], 32),
+            modeimg=redeclipse().modeimg(mode["id"], 32),
             mode=mode,
             recentgames=recentgames, pages=page.make(
             sel.webpath, currentpage, len(mode['games']), listcount

@@ -3,6 +3,7 @@ import sqlite3
 import os
 import shutil
 import time
+import redeclipse
 
 
 class DB:
@@ -12,6 +13,8 @@ class DB:
 
     def __enter__(self):
         self.con = sqlite3.connect(self.path)
+        for f in redeclipse.functions:
+            self.con.create_function(f.name, f.numparams, f(self))
         self.con.row_factory = sqlite3.Row
         return self
 

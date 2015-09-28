@@ -13,5 +13,9 @@
 "playerrecent": 5,
 "playerrecentavg": 100,
 
-"weaponrecentavg": 1000
+"weaponrecentavg": 1000,
+
+"defaultversion": "1.5.4",
+
+"versions": "version GLOB '1.5.*' OR version GLOB '1.6.*'"
 }

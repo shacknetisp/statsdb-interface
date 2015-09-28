@@ -15,6 +15,7 @@ import traceback
 import web
 import dbselectors
 import caches
+import redeclipse
 
 if len(sys.argv) < 2:
     print("Usage: python3 server.py <master server home directory>")
@@ -34,6 +35,8 @@ def cfgval(key):
     if key in config:
         return config[key]
     return defaultconfig[key]
+
+redeclipse.defaultversion = cfgval("defaultversion")
 
 
 class httpd:
