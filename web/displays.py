@@ -440,6 +440,7 @@ def player(sel):
             if weapon['timeloadout'] is not None:
                 recentweapons += tableweapon(weapon, totalwielded)
         gs = dbselectors.GameSelector(sel)
+        gs.minimal = "basic"
         firstago = '<a href="/display/game/%d">%s</a>' % (min(player["games"]),
             timeutils.agohtml(gs.single(min(player["games"]))["time"]))
         lastago = '<a href="/display/game/%d">%s</a>' % (max(player["games"]),

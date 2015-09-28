@@ -414,7 +414,7 @@ class PlayerSelector(BaseSelector):
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
             WHERE game IN (SELECT id FROM games
-            WHERE mode != mode != re_mode(id, 'race'))
+            WHERE mode != re_mode(id, 'race'))
             AND handle = ?
             AND %s""" % (x,
                 self.vlimit()), (handle,)
