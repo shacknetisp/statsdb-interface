@@ -10,6 +10,19 @@
     text-align: center;
 }
 
+.colcontainer {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.leftcol {
+    float: left;
+}
+
+.rightcol {
+    float: right;
+}
+
 .display-table {
     margin: 4px 12px 4px 0px;
 }

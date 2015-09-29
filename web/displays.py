@@ -428,8 +428,10 @@ def player(sel):
                 recentgames += '</tr>'
         recentweapons = ""
         try:
-            fratio = "%.2f" % (player["recent"]["frags"] /
-                max(1, player["recent"]["deaths"]))
+            fratio = "%.2f [%d / %d]" % ((player["recent"]["frags"] /
+                max(1, player["recent"]["deaths"])),
+                    player["recent"]["frags"],
+                    player["recent"]["deaths"])
         except TypeError:
             fratio = "-"
         totalwielded = sum([w['timewielded']
@@ -467,9 +469,17 @@ def player(sel):
         <div class="center">
             <h2>{player[name]}</h2>
             <h3>{player[handle]}</h3>
+            <div class="colcontainer">
+            <div class="leftcol">
             First appeared: {firstago}<br>
             Last appeared: {lastago}<br>
+            </div>
+            <div class="rightcol">
             Most played map: {topmap}<br>
+            Playing time: {timeplayed}<br>
+            </div>
+            </div>
+            <div style="clear: both;"></div>
             <h3>Recent Games</h3>
             Frag Ratio: {fratio}<br>
             DPM: {dpm}<br>
@@ -507,7 +517,9 @@ def player(sel):
             fratio=fratio,
             recentweapons=recentweapons,
             tableweaponlabels=tableweaponlabels(),
-            dpm=dpm, topmap=topmap)
+            dpm=dpm, topmap=topmap, timeplayed=timeutils.durstr(
+                player["alltime"]["timeactive"], full=True
+                ))
     return base.page(sel, ret, title="%s" % sel.pathid)
 displays["player"] = player
 

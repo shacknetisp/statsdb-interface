@@ -445,7 +445,7 @@ class PlayerSelector(BaseSelector):
         if bombings:
             ret['bombings'] = bombings
 
-        for t in ['frags', 'deaths', 'timealive']:
+        for t in ['frags', 'deaths', 'timealive', 'timeactive']:
             recent[t] = recentsum(t)
             alltime[t] = allsum(t)
 

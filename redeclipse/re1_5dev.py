@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import cgi
 from collections import OrderedDict
-# Red Eclipse settings that may change in later releases.
+# Red Eclipse settings that may change.
+#Version 1.5.4+
 
 # Weapon Lists
 loadoutweaponlist = ["pistol", "sword", "shotgun",
@@ -46,6 +47,8 @@ gspmuts = {
     modes["bb"]: ["hold", "basket", "attack"],
     modes["race"]: ["marathon", "timed", "gauntlet"],
     }
+
+#Create Mutator Lists
 gspnum = basemuts.index("gsp") - 1
 basemuts = tomuts(basemuts)
 del basemuts["gsp"]
