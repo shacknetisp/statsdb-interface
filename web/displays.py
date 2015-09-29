@@ -21,12 +21,16 @@ def tableweapon(weapon, totalwielded):
         weapon["timeloadout"] / max(1, totalwielded) * 100)
     weapons += "<td>%d%%</td>" % (
         weapon["timewielded"] / max(1, totalwielded) * 100)
-    weapons += "<td>%d - %d</td>" % (
+    weapons += "<td><span class='explain' title='%d %d'>%d</span></td>" % (
         weapon["damage1"] / (max(weapon["timewielded"], 1) / 60),
-        weapon["damage2"] / (max(weapon["timewielded"], 1) / 60))
-    weapons += "<td>%d - %d</td>" % (
+        weapon["damage2"] / (max(weapon["timewielded"], 1) / 60),
+        (weapon["damage1"] + weapon["damage2"]) / (
+            max(weapon["timewielded"], 1) / 60))
+    weapons += "<td><span class='explain' title='%d %d'>%d</span></td>" % (
         weapon["frags1"] / (max(weapon["timewielded"], 1) / 60),
-        weapon["frags2"] / (max(weapon["timewielded"], 1) / 60))
+        weapon["frags2"] / (max(weapon["timewielded"], 1) / 60),
+        (weapon["frags1"] + weapon["frags2"]) / (
+            max(weapon["timewielded"], 1) / 60),)
     weapons += "</tr>"
     return weapons
 

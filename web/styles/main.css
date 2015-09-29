@@ -4,6 +4,7 @@
 
 .explain {
     border-bottom: 1px dashed gray;
+    min-width: 4px;
 }
 
 .center {
