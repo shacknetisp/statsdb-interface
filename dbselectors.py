@@ -123,7 +123,7 @@ class ServerSelector(BaseSelector):
         ret["games"] = [r[0] for r in
         self.db.con.execute(
             """SELECT game FROM game_servers
-            WHERE handle = ?""", (handle,))]
+            WHERE handle = ? AND game IN (SELECT id FROM games)""", (handle,))]
         for gid in list(reversed(ret["games"]))[
             :self.server.cfgval("serverrecent")]:
             gs = GameSelector(self)
@@ -381,7 +381,8 @@ class PlayerSelector(BaseSelector):
         ret["games"] = [r[0] for r in
         self.db.con.execute(
             """SELECT game FROM game_players
-            WHERE handle = ?""", (handle,))]
+            WHERE handle = ?
+            AND game in (SELECT id FROM games)""", (handle,))]
         if minimal == "basic":
             return ret
         for gid in list(reversed(ret["games"]))[
@@ -428,7 +429,8 @@ class PlayerSelector(BaseSelector):
 
         captures = []
         for capture_row in self.db.con.execute(
-            "SELECT * FROM game_captures WHERE playerhandle = ?", (handle,)):
+            """SELECT * FROM game_captures WHERE playerhandle = ?
+            AND game in (SELECT id FROM games)""", (handle,)):
                 capture = {}
                 dictfromrow(capture, capture_row, ["game",
                     None, None, "capturing", "captured"])
@@ -437,7 +439,8 @@ class PlayerSelector(BaseSelector):
             ret['captures'] = captures
         bombings = []
         for bombing_row in self.db.con.execute(
-            "SELECT * FROM game_bombings WHERE playerhandle = ?", (handle,)):
+            """SELECT * FROM game_bombings WHERE playerhandle = ?
+            AND game in (SELECT id FROM games)""", (handle,)):
                 bombing = {}
                 dictfromrow(bombing, bombing_row, ["game",
                     None, None, "bombing", "bombed"])
@@ -508,7 +511,9 @@ class PlayerSelector(BaseSelector):
         ids = [r[0] for r in
         self.db.con.execute(
             """SELECT DISTINCT handle FROM game_players
-            %s""" % f[0], f[1]) if r[0]]
+            %s
+            %s game in (SELECT id FROM games)""" % (f[0],
+                'AND' if f[0] else 'WHERE'), f[1]) if r[0]]
         ret = {}
         for gid in ids:
             v = self.single(gid, False)
@@ -525,7 +530,8 @@ class PlayerSelector(BaseSelector):
             return 0
         return self.db.con.execute(
             """SELECT count(DISTINCT handle) FROM game_players
-            WHERE length(handle)""").fetchone()[0]
+            WHERE length(handle)
+            AND game in (SELECT id FROM games)""").fetchone()[0]
 
 
 class WeaponSelector(BaseSelector):
