@@ -84,13 +84,6 @@ def mutslist(game, html=False, short=False):
         return "<br>".join(htmll)
     return muts
 
-# SQL Filters, [<is not>, <is>]
-m_laptime_sql = ("mode != %d OR (mutators & %d) = 0" % (modes["race"],
-    mutators["timed"]),
-    "mode = %d AND (mutators & %d) != 0" % (modes["race"],
-    mutators["timed"]))
-m_race_sql = ("mode != %d" % modes["race"],
-    "mode = 6 %d" % modes["race"])
 
 modestr = ["Demo", "Editing", "Deathmatch",
     "CTF", "DAC", "Bomber Ball", "Race"]
