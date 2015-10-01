@@ -219,7 +219,8 @@ class GameSelector(BaseSelector):
                     player = {}
                     dictfromrow(player, player_row, [None,
                         "name", "handle",
-                        "score", "timealive", "frags", "deaths", "id"])
+                        "score", "timealive", "frags", "deaths", "id",
+                        "timeactive"])
                     if self.minimal == 'basicplayer2':
                         player["damage"] = self.db.con.execute(
                             """SELECT (sum(damage1) + sum(damage2))
@@ -274,7 +275,8 @@ class GameSelector(BaseSelector):
                     }
                 dictfromrow(player, player_row, [None,
                     "name", "handle",
-                    "score", "timealive", "frags", "deaths", "id"])
+                    "score", "timealive", "frags", "deaths", "id",
+                    "timeactive"])
 
                 player["damage"] = self.db.con.execute(
                         """SELECT (sum(damage1) + sum(damage2))
@@ -406,18 +408,21 @@ class PlayerSelector(BaseSelector):
             """SELECT sum(%s) FROM
             (SELECT * FROM game_players
             WHERE game IN (SELECT id FROM games
-            WHERE mode != re_mode(id, 'race'))
+            %s)
             AND %s
             AND handle = ?
             ORDER by ROWID DESC LIMIT %d)""" % (x,
+                "WHERE mode != re_mode(id, 'race')" if x not in
+                ['timeactive'] else "",
                 self.vlimit(),
                 self.server.cfgval("playerrecentavg")), (handle,)).fetchone()[0]
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_players
             WHERE game IN (SELECT id FROM games
-            WHERE mode != re_mode(id, 'race'))
+            %s)
             AND handle = ?
-            AND %s""" % (x,
+            AND %s""" % (x, "WHERE mode != re_mode(id, 'race')" if x not in
+            ['timeactive'] else "",
                 self.vlimit()), (handle,)
             ).fetchone()[0]
         alltime = {
