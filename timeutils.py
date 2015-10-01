@@ -8,7 +8,7 @@ def utcepoch():
     return dt.timestamp()
 
 
-def durstr(dur, skip="", dec=False, full=False):
+def durstr(dur, skip="", dec=False, full=False, skiplow=True):
     """Return dur as a formatted string."""
     firstdur = dur
     ret = ""
@@ -18,15 +18,19 @@ def durstr(dur, skip="", dec=False, full=False):
         (60 * 60 * 24 * 7, 'w', 52 * 2),
         (60 * 60 * 24, 'd', 7),
         (60 * 60, 'h', 24),
-        (60, 'm ' if full else 'm', 60),
-        (1, 's ' if full else 's', 60),
+        (60, 'm', 60),
+        (1, 's', 60),
         ]:
             if style[1] in skip:
                 continue
+            if full:
+                style = (style[0], style[1].strip() + (' ' if full else ''),
+                    style[2])
             last = style
             amount = dur // style[0]
             extra = dur % style[0]
-            if style[2] and firstdur / style[0] > style[2] and not dec:
+            if (style[2] and firstdur / style[0] > style[2]
+                and not dec and skiplow):
                 break
             if dec and style[0] == 1:
                 amount = dur

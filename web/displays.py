@@ -522,7 +522,9 @@ def player(sel):
             recentweapons=recentweapons,
             tableweaponlabels=tableweaponlabels(),
             dpm=dpm, topmap=topmap, timeplayed=timeutils.durstr(
-                player["alltime"]["timeactive"], full=True
+                player["alltime"]["timeactive"],
+                skip="s", skiplow=False,
+                full=True,
                 ))
     return base.page(sel, ret, title="%s" % sel.pathid)
 displays["player"] = player
