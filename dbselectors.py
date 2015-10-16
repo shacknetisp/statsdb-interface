@@ -133,7 +133,7 @@ class ServerSelector(BaseSelector):
 
     def getdict(self):
         if self.pathid is not None:
-            return self.single(self.pathid)
+            return self.single(self.pathid) or {'error': 'Not Found'}
         f = self.makefilters()
         handles = [r[0] for r in
         self.db.con.execute(
@@ -322,7 +322,7 @@ class GameSelector(BaseSelector):
 
     def getdict(self, one=False, last=None):
         if self.pathid is not None:
-            return self.single(self.pathid)
+            return self.single(self.pathid) or {'error': 'Not Found'}
         f = self.makefilters(where=False)
         if self.server.dbexists:
             ids = [r[0] for r in
@@ -511,7 +511,7 @@ class PlayerSelector(BaseSelector):
 
     def getdict(self):
         if self.pathid is not None:
-            return self.single(self.pathid)
+            return self.single(self.pathid) or {'error': 'Not Found'}
         f = self.makefilters()
         ids = [r[0] for r in
         self.db.con.execute(
@@ -570,8 +570,8 @@ class WeaponSelector(BaseSelector):
     def getdict(self):
         if self.pathid is not None:
             if self.pathid not in redeclipse().weaponlist:
-                return None
-            return self.single(self.pathid)
+                return {'error': 'Not Found'}
+            return self.single(self.pathid) or {'error': 'Not Found'}
         ret = {}
         for w in redeclipse().weaponlist:
             ret[w] = self.single(w)
@@ -637,7 +637,7 @@ class MapSelector(BaseSelector):
 
     def getdict(self):
         if self.pathid is not None:
-            return self.single(self.pathid)
+            return self.single(self.pathid) or {'error': 'Not Found'}
         f = self.makefilters()
         maps = [r[0] for r in
         self.db.con.execute(
@@ -679,7 +679,7 @@ class ModeSelector(BaseSelector):
 
     def getdict(self):
         if self.pathid is not None:
-            return self.single(self.pathid)
+            return self.single(self.pathid) or {'error': 'Not Found'}
         f = self.makefilters()
         modes = [r[0] for r in
         self.db.con.execute(

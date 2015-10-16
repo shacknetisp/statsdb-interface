@@ -80,7 +80,7 @@ def make(server, db, q, path):
     if paths[0] in paliases:
         paths = paliases[paths[0]].split('/') + paths[1:]
     if paths[0] == 'get':
-        ret = {"error": "Invalid Query"}
+        ret = {"error": "Invalid Query Type"}
         if not server.dbexists:
             return 'application/json', '200 OK', json.dumps(
                 {"error": "Empty Database"}).encode()
