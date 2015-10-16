@@ -690,6 +690,39 @@ class ModeSelector(BaseSelector):
             ret[mode] = self.single(mode, False)
         return ret
 
+
+class MutSelector(BaseSelector):
+
+    def single(self, mut, one=True):
+        if mut not in list(redeclipse().basemuts.keys())[:-1]:
+            return None
+        ret = {
+            "id": mut,
+            "recentgames": {},
+            }
+        ret["games"] = [r[0] for r in
+        self.db.con.execute(
+            """SELECT id FROM games
+            WHERE mutators & re_mut(id, '%s')""" % ret["id"])]
+        if one:
+            for gid in list(reversed(ret["games"]))[
+                :self.server.cfgval("moderecent")]:
+                gs = GameSelector(self)
+                game = gs.single(gid, one=False)
+                ret["recentgames"][gid] = game
+        return ret
+
+    def getdict(self):
+        if self.pathid is not None:
+            return self.single(self.pathid) or {'error': 'Not Found'}
+        muts = list(redeclipse().basemuts.keys())[:-1]
+        ret = {}
+        for mut in muts:
+            r = self.single(mut, False)
+            if r:
+                ret[mut] = r
+        return ret
+
 selectors = {
     'servers': ServerSelector(),
     'games': GameSelector(),
@@ -697,4 +730,5 @@ selectors = {
     'weapons': WeaponSelector(),
     'maps': MapSelector(),
     'modes': ModeSelector(),
+    'muts': MutSelector(),
     }
