@@ -548,7 +548,10 @@ class WeaponSelector(BaseSelector):
             """SELECT sum(%s) FROM
             (SELECT * FROM game_weapons WHERE weapon = ?
             AND %s
-            AND game IN (SELECT id FROM games WHERE mode != re_mode(id, 'race'))
+            AND game IN (SELECT id FROM games WHERE mode != re_mode(id, 'race')
+            AND (mutators & re_mut(id, 'insta')) = 0
+            AND (mutators & re_mut(id, 'medieval')) = 0
+            )
             ORDER by ROWID DESC LIMIT %d)""" % (x,
             self.vlimit(),
             self.server.cfgval("weaponrecentavg")),
@@ -556,7 +559,10 @@ class WeaponSelector(BaseSelector):
         allsum = lambda x: self.db.con.execute(
             """SELECT sum(%s) FROM game_weapons WHERE weapon = ?
             AND game IN (SELECT id FROM games
-            WHERE mode != re_mode(id, 'race'))""" % (
+            WHERE mode != re_mode(id, 'race')
+            AND (mutators & re_mut(id, 'insta')) = 0
+            AND (mutators & re_mut(id, 'medieval')) = 0
+            )""" % (
                 x),
             (name,)).fetchone()[0]
         for t in redeclipse().weapcols:
