@@ -556,14 +556,14 @@ def playergames(sel):
                 "Game #%d" % gid)
             recentgames += tdlink("mode",
                 game["mode"],
-                redeclipse.modeimg(game["mode"]), e=False)
-            recentgames += "<td>%s</td>" % (redeclipse.mutslist(
+                redeclipse(game).modeimg(game["mode"]), e=False)
+            recentgames += "<td>%s</td>" % (redeclipse(game).mutslist(
                 game, True
                 ) or '-')
             recentgames += tdlink("map", game["map"], game["map"])
             recentgames += '<td>%s</td>' % timeutils.agohtml(game["time"])
             recentgames += '<td>%s</td>' % cgi.escape(entry["name"])
-            recentgames += '<td>%s</td>' % redeclipse.scorestr(game,
+            recentgames += '<td>%s</td>' % redeclipse(game).scorestr(game,
                 entry["score"])
             recentgames += '<td>%d</td>' % entry["frags"]
             recentgames += '<td>%d</td>' % entry["deaths"]
