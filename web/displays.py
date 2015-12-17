@@ -254,7 +254,7 @@ def game(sel):
                 bombings += "<tr>"
                 bombings += tdlinkp(
                         "player", bombing["playerhandle"],
-                        game["players"][bombing["player"]]["name"])
+                        game["id_players"][bombing["player"]]["name"])
                 bombings += "<td>%s</td>" % (cgi.escape(
                     teamlist[bombing["bombing"]]["name"],
                     ))
