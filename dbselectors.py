@@ -197,6 +197,7 @@ class GameSelector(BaseSelector):
         ret = {
             "teams": {},
             "players": [],
+            "id_players": {},
             "weapons": {},
             }
         dictfromrow(ret, row, ["id", "time",
@@ -228,6 +229,7 @@ class GameSelector(BaseSelector):
                             WHERE game = %d AND player = %s""" % (
                                 row[0], player["id"])).fetchone()[0]
                     ret["players"].append(player)
+                    ret["id_players"][player["id"]] = player
             return ret
         # Teams
         for team_row in self.db.con.execute(
@@ -307,6 +309,7 @@ class GameSelector(BaseSelector):
                                 w[t] = 0
                         player["weapons"][weapon] = w
                 ret["players"].append(player)
+                ret["id_players"][player["id"]] = player
         if one:
             for weapon in redeclipse(ret).weaponlist:
                 w = {'name': weapon}

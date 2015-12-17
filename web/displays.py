@@ -230,7 +230,7 @@ def game(sel):
                 captures += "<tr>"
                 captures += tdlinkp(
                         "player", capture["playerhandle"],
-                        game["players"][capture["player"]]["name"])
+                        game["id_players"][capture["player"]]["name"])
                 captures += "<td>%s</td>" % (cgi.escape(
                     teamlist[capture["capturing"]]["name"],
                     ))
