@@ -1,2 +1,8 @@
 # -*- coding: utf-8 -*-
-from . import err404, err500, main, displays
+
+
+def page(content, title="", css="", debug=""):
+    ret = open("files/html/base.html").read().format(
+        content=content,
+        title=(":" + title) if title else "", css=css, debuginfo=debug)
+    return ret
