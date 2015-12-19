@@ -1,6 +1,12 @@
 {
     "sqlitedb": "stats.sqlite",
+    "backupkeepdays": 30,
+
     "host": "",
     "port": 28700,
-    "backupkeepdays": 30
+
+    "defaultversion": "1.5.4",
+    "versions": {
+        "1_5dev": ["1.5.4"]
+    }
 }

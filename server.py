@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
+import db
 import select
 from wsgiref.simple_server import make_server, WSGIRequestHandler
 from threading import Thread
@@ -21,7 +21,8 @@ class httpd:
         result = b""
 
         # Handle the request
-        response = api.handle(api.Request(environ))
+        with self.server.db:
+            response = api.handle(api.Request(environ), self.server.db.con)
         # Output the response
         status = response.status
         headers = response.headers
@@ -54,6 +55,7 @@ class Server:
         self.httpd = make_server(cfg.get("host"), cfg.get("port"),
             httpd(self),
             handler_class=httphandler)
+        self.db = db.DB(self.path)
         self.tick()
         # Start the Daemon Thread
         thread = Thread(target=Server.do_http, args=(self, ))
@@ -74,6 +76,7 @@ class Server:
             "/statsdbbackups/" +
             time.strftime("%Y%m%d") + '.bak')
             if not os.path.exists(backupfile):
+                self.db.backup(backupfile)
                 print("Creating backup.")
             #Clear old backups
             flushdir(cfg.home + "/statsdbbackups",
