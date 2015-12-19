@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import importlib
 import collections
+import time
+import cfg
+
+cache = {}
 
 
 class Selector:
@@ -74,6 +78,22 @@ class Selector:
                 continue
             self.flags[flag] = value
 
+    def single(self, specific=None):
+        specific = self.specific if specific is None else specific
+        index = str([self.name, 'single',
+            list(self.q.items()), self.flags, specific])
+        if index not in cache or (
+            time.time() - cache[index][0] > cfg.get('cache_selectors')):
+                cache[index] = (time.time(), self.make_single(specific))
+        return cache[index][1]
+
+    def multi(self):
+        index = str([self.name, 'multi', list(self.q.items()), self.flags])
+        if index not in cache or (
+            time.time() - cache[index][0] > cfg.get('cache_selectors')):
+                cache[index] = (time.time(), self.make_multi())
+        return cache[index][1]
+
 
 def rowtodict(d, r, l, start=0):
     for i in range(len(l)):
@@ -123,7 +143,9 @@ class basicxfilter:
 
 
 def importselector(s):
-    return importlib.import_module("dbselectors." + s).Selector
+    c = importlib.import_module("dbselectors." + s).Selector
+    c.name = s
+    return c
 
 selectors = {
     "game": importselector("game"),

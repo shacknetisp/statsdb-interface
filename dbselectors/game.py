@@ -135,12 +135,12 @@ class Selector(dbselectors.Selector):
                 ret['weapons'][weapon] = w
         return ret
 
-    def single(self, specific=None):
+    def make_single(self, specific):
         row = self.db.execute("SELECT * FROM games WHERE id = ?",
-            [self.specific if specific is None else specific]).fetchone()
+            [specific]).fetchone()
         return self.fromrow(row) or {'error': 'Does not exist.'}
 
-    def multi(self):
+    def make_multi(self):
         f = self.makefilters(where=False)
         ids = [r[0] for r in
         self.db.execute(
