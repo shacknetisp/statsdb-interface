@@ -6,6 +6,13 @@ import cfg
 
 cache = {}
 
+#List of selectors
+#(<api calling points>, <db selector module>)
+selectors = [
+    (['game', 'games'], 'game'),
+    (['server', 'servers'], 'server'),
+]
+
 
 class Selector:
 
@@ -26,10 +33,12 @@ class Selector:
             else:
                 nf[f[0]] = f[1]
         self.flags = nf
+        # Enable or disable all flags
         if 'all-flags' in self.q:
             self.flags_all()
         if 'clear-flags' in self.q:
             self.flags_none()
+        # Specific Flags
         if 'no-flags' in self.q:
             for f in self.q['no-flags']:
                 self.flags[f] = False
@@ -78,6 +87,7 @@ class Selector:
                 continue
             self.flags[flag] = value
 
+    # Handle caching of single
     def single(self, specific=None):
         specific = self.specific if specific is None else specific
         index = str([self.name, 'single',
@@ -87,6 +97,7 @@ class Selector:
                 cache[index] = (time.time(), self.make_single(specific))
         return cache[index][1]
 
+    # Handle caching of multi
     def multi(self):
         index = str([self.name, 'multi', list(self.q.items()), self.flags])
         if index not in cache or (
@@ -147,7 +158,13 @@ def importselector(s):
     c.name = s
     return c
 
-selectors = {
-    "game": importselector("game"),
-    "games": importselector("game"),
-}
+ns = {}
+for s in selectors:
+    for an in s[0]:
+        ns[an] = importselector(s[1])
+selectors = ns
+
+
+def get(selector, db, q=None):
+    s = selectors[selector](q or {}, db, None)
+    return s

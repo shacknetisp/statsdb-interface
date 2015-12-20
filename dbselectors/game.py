@@ -7,7 +7,7 @@ class Selector(dbselectors.Selector):
 
     def __init__(self, *args, **kwargs):
         self.flags = [
-            "game", "server",
+            "server",
             "teams", "affinities", "rounds",
             "players", "playerdamage", "playeraffinities", "playerweapons",
             ("id_players", False),
@@ -22,14 +22,13 @@ class Selector(dbselectors.Selector):
             "players": {},
             "weapons": {},
         }
-        # Base row and version
-        if self.flags["game"]:
-            dbselectors.rowtodict(ret, row, ["id", "time",
-                "map", "mode", "mutators",
-                "timeplayed"])
-            ret["version"] = self.db.execute(
-                """SELECT version FROM game_servers
-                WHERE game = %d""" % ret['id']).fetchone()[0]
+        # Base
+        dbselectors.rowtodict(ret, row, ["id", "time",
+            "map", "mode", "mutators",
+            "timeplayed"])
+        ret["version"] = self.db.execute(
+            """SELECT version FROM game_servers
+            WHERE game = %d""" % ret['id']).fetchone()[0]
         # Server handle
         if self.flags["server"]:
             ret["server"] = self.db.execute(
@@ -142,21 +141,14 @@ class Selector(dbselectors.Selector):
 
     def make_multi(self):
         f = self.makefilters(where=False)
-        ids = [r[0] for r in
-        self.db.execute(
-            """SELECT id FROM games
-            WHERE %s ORDER BY id DESC""" % (
-                f[0] if f[0] else "1 = 1"), f[1])]
         self.weakflags(['weapons', 'playerweapons', 'rounds'], False)
         ret = {}
-        for gid in ids:
-            v = self.single(gid)
-            for f in self.xfilters:
-                if v is not None:
-                    if not f(self, v):
-                        v = None
-            if v is not None:
-                ret[gid] = v
+        for row in self.db.execute(
+            """SELECT * FROM games
+            WHERE %s ORDER BY id DESC""" % (
+                f[0] if f[0] else "1 = 1"), f[1]):
+                    game = self.fromrow(row)
+                    ret[game["id"]] = game
         return ret
 
     filters = [
