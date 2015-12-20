@@ -27,7 +27,7 @@ class Selector(dbselectors.Selector):
         if self.flags["games"]:
             gamerows = list(self.db.execute(
                 """SELECT * FROM games
-                WHERE id IN (SELECT id FROM game_servers WHERE handle = ?)""",
+                WHERE id IN (SELECT game FROM game_servers WHERE handle = ?)""",
                 (ret['handle'],)))
             ret["games"] = [r[0] for r in gamerows]
             # Game data

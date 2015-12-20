@@ -12,3 +12,9 @@ def sliceneg(l, s):
     if s < 0:
         return l
     return l[:s]
+
+
+def sok(d):
+    if 'error' in d:
+        return False
+    return bool(d)

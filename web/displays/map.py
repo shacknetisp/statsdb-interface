@@ -3,6 +3,7 @@ import dbselectors
 import web
 from redeclipse import redeclipse
 import timeutils
+import utils
 onpagecount = 20
 
 
@@ -12,7 +13,7 @@ def single(request, db, specific):
     mapselector.flags_none()
     mapselector.weakflags(["race"], True)
     gmap = mapselector.single(specific)
-    if gmap:
+    if utils.sok(gmap):
         # Game List
         pager = web.Pager(request, onpagecount, reversed(gmap["games"]))
         recentgames = web.Table(

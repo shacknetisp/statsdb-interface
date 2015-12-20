@@ -7,6 +7,10 @@ import json
 import copy
 import dbselectors
 from web import displays
+import time
+import cfg
+
+cache = {}
 
 
 # Response to be sent to the client
@@ -55,9 +59,15 @@ def handle(request, db):
             path=request.path,
             query=request.query,
     )))
+    index = str([request.path, request.query])
+    if index in cache:
+        if time.time() - cache[index][0] < cfg.get('cache_web'):
+            return cache[index][1]
     # Handle all errors
     try:
-        return safe_handle(request, db)
+        result = safe_handle(request, db)
+        cache[index] = (time.time(), result)
+        return result
     except:
         traceback.print_exc()
         return WebResponse(

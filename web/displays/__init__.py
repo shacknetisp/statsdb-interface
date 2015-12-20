@@ -7,7 +7,7 @@ import importlib
 displays = [
     #(['', 'overview'], 'overview'),
     #(['game', 'games', 'g'], 'game'),
-    #(['server', 'servers', 's'], 'server'),
+    (['server', 'servers', 's'], 'server'),
     #(['player', 'players', 'p'], 'player'),
     #(['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
