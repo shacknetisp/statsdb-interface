@@ -4,7 +4,9 @@ from datetime import datetime
 import traceback
 import web
 import json
+import copy
 import dbselectors
+from web import displays
 
 
 # Response to be sent to the client
@@ -19,7 +21,7 @@ class Response:
     }
 
     def __init__(self, body="", headers=None, status=200):
-        self.body = body.encode()
+        self.body = body.encode() if type(body) is str else body
         self.headers = headers or {}
         self.status = Response.HTTP_Codes[status]
 
@@ -28,10 +30,11 @@ class Response:
 class WebResponse (Response):
 
     def __init__(self, body="", title="", css="", status=200, debug=""):
-        super(type(self), self).__init__(body=web.page(body, title, css, debug),
-            status=status, headers={
+        super(
+            type(self), self).__init__(body=web.page(body, title, css, debug),
+                                       status=status, headers={
                 'Content-type': 'text/html',
-                })
+            })
 
 
 # Request from the client
@@ -47,11 +50,11 @@ class Request:
 # Handle a request
 def handle(request, db):
     print(("{ts} {ip} {path} {query}".format(
-            ts=datetime.now().strftime('%D %T'),
+        ts=datetime.now().strftime('%D %T'),
             ip=request.clientip,
             path=request.path,
             query=request.query,
-        )))
+    )))
     # Handle all errors
     try:
         return safe_handle(request, db)
@@ -73,22 +76,50 @@ def safe_handle(request, db):
     # Go through list, popping.
     if paths:
         top = paths.pop(0)
+    toppaths = copy.deepcopy(paths)
     if paths:
         sub = paths.pop(0)
     if paths:
         specific = paths.pop(0)
-    if not top:
-        #Overview
-        pass
-    elif top == "api":
-        # Return JSON
+
+    def filepath(t):
+        return str('files/' + t + '/' + '/'.join(toppaths)).replace('..', '')
+
+    # Return JSON directly from the selectors
+    if top == "api":
         ret = {'error': 'No such selector.'}
         if sub and sub in dbselectors.selectors:
             selector = dbselectors.selectors[sub](request.query, db, specific)
             ret = selector.single() if specific else selector.multi()
         return Response(json.dumps(ret), headers={
             'Content-type': 'application/json',
-            })
+        })
+    # Files
+    elif top == "images":
+        return Response(open(filepath('images'), 'rb').read(), headers={
+            'Content-type': 'image/png',
+        })
+    elif top == "styles":
+        return Response(open(filepath('styles')).read(), headers={
+            'Content-type': 'text/css',
+        })
+    elif top == "robots.txt":
+        return Response(open('files/robots.txt').read(), headers={
+            'Content-type': 'text/plain',
+        })
+    # Displays
+    elif top in displays.displays:
+        # Sub is specific for displays
+        specific = sub
+        display = displays.displays[top]
+        if specific and hasattr(display, 'single'):
+            out = display.single(request, db, specific)
+        else:
+            out = display.multi(request, db)
+        return Response(out, headers={
+            'Content-type': 'text/html',
+        })
+
     return WebResponse(
         "<h2 class='center'>404 Page not Found</h2>",
         title=Response.HTTP_Codes[404],

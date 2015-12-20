@@ -55,7 +55,7 @@ class Selector(dbselectors.Selector):
             """SELECT DISTINCT handle FROM game_servers
             %s""" % f[0], f[1])]
         ret = {}
-        self.weakflags(['recentgames'], False)
+        self.weakflags(['recentgames'], False, True)
         for handle in handles:
             ret[handle] = self.single(handle)
         return ret

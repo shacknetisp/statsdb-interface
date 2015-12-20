@@ -10,7 +10,6 @@ class Selector(dbselectors.Selector):
             "server",
             "teams", "affinities", "rounds",
             "players", "playerdamage", "playeraffinities", "playerweapons",
-            ("id_players", False),
             "weapons"]
         super(Selector, self).__init__(*args, **kwargs)
 
@@ -141,7 +140,7 @@ class Selector(dbselectors.Selector):
 
     def make_multi(self):
         f = self.makefilters(where=False)
-        self.weakflags(['weapons', 'playerweapons', 'rounds'], False)
+        self.weakflags(['weapons', 'playerweapons', 'rounds'], False, True)
         ret = {}
         for row in self.db.execute(
             """SELECT * FROM games

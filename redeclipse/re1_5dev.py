@@ -17,6 +17,7 @@ for a in ['damage',
     'frags']:
         weapcols += [a + '1', a + '2']
 
+#Mode Lists
 modes = {
     "dm": 2,
     "ctf": 3,
@@ -88,6 +89,7 @@ def mutslist(game, html=False, short=False):
     return muts
 
 
+#Fancy Mode Names
 modestr = ["Demo", "Editing", "Deathmatch",
     "CTF", "DAC", "Bomber Ball", "Race"]
 

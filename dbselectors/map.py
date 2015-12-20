@@ -80,7 +80,7 @@ class Selector(dbselectors.Selector):
         self.db.execute(
             """SELECT DISTINCT map FROM games
             %s""" % f[0], f[1])]
-        self.weakflags(['recentgames', 'race'], False)
+        self.weakflags(['recentgames', 'race'], False, True)
         for mapname in maps:
             ret[mapname] = self.single(mapname)
         return ret

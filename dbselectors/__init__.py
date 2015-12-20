@@ -45,6 +45,8 @@ class Selector:
         self.q.update(q)
         self.specific = specific
 
+        self.weakflagged = {}
+
         # Build flag list
         nf = {}
         for f in self.flags:
@@ -99,13 +101,17 @@ class Selector:
             self.flags[k] = True
 
     # Only set these flags if they are not specified
-    def weakflags(self, flags, value):
+    def weakflags(self, flags, value, very=False):
         for flag in flags:
+            if very and flag in self.weakflagged:
+                continue
             if 'flags' in self.q and flag in self.q['flags']:
                 continue
             if 'no-flags' in self.q and flag in self.q['no-flags']:
                 continue
             self.flags[flag] = value
+            if not very:
+                self.weakflagged[flag] = True
 
     # Handle caching of single
     def single(self, specific=None):

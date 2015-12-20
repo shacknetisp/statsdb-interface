@@ -13,6 +13,10 @@
         "1.5.4"
     ],
 
+    "cache_web": 300,
     "cache_selectors": 600,
-    "recent": 25
+    "cache_advanced": 600,
+    "recent": 25,
+
+    "paginator_around": 3
 }

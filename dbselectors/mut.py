@@ -38,7 +38,7 @@ class Selector(dbselectors.Selector):
 
     def make_multi(self):
         ret = {}
-        self.weakflags(['recentgames'], False)
+        self.weakflags(['recentgames'], False, True)
         for mut in list(redeclipse().basemuts.keys()):
             ret[mut] = self.single(mut)
         return ret

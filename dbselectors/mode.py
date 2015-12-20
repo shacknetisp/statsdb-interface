@@ -47,7 +47,7 @@ class Selector(dbselectors.Selector):
 
     def make_multi(self):
         ret = {}
-        self.weakflags(['recentgames'], False)
+        self.weakflags(['recentgames'], False, True)
         for mode in list(redeclipse().modes.values()):
             ret[mode] = self.single(mode)
         return ret
