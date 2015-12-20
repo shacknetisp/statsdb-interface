@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import dbselectors
 import cfg
+import utils
 
 
 class Selector(dbselectors.Selector):
@@ -34,12 +35,8 @@ class Selector(dbselectors.Selector):
                 gs = dbselectors.get("game", self.db)
                 gs.flags_none()
                 gs.weakflags(['players'], True)
-                num = 25
-                try:
-                    num = int(self.q['recentgames'][0])
-                except:
-                    pass
-                for row in list(reversed(gamerows))[:num]:
+                num = self.q.qint('recentgames', cfg.get('recent'))
+                for row in utils.sliceneg(list(reversed(gamerows)), num):
                     game = gs.fromrow(row)
                     ret["recentgames"][game["id"]] = game
         return ret

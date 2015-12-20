@@ -13,5 +13,6 @@
         "1.5.4"
     ],
 
-    "cache_selectors": 300
+    "cache_selectors": 600,
+    "recent": 25
 }

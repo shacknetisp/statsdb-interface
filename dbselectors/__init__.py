@@ -3,6 +3,7 @@ import importlib
 import collections
 import time
 import cfg
+import utils
 
 cache = {}
 
@@ -12,7 +13,25 @@ selectors = [
     (['game', 'games'], 'game'),
     (['server', 'servers'], 'server'),
     (['player', 'players'], 'player'),
+    (['weapon', 'weapons'], 'weapon'),
+    (['map', 'maps'], 'map'),
+    (['mode', 'modes'], 'mode'),
+    (['mut', 'mutator', 'muts', 'mutators'], 'mut'),
 ]
+
+
+class QOpt(collections.defaultdict):
+
+    def __init__(self, *args, **kwargs):
+        super(QOpt, self).__init__(*args, **kwargs)
+
+    def qstr(self, v, d=""):
+        if v in self and self[v]:
+            return self[v][0]
+        return d
+
+    def qint(self, v, d=0):
+        return utils.toint(self.qstr(v), d)
 
 
 class Selector:
@@ -22,7 +41,7 @@ class Selector:
 
     def __init__(self, q, db, specific):
         self.db = db
-        self.q = collections.defaultdict(lambda: list())
+        self.q = QOpt(lambda: list())
         self.q.update(q)
         self.specific = specific
 
@@ -106,6 +125,7 @@ class Selector:
                 cache[index] = (time.time(), self.make_multi())
         return cache[index][1]
 
+    #Version limit (massive weapon changes, etc)
     def vlimit(self, i="game"):
         if "no-vlimit" in self.q:
             return "1 = 1"
@@ -114,6 +134,13 @@ class Selector:
             ' OR version GLOB '.join(['1 = 0'] + [
                 ("'%s'" % x) for x in cfg.get('countversions')]),
             )
+
+    #Recent param, < 0 means no limit.
+    def recent(self, k):
+        num = self.q.qint(k, cfg.get('recent'))
+        if num < 0:
+            return ""
+        return "ORDER by ROWID DESC LIMIT %d" % (num)
 
 
 def rowtodict(d, r, l, start=0):

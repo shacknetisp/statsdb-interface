@@ -33,7 +33,6 @@ class sql_re_mode:
 
     numparams = 2
     name = "re_mode"
-    cache = {}
 
     def __init__(self, db):
         self.db = db
@@ -62,7 +61,6 @@ class sql_re_mut:
 
     numparams = 2
     name = "re_mut"
-    cache = {}
 
     def __init__(self, db):
         self.db = db
