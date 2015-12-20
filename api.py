@@ -122,13 +122,15 @@ def safe_handle(request, db):
         # Sub is specific for displays
         specific = sub
         display = displays.displays[top]
+        out = None
         if specific and hasattr(display, 'single'):
             out = display.single(request, db, specific)
-        else:
+        elif hasattr(display, 'multi'):
             out = display.multi(request, db)
-        return Response(out, headers={
-            'Content-type': 'text/html',
-        })
+        if out is not None:
+            return Response(out, headers={
+                'Content-type': 'text/html',
+            })
 
     return WebResponse(
         "<h2 class='center'>404 Page not Found</h2>",

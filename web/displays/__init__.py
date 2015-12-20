@@ -11,7 +11,7 @@ displays = [
     #(['player', 'players', 'p'], 'player'),
     #(['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
-    #(['mode', 'modes'], 'mode'),
+    (['mode', 'modes'], 'mode'),
     #(['mut', 'mutator', 'muts', 'mutators'], 'mut'),
 ]
 

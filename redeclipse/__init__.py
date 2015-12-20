@@ -23,7 +23,7 @@ def redeclipse(s=None):
             for match in v:
                 if fnmatch(s["version"], match):
                     cache[s["version"]] = importlib.import_module(
-                        "redeclipse.re%s" % m)
+                        "redeclipse.re%s" % m).RE()
                     return cache[s["version"]]
     return None
 

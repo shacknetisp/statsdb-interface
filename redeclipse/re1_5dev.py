@@ -1,125 +1,36 @@
 # -*- coding: utf-8 -*-
-import cgi
-from collections import OrderedDict
+from . import default
+
+
 # Red Eclipse settings that may change.
 #Version 1.5.4+
+class RE(default.RE):
+    # Weapon Lists
+    loadoutweaponlist = ["pistol", "sword", "shotgun",
+        "smg", "flamer", "plasma", "zapper", "rifle"]
+    weaponlist = ["melee"] + loadoutweaponlist + ["grenade", "mine", "rocket"]
 
-# Weapon Lists
-loadoutweaponlist = ["pistol", "sword", "shotgun",
-    "smg", "flamer", "plasma", "zapper", "rifle"]
-weaponlist = ["melee"] + loadoutweaponlist + ["grenade", "mine", "rocket"]
+    #Mode Lists
+    modes = {
+        "dm": 2,
+        "ctf": 3,
+        "dac": 4,
+        "bb": 5,
+        "race": 6,
+        }
 
-# Weapon Columns
-weapcols = ['timewielded', 'timeloadout']
-for a in ['damage',
-    'hits', 'shots',
-    'flakhits', 'flakshots',
-    'frags']:
-        weapcols += [a + '1', a + '2']
+    #Mutators
+    mutators = {}
+    basemuts = ["multi", "ffa", "coop", "insta", "medieval", "kaboom",
+        "duel", "survivor", "classic", "onslaught", "freestyle", "vampire",
+        "resize", "hard", "basic", "gsp"]
+    gspmuts = {
+        modes["ctf"]: ["quick", "defend", "protect"],
+        modes["dac"]: ["quick", "king"],
+        modes["bb"]: ["hold", "basket", "attack"],
+        modes["race"]: ["marathon", "timed", "gauntlet"],
+        }
 
-#Mode Lists
-modes = {
-    "dm": 2,
-    "ctf": 3,
-    "dac": 4,
-    "bb": 5,
-    "race": 6,
-    }
-
-cmodestr = {}
-for k, v in list(modes.items()):
-    cmodestr[v] = k
-
-
-def tomuts(l, a=0):
-    ret = OrderedDict()
-    for i, mut in enumerate(l):
-        ret[mut] = 1 << (i + a)
-    return ret
-
-#Mutators
-mutators = {}
-basemuts = ["multi", "ffa", "coop", "insta", "medieval", "kaboom",
-    "duel", "survivor", "classic", "onslaught", "freestyle", "vampire",
-    "resize", "hard", "basic", "gsp"]
-gspmuts = {
-    modes["ctf"]: ["quick", "defend", "protect"],
-    modes["dac"]: ["quick", "king"],
-    modes["bb"]: ["hold", "basket", "attack"],
-    modes["race"]: ["marathon", "timed", "gauntlet"],
-    }
-
-#Create Mutator Lists
-gspnum = basemuts.index("gsp") - 1
-basemuts = tomuts(basemuts)
-del basemuts["gsp"]
-mutators.update(basemuts)
-for mode, modemuts in list(gspmuts.items()):
-    modemuts = tomuts(modemuts, gspnum)
-    gspmuts[mode] = modemuts
-    mutators.update(modemuts)
-
-
-def mutslist(game, html=False, short=False):
-    muts = []
-
-    def chunks(l, n):
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
-    for m in basemuts:
-        if (game["mutators"] & basemuts[m]):
-            muts.append(m)
-
-    if game['mode'] in gspmuts:
-        for m in gspmuts[game['mode']]:
-            if (game["mutators"] & gspmuts[game['mode']][m]):
-                muts.append(m)
-    if html:
-        if short:
-            out = []
-            for m in muts:
-                out.append(m)
-            return cgi.escape('-'.join(out))
-        outl = chunks(muts, 3)
-        htmll = []
-        for chunk in outl:
-            htmll.append(cgi.escape(" ".join(chunk)))
-        return "<br>".join(htmll)
-    return muts
-
-
-#Fancy Mode Names
-modestr = ["Demo", "Editing", "Deathmatch",
-    "CTF", "DAC", "Bomber Ball", "Race"]
-
-
-def scorestr(game, score):
-    """Display score as a str, as time or points depending on the game."""
-    import timeutils
-    if game["mode"] == modes["race"] and game["mutators"] & mutators["timed"]:
-        if score == 0:
-            return '-'
-        return timeutils.durstr(score / 1000, dec=True, full=True)
-    return str(score)
-
-
-def modeimg(mode, c=24):
-    return '''<img class="img%d"
-    title="%s" src="%s" alt="%s">''' % (c, modestr[mode],
-        "/images/modes/%d.png" % mode,
-        modestr[mode])
-
-
-def weaponimg(weap, c=24):
-    return '''<img class="img%d"
-    title="%s" src="%s" alt="%s">''' % (c, weap,
-        "/images/weapons/%s.png" % weap,
-        weap)
-
-
-def teamimg(t, c=24):
-    return '''<img class="img%d"
-    title="%s" src="%s" alt="%s">''' % (c, t,
-        "/images/teams/%s.png" % t,
-        t)
+    #Fancy Mode Names
+    modestr = ["Demo", "Editing", "Deathmatch",
+        "CTF", "DAC", "Bomber Ball", "Race"]

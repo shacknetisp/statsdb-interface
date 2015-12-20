@@ -17,7 +17,7 @@ def single(request, db, specific):
         # Game List
         pager = web.Pager(request, onpagecount, reversed(server["games"]))
         recentgames = web.Table(
-            ["ID", "Mode", "Mutators", "Duration", "Played"])
+            ["ID", "Mode", "Mutators", "Map", "Duration", "Played"])
         gs = dbselectors.get('game', db)
         gs.flags_none()
         firstgame = gs.single(server["games"][0])
@@ -28,6 +28,7 @@ def single(request, db, specific):
                 tr(web.link("/mode/", game["mode"],
                     redeclipse(game).modeimg(game["mode"])))
                 tr(redeclipse(game).mutslist(game, True) or '-')
+                tr(web.link("/map/", game["map"], game["map"], True))
                 tr(timeutils.durstr(round(game["timeplayed"])))
                 tr(timeutils.agohtml(game["time"]))
 
@@ -52,8 +53,8 @@ def single(request, db, specific):
             fgtime=timeutils.agohtml(firstgame["time"]), fgid=firstgame["id"],
             pages=pager.html())
     else:
-        ret = "<div class='center'><h2>No such map.</h2></div>"
-    return web.page(ret, title="Map %s" % specific)
+        ret = "<div class='center'><h2>No such server.</h2></div>"
+    return web.page(ret, title="Server %s" % specific)
 
 
 def multi(request, db):
@@ -94,4 +95,4 @@ def multi(request, db):
         </div>
     </div>
     """.format(servertable=servertable.html(), pages=pager.html())
-    return web.page(ret, title="Maps")
+    return web.page(ret, title="Servers")
