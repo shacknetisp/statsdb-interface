@@ -34,7 +34,12 @@ class Selector(dbselectors.Selector):
                 gs = dbselectors.get("game", self.db)
                 gs.flags_none()
                 gs.weakflags(['players'], True)
-                for row in list(reversed(gamerows))[:cfg.get('recent')]:
+                num = 25
+                try:
+                    num = int(self.q['recentgames'][0])
+                except:
+                    pass
+                for row in list(reversed(gamerows))[:num]:
                     game = gs.fromrow(row)
                     ret["recentgames"][game["id"]] = game
         return ret

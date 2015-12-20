@@ -11,6 +11,7 @@ cache = {}
 selectors = [
     (['game', 'games'], 'game'),
     (['server', 'servers'], 'server'),
+    (['player', 'players'], 'player'),
 ]
 
 
@@ -104,6 +105,15 @@ class Selector:
             time.time() - cache[index][0] > cfg.get('cache_selectors')):
                 cache[index] = (time.time(), self.make_multi())
         return cache[index][1]
+
+    def vlimit(self, i="game"):
+        if "no-vlimit" in self.q:
+            return "1 = 1"
+        return """%s IN (SELECT game FROM game_servers
+        WHERE %s)""" % (i,
+            ' OR version GLOB '.join(['1 = 0'] + [
+                ("'%s'" % x) for x in cfg.get('countversions')]),
+            )
 
 
 def rowtodict(d, r, l, start=0):

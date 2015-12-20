@@ -9,8 +9,9 @@
     "versions": {
         "1_5dev": ["1.5.4"]
     },
+    "countversions": [
+        "1.5.4"
+    ],
 
-    "cache_selectors": 300,
-
-    "recent": 10
+    "cache_selectors": 300
 }
