@@ -162,11 +162,18 @@ def safe_handle(request, db):
                 specific = int(paths.pop(0))
             except ValueError:
                 pass
-        if sub and specific and hasattr(rankselectors.selectors[sub], 'page'):
-            out = rankselectors.get(sub, db, specific).page(request)
-            return Response(out, headers={
-                'Content-type': 'text/html',
-            })
+        if sub and specific in rankselectors.alloweddays and hasattr(
+            rankselectors.selectors[sub], 'page'):
+                opts = (request.query['opts'][0]
+                    if 'opts' in request.query and request.query['opts']
+                    else None)
+                out = rankselectors.get(sub, db, specific,
+                        opts
+                    ).page(request)
+                if out:
+                    return Response(out, headers={
+                        'Content-type': 'text/html',
+                    })
 
     return WebResponse(
         "<h2 class='center'>404 Page not Found</h2>",

@@ -80,9 +80,9 @@ def multi(request, db):
         "maps": rankselectors.get('maps', db, 90).table().html(),
         "servers": rankselectors.get('servers', db, 90).table().html(),
         "ffa": rankselectors.get(
-            'winners', db, 90, ('FFA', 'ffa')).table().html(),
+            'winners', db, 90, 'ffa').table().html(),
         "ffasurv": rankselectors.get(
-            'winners', db, 90, ('FFA Survivor', 'ffasurv')).table().html(),
+            'winners', db, 90, 'ffasurv').table().html(),
     }
 
     ret = """
@@ -149,7 +149,7 @@ Sniper</span></td>
         {ranks[fpm]}
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/ranks/games">Games</a></h5>
+        <h5><a href="/ranks/games/365">Games</a></h5>
         {ranks[games]}
     </div>
 
@@ -177,11 +177,13 @@ Sniper</span></td>
         </table>
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/ranks/ffa">FFA Win Ratio</a></h5>
+        <h5><a href="/ranks/winners/180?opts=ffa">
+        FFA Win Ratio</a></h5>
         {ranks[ffa]}
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/ranks/ffasurv">FFA Survivor Win Ratio</a></h5>
+        <h5><a href="/ranks/winners/180?&opts=ffasurv"">
+        FFA Survivor Win Ratio</a></h5>
         {ranks[ffasurv]}
     </div>
 
