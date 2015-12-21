@@ -56,16 +56,22 @@ class Request:
 
 # Handle a request
 def handle(request, db):
+    index = str([request.path, request.query])
+    if index in cache:
+        if time.time() - cache[index][0] < cfg.get('cache_web'):
+            print(("{ts} {ip} {path} {query} [cached]".format(
+                ts=datetime.now().strftime('%D %T'),
+                    ip=request.clientip,
+                    path=request.path,
+                    query=request.query,
+            )))
+            return cache[index][1]
     print(("{ts} {ip} {path} {query}".format(
         ts=datetime.now().strftime('%D %T'),
             ip=request.clientip,
             path=request.path,
             query=request.query,
     )))
-    index = str([request.path, request.query])
-    if index in cache:
-        if time.time() - cache[index][0] < cfg.get('cache_web'):
-            return cache[index][1]
     # Handle all errors
     try:
         result = safe_handle(request, db)

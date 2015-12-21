@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib
 import web
-import cgi
 from redeclipse import redeclipse
 
 
@@ -11,8 +10,8 @@ displays = [
     #(['', 'overview'], 'overview'),
     (['game', 'games', 'g'], 'game'),
     (['server', 'servers', 's'], 'server'),
-    #(['player', 'players', 'p'], 'player'),
-    #(['weapon', 'weapons'], 'weapon'),
+    (['player', 'players', 'p'], 'player'),
+    (['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
     (['mode', 'modes'], 'mode'),
     (['mut', 'mutator', 'muts', 'mutators'], 'mut'),

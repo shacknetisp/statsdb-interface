@@ -181,7 +181,7 @@ def single(request, db, specific):
                 if weaponstable is not None else "",
             )
     else:
-        ret = "<div class='center'><h2>No such mutator.</h2></div>"
+        ret = "<div class='center'><h2>No such game.</h2></div>"
     return web.page(ret, title="Game %s" % specific)
 
 
