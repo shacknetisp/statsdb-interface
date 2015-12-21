@@ -5,6 +5,7 @@ Disallow: /g/
 Disallow: /player/
 Disallow: /players/
 Disallow: /p/
+Disallow: /playergames/
 Disallow: /server/
 Disallow: /servers/
 Disallow: /s/

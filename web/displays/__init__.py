@@ -11,6 +11,7 @@ displays = [
     (['game', 'games', 'g'], 'game'),
     (['server', 'servers', 's'], 'server'),
     (['player', 'players', 'p'], 'player'),
+    (['playergames'], 'playergames'),
     (['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
     (['mode', 'modes'], 'mode'),
@@ -38,6 +39,8 @@ def weaponstable(weapons, totalwielded, order):
     for weapon in order:
         with table.tr as tr:
             weapon = weapons[weapon]
+            if weapon["timeloadout"] is None:
+                continue
             weap = weapon["name"]
             tr(web.link("/weapon/", weap,
                 '%s %s' % (redeclipse().weaponimg(weap), weap)))

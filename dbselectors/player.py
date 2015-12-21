@@ -37,9 +37,12 @@ class Selector(dbselectors.Selector):
             if self.flags['recentgames']:
                 gs = dbselectors.get("game", self.db)
                 gs.flags_none()
+                gs.weakflags(['players'], True)
                 for row in utils.sliceneg(
                     list(reversed(gamerows)), recentgames):
                     game = gs.fromrow(row)
+                    game['player'] = [p for p in list(game["players"].values())
+                        if p["handle"] == handle][0]
                     # Count FFA rounds for this player in a new index
                     ffarounds = []
                     for ffaround_row in self.db.execute(
