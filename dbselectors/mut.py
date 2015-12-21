@@ -12,8 +12,8 @@ class Selector(dbselectors.Selector):
         super(Selector, self).__init__(*args, **kwargs)
 
     def make_single(self, specific):
-        if specific not in list(redeclipse().basemuts.keys()):
-            return {'Error': 'Mut does not exist'}
+        if specific not in redeclipse().mutators:
+            return {'error': 'Mut does not exist'}
         ret = {
             "id": specific,
             "recentgames": {},

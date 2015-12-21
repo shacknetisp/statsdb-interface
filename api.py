@@ -4,7 +4,6 @@ from datetime import datetime
 import traceback
 import web
 import json
-import copy
 import dbselectors
 from web import displays
 import time
@@ -24,21 +23,25 @@ class Response:
         500: "500 Internal Server Error",
     }
 
-    def __init__(self, body="", headers=None, status=200):
+    def __init__(self, body="", headers=None, status=200, cache=True):
         self.body = body.encode() if type(body) is str else body
         self.headers = headers or {}
         self.status = Response.HTTP_Codes[status]
+        self.cache = cache
 
 
 # Styled page as a Response
 class WebResponse (Response):
 
-    def __init__(self, body="", title="", css="", status=200, debug=""):
-        super(
-            type(self), self).__init__(body=web.page(body, title, css, debug),
-                                       status=status, headers={
-                'Content-type': 'text/html',
-            })
+    def __init__(self, body="", title="", css="",
+        status=200, debug="", cache=True):
+            super(
+                type(self), self).__init__(
+                    body=web.page(body, title, css, debug),
+                    status=status, headers={
+                            'Content-type': 'text/html',
+                        },
+                    cache=cache)
 
 
 # Request from the client
@@ -66,7 +69,8 @@ def handle(request, db):
     # Handle all errors
     try:
         result = safe_handle(request, db)
-        cache[index] = (time.time(), result)
+        if result.cache:
+            cache[index] = (time.time(), result)
         return result
     except:
         traceback.print_exc()
@@ -86,17 +90,29 @@ def safe_handle(request, db):
     # Go through list, popping.
     if paths:
         top = paths.pop(0)
-    toppaths = copy.deepcopy(paths)
-    if paths:
-        sub = paths.pop(0)
-    if paths:
-        specific = paths.pop(0)
 
     def filepath(t):
-        return str('files/' + t + '/' + '/'.join(toppaths)).replace('..', '')
+        return str('files/' + t + '/' + '/'.join(paths)).replace('..', '')
+
+    # Check if the DB exists, return an error message.
+    if db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='games'"
+        ).fetchone() is None:
+            if top == "api":
+                return Response(json.dumps({"error": "No database"}), headers={
+                    'Content-type': 'application/json',
+                }, cache=False)
+            else:
+                return WebResponse(
+                    "<h2 class='center'>There is no statistics database.</h2>",
+                    title="No database.", cache=False)
 
     # Return JSON directly from the selectors
     if top == "api":
+        if paths:
+            sub = paths.pop(0)
+        if paths:
+            specific = paths.pop(0)
         ret = {'error': 'No such selector.'}
         if sub and sub in dbselectors.selectors:
             selector = dbselectors.selectors[sub](request.query, db, specific)
@@ -119,8 +135,8 @@ def safe_handle(request, db):
         })
     # Displays
     elif top in displays.displays:
-        # Sub is specific for displays
-        specific = sub
+        if paths:
+            specific = paths.pop(0)
         display = displays.displays[top]
         out = None
         if specific and hasattr(display, 'single'):

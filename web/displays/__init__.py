@@ -12,7 +12,7 @@ displays = [
     #(['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
     (['mode', 'modes'], 'mode'),
-    #(['mut', 'mutator', 'muts', 'mutators'], 'mut'),
+    (['mut', 'mutator', 'muts', 'mutators'], 'mut'),
 ]
 
 
