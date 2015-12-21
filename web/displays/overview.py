@@ -63,6 +63,8 @@ def multi(request, db):
 
     ranks = {
         "spf": rankselectors.get('spf', db, 7).table().html(),
+        "captures": rankselectors.get('captures', db, 7).table().html(),
+        "bombings": rankselectors.get('bombings', db, 7).table().html(),
         "sword": rankselectors.get('weapon', db, 7,
             {"weapon": ('sword', 0)}).best(),
         "sniper": rankselectors.get('weapon', db, 7,
@@ -71,6 +73,7 @@ def multi(request, db):
         "spm": rankselectors.get('spm', db, 30).table().html(),
         "dpm": rankselectors.get('dpm', db, 30).table().html(),
         "fpm": rankselectors.get('fpm', db, 30).table().html(),
+        "games": rankselectors.get('games', db, 30).table().html(),
 
         "maps": rankselectors.get('maps', db, 90).table().html(),
         "servers": rankselectors.get('servers', db, 90).table().html(),
@@ -85,7 +88,20 @@ def multi(request, db):
         <h5>Score/Frags</h5>
         {ranks[spf]}
     </div>
-
+    <div class='display-table float-table'>
+        <h5>
+        <span class="explain" title="Most Flag Captures">Captures</span></h5>
+        <table>
+            {ranks[captures]}
+        </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5>
+        <span class="explain" title="Most Base Bombings">Bombings</span></h5>
+        <table>
+            {ranks[bombings]}
+        </table>
+    </div>
     <div class='display-table float-table'>
         <h5>Best</h5>
         <table>
@@ -119,6 +135,10 @@ Sniper</span></td>
         <h5><a href="/ranks/fpm/180"
             class="explain" title="Frags per Minute">FPM</a></h5>
         {ranks[fpm]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/games">Games</a></h5>
+        {ranks[games]}
     </div>
 
     <div style="clear: both;"></div>

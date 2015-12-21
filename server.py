@@ -24,7 +24,7 @@ class httpd:
 
         # Handle the request
         with self.server.db:
-            response = api.handle(api.Request(environ), self.server.db.con)
+            response = api.handle(api.Request(environ), self.server.db)
         # Output the response
         status = response.status
         headers = response.headers
@@ -61,7 +61,7 @@ class Server:
         self.tick()
         # This will start the overview caches
         with self.db:
-            web.displays.displays['overview'].multi(None, self.db.con)
+            web.displays.displays['overview'].multi(None, self.db)
         # Start the Daemon Thread
         thread = Thread(target=Server.do_http, args=(self, ))
         thread.setDaemon(True)

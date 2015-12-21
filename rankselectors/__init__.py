@@ -17,6 +17,9 @@ selectors = [
     (['fpm'], 'fpm'),
     (['spf'], 'spf'),
     (['weapon'], 'weapon'),
+    (['games'], 'games'),
+    (['captures'], 'captures'),
+    (['bombings'], 'bombings'),
 ]
 
 
@@ -61,5 +64,5 @@ def tick(db):
         if time.time() - cache[index][0] > cfg.get('cache_ranks'):
             with db:
                 cache[index][0] = time.time()
-                cache[index][1].db = db.con
+                cache[index][1].db = db
                 cache[index][1].update()

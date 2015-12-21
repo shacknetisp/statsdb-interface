@@ -28,6 +28,13 @@ class DB:
         self.con.close()
         self.lock.release()
 
+    def execute(self, *args):
+        if not self.lock.locked():
+            with self:
+                return self.con.execute(*args)
+        else:
+            return self.con.execute(*args)
+
     def backup(self, backupfile):
         self.lock.acquire()
         # Copy the DB
