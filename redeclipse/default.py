@@ -8,9 +8,9 @@ class RE:
 
     def __init__(self):
         #Core mode names
-        cmodestr = {}
+        self.cmodestr = {}
         for k, v in list(self.modes.items()):
-            cmodestr[v] = k
+            self.cmodestr[v] = k
 
         #Create Mutator Lists
         gspnum = self.basemuts.index("gsp") - 1
@@ -51,7 +51,7 @@ class RE:
                 out = []
                 for m in muts:
                     out.append(web.link('/mut/', m, m))
-                return cgi.escape('-'.join(out))
+                return '-'.join(out)
             outl = chunks([web.link('/mut/', m, m) for m in muts], 3)
             htmll = []
             for chunk in outl:

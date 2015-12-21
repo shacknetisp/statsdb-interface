@@ -37,26 +37,42 @@ class Table:
         def __call__(self, td=""):
             self.tds.append(str(td))
 
-    def __init__(self, headings):
+    def __init__(self, headings, title="", classes=""):
         self.headings = headings
         self.entries = []
         self.tr = self.TR(self)
+        self.title = title
+        self.classes = classes
 
     def add(self, t):
         self.tds.append(t)
 
-    def html(self):
+    def html(self, full=False):
         headings = ""
         for h in self.headings:
             headings += "<th>%s</th>" % h
-        ret = """
-        <table>
-            <tr>
-                {headings}
-            </tr>
-            {body}
-        </table>
-        """.format(headings=headings, body="".join(self.entries))
+        if full:
+            ret = """
+            <div class='{classes}'>
+                <h3>{title}</h3>
+                <table>
+                    <tr>
+                        {headings}
+                    </tr>
+                    {body}
+                </table>
+            </div>
+            """.format(headings=headings, body="".join(self.entries),
+                classes=self.classes, title=self.title)
+        else:
+            ret = """
+            <table>
+                <tr>
+                    {headings}
+                </tr>
+                {body}
+            </table>
+            """.format(headings=headings, body="".join(self.entries))
         return ret
 
 
