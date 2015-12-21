@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cgi
 from collections import OrderedDict
+import web
 
 
 class RE:
@@ -49,12 +50,12 @@ class RE:
             if short:
                 out = []
                 for m in muts:
-                    out.append(m)
+                    out.append(web.link('/mut/', m, m))
                 return cgi.escape('-'.join(out))
-            outl = chunks(muts, 3)
+            outl = chunks([web.link('/mut/', m, m) for m in muts], 3)
             htmll = []
             for chunk in outl:
-                htmll.append(cgi.escape(" ".join(chunk)))
+                htmll.append(" ".join(chunk))
             return "<br>".join(htmll)
         return muts
 
