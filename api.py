@@ -5,6 +5,7 @@ import traceback
 import web
 import json
 import dbselectors
+import rankselectors
 from web import displays
 import time
 import cfg
@@ -150,6 +151,19 @@ def safe_handle(request, db):
         elif hasattr(display, 'multi'):
             out = display.multi(request, db)
         if out is not None:
+            return Response(out, headers={
+                'Content-type': 'text/html',
+            })
+    elif top == "ranks":
+        if paths:
+            sub = paths.pop(0)
+        if paths:
+            try:
+                specific = int(paths.pop(0))
+            except ValueError:
+                pass
+        if sub and specific and hasattr(rankselectors.selectors[sub], 'page'):
+            out = rankselectors.get(sub, db, specific).page(request)
             return Response(out, headers={
                 'Content-type': 'text/html',
             })

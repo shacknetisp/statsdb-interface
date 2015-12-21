@@ -5,7 +5,7 @@ import dbselectors
 import cgi
 import timeutils
 from redeclipse import redeclipse
-onpagecount = 20
+onpagecount = 15
 
 
 def single(request, db, specific):

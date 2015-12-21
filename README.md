@@ -22,7 +22,7 @@ Limits: If < 0 return all, else limit number of games used to calculate.
 
 ## /api/games
 * Flags: server, teams, affinities, rounds, players, playerdamage, playeraffinities, playerweapons, weapons
-* Filters: mode (basic), time (math), timeplayed (math), id (math), map (basic OR), players (basic AND), mutators (basic AND)
+* Filters: mode (basic), time (math), timeplayed (math), id (math), map (basic OR), players (basic AND), mutators (basic AND), uniqueplayers (math), fighting (basic)
 
 ## /api/maps
 * Flags: recentgames, race

@@ -15,7 +15,7 @@
 
     "cache_web": 300,
     "cache_selectors": 600,
-    "cache_advanced": 600,
+    "cache_ranks": 600,
     "recent": 25,
 
     "paginator_around": 3

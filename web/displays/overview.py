@@ -2,6 +2,7 @@
 import web
 import dbselectors
 import timeutils
+import rankselectors
 from redeclipse import redeclipse
 
 
@@ -60,7 +61,76 @@ def multi(request, db):
             tr(timeutils.durstr(round(game["timeplayed"])))
             tr(timeutils.agohtml(game["time"]))
 
+    ranks = {
+        "spf": rankselectors.get('spf', db, 7).table().html(),
+        "sword": rankselectors.get('weapon', db, 7,
+            {"weapon": ('sword', 0)}).best(),
+        "sniper": rankselectors.get('weapon', db, 7,
+            {"weapon": ('rifle', 2)}).best(),
+
+        "spm": rankselectors.get('spm', db, 30).table().html(),
+        "dpm": rankselectors.get('dpm', db, 30).table().html(),
+        "fpm": rankselectors.get('fpm', db, 30).table().html(),
+
+        "maps": rankselectors.get('maps', db, 90).table().html(),
+        "servers": rankselectors.get('servers', db, 90).table().html(),
+    }
+
     ret = """
+    <h2>Recent Overview</h2>
+
+    <h5><a href="/players">Players</a></h5>
+    <h3>Last 7 Days</h3>
+    <div class='display-table float-table'>
+        <h5>Score/Frags</h5>
+        {ranks[spf]}
+    </div>
+
+    <div class='display-table float-table'>
+        <h5>Best</h5>
+        <table>
+            <tr>
+                <td><span class="explain"
+title="Best Damage and Frags with the Sword">Knight</span></td>
+                <td>{ranks[sword]}</td>
+            </tr>
+            <tr>
+                <td><span class="explain"
+title="Best Damage and Frags with the Rifle Secondary">
+Sniper</span></td>
+                <td>{ranks[sniper]}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="clear: both;"></div>
+    <h3>Last 30 Days</h3>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/spm/180"
+            class="explain" title="Score per Minute">SPM</a></h5>
+        {ranks[spm]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/dpm/180"
+            class="explain" title="Damage per Minute">DPM</a></h5>
+        {ranks[dpm]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/fpm/180"
+            class="explain" title="Frags per Minute">FPM</a></h5>
+        {ranks[fpm]}
+    </div>
+
+    <div style="clear: both;"></div>
+    <h3>Last 90 Days</h3>
+    <div class='display-table float-table'>
+        <h5><a href="/maps">Maps</a></h5>
+        {ranks[maps]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/servers">Servers</a></h5>
+        {ranks[servers]}
+    </div>
     <div class='display-table float-table'>
         <h5><a href="/weapons">Weapons</a></h5>
         <table>
@@ -74,6 +144,7 @@ def multi(request, db):
             </tr>
         </table>
     </div>
+
     <div style="clear: both;"></div>
     <div class='display-table'>
         <h5><a href="/games">Latest Games</a></h5>
@@ -94,5 +165,6 @@ def multi(request, db):
             topweapons['wield'][1]
                 / max(topweapons['totalwielded'], 1) * 100),
         games=gamestable.html(),
+        ranks=ranks,
         )
     return web.page(ret, title="Overview")

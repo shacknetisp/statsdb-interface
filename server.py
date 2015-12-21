@@ -8,6 +8,8 @@ import time
 import os
 import cfg
 import api
+import web
+import rankselectors
 
 
 class httpd:
@@ -57,11 +59,14 @@ class Server:
             handler_class=httphandler)
         self.db = db.DB(self.path)
         self.tick()
+        # This will start the overview caches
+        with self.db:
+            web.displays.displays['overview'].multi(None, self.db.con)
         # Start the Daemon Thread
         thread = Thread(target=Server.do_http, args=(self, ))
         thread.setDaemon(True)
         thread.start()
-        print("Server running.")
+        print("Server running, cache started.")
 
     def do_http(self):
         while True:
@@ -69,6 +74,7 @@ class Server:
                 self.httpd.handle_request()
 
     def tick(self):
+        rankselectors.tick(self.db)
         if time.time() - self.lasttick >= 60 * 1:
             self.lasttick = time.time()
             #Create a backup

@@ -155,6 +155,9 @@ class Selector(dbselectors.Selector):
         dbselectors.mathfilter("time"),
         dbselectors.mathfilter("timeplayed"),
         dbselectors.mathfilter("id"),
+        dbselectors.mathfilter("uniqueplayers"),
+        [{"key": "fighting", "sql": "mode != re_mode(id, 'race')"},
+            {"key": "not-fighting", "sql": "mode == re_mode(id, 'race')"}]
     ]
     xfilters = [
         dbselectors.basicxfilter("map"),

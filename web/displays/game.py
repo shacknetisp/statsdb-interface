@@ -5,7 +5,7 @@ from redeclipse import redeclipse
 import timeutils
 import utils
 import cgi
-onpagecount = 20
+onpagecount = 15
 
 
 def single(request, db, specific):
