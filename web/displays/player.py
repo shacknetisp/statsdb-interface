@@ -62,7 +62,7 @@ def single(request, db, specific):
         gamestable = web.Table(["Game", "Mode", "Mutators",
             "Map", "Time", "Played As", "Score", "Frags", "Deaths"])
         for gid in sorted(
-            list(player["recentgames"].keys()), reverse=True)[:10]:
+            list(player["recentgames"].keys()), reverse=True)[:5]:
                 game = player["recentgames"][gid]
                 entry = game["player"]
                 with gamestable.tr as tr:

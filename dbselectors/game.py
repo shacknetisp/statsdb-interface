@@ -157,7 +157,24 @@ class Selector(dbselectors.Selector):
         dbselectors.mathfilter("id"),
         dbselectors.mathfilter("uniqueplayers"),
         [{"key": "fighting", "sql": "mode != re_mode(id, 'race')"},
-            {"key": "not-fighting", "sql": "mode == re_mode(id, 'race')"}]
+            {"key": "not-fighting", "sql": "mode == re_mode(id, 'race')"}],
+        #Rank Keys
+        [
+            {"key": "affmvp", "sql": """mode != re_mode(id, 'race')
+                AND (NOT (mutators & re_mut(id, 'survivor'))
+                OR (mutators & re_mut(id, 'duel')))
+                AND mode in (re_mode(id, 'ctf'), re_mode(id, 'bb'))"""},
+            {"key": "dmmvp", "sql": """mode != re_mode(id, 'race')
+                AND (NOT (mutators & re_mut(id, 'ffa'))
+                OR (mutators & re_mut(id, 'duel'))
+                OR (mutators & re_mut(id, 'survivor')))
+                AND mode = re_mode(id, 'dm')"""},
+            {"key": "ffa", "sql": """mode != re_mode(id, 'race')
+                AND (mutators & re_mut(id, 'ffa'))"""},
+            {"key": "ffasurv", "sql": """mode != re_mode(id, 'race')
+                AND (mutators & re_mut(id, 'ffa'))
+                AND (mutators & re_mut(id, 'survivor'))"""},
+        ],
     ]
     xfilters = [
         dbselectors.basicxfilter("map"),

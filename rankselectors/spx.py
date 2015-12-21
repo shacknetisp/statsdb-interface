@@ -15,14 +15,16 @@ class Selector(rankselectors.Selector):
         self.rounddigits = 1
         self.sortkey = lambda x: -x[1]
         super(Selector, self).__init__(*args, **kwargs)
+        self.pagetitle = ""
         self.q = {
-            'gt-time': [time.time() - 60 * 60 * 24 * self.days],
-            'gt-uniqueplayers': [1],
             'fighting': [],
         }
-        self.pagetitle = ""
 
     def update(self):
+        self.q.update({
+            'gt-time': [time.time() - 60 * 60 * 24 * self.days],
+            'gt-uniqueplayers': [1],
+        })
         gs = dbselectors.get('game', self.db, self.q)
         gs.flags_none()
         gs.weakflags(['players', 'playerdamage'], True)

@@ -9,3 +9,4 @@ class Selector(single.Selector):
         self.pagetitle = "Player Captures: Last %d days" % self.days
         self.tabletitle = ("Player", "Captures")
         self.playerkey = lambda x: len(x['captures'])
+        self.uniqueplayers = 4

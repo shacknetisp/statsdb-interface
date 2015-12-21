@@ -9,31 +9,37 @@ import time
 class Selector(rankselectors.Selector):
 
     def __init__(self, *args, **kwargs):
-        self.tabletitle = (None, None)
-        self.playerkey = None
-        self.uniqueplayers = 0
-        self.sortkey = lambda x: -x[1]
+        self.tabletitle = ("Player", "Ratio")
+        self.uniqueplayers = 2
         super(Selector, self).__init__(*args, **kwargs)
-        self.pagetitle = ""
+        self.pagetitle = "%s win ratio: Last %d days" % (
+            self.opts[0], self.days)
         self.q = {}
 
     def update(self):
         self.q.update({
             'gt-time': [time.time() - 60 * 60 * 24 * self.days],
             'gt-uniqueplayers': [self.uniqueplayers - 1],
+            self.opts[1]: [],
         })
         gs = dbselectors.get('game', self.db, self.q)
         gs.flags_none()
-        gs.weakflags(['players', 'playerdamage'], True)
+        gs.weakflags(['players'], True)
         players = {}
         for game in list(gs.multi().values()):
-            for player in list(game["players"].values()):
+            plist = list(game["players"].values())
+            best = sorted(plist, key=lambda x: -x["score"])[0]["score"]
+            for player in plist:
                 if player["handle"]:
                     if player["handle"] not in players:
-                        players[player["handle"]] = 0
-                    players[player["handle"]] += self.playerkey(player)
+                        players[player["handle"]] = [0, 0]
+                    if player["score"] >= best:
+                        players[player["handle"]][0] += 1
+                    else:
+                        players[player["handle"]][1] += 1
         with self.lock:
-            self.data = sorted(list(players.items()), key=self.sortkey)
+            self.data = sorted(list(players.items()),
+                key=lambda x: -(x[1][0] / max(x[1][1], 1)))
 
     def table(self, limit=5, pager=None):
         data = self.get()
@@ -44,9 +50,8 @@ class Selector(rankselectors.Selector):
             indexes = data[:limit]
         for p in indexes:
             with table.tr as tr:
-                if p[1]:
-                    tr(web.link('/player/', p[0], p[0]))
-                    tr(p[1])
+                tr(web.link('/player/', p[0], p[0]))
+                tr("%d [%d/%d]" % (p[1][0] / max(1, p[1][1]), p[1][0], p[1][1]))
         return table
 
     def page(self, request):

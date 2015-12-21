@@ -65,6 +65,8 @@ def multi(request, db):
         "spf": rankselectors.get('spf', db, 7).table().html(),
         "captures": rankselectors.get('captures', db, 7).table().html(),
         "bombings": rankselectors.get('bombings', db, 7).table().html(),
+        "affmvp": rankselectors.get('mvp', db, 7, "affmvp").table().html(),
+        "dmmvp": rankselectors.get('mvp', db, 7, "dmmvp").table().html(),
         "sword": rankselectors.get('weapon', db, 7,
             {"weapon": ('sword', 0)}).best(),
         "sniper": rankselectors.get('weapon', db, 7,
@@ -77,6 +79,10 @@ def multi(request, db):
 
         "maps": rankselectors.get('maps', db, 90).table().html(),
         "servers": rankselectors.get('servers', db, 90).table().html(),
+        "ffa": rankselectors.get(
+            'winners', db, 90, ('FFA', 'ffa')).table().html(),
+        "ffasurv": rankselectors.get(
+            'winners', db, 90, ('FFA Survivor', 'ffasurv')).table().html(),
     }
 
     ret = """
@@ -91,16 +97,22 @@ def multi(request, db):
     <div class='display-table float-table'>
         <h5>
         <span class="explain" title="Most Flag Captures">Captures</span></h5>
-        <table>
-            {ranks[captures]}
-        </table>
+        {ranks[captures]}
     </div>
     <div class='display-table float-table'>
         <h5>
         <span class="explain" title="Most Base Bombings">Bombings</span></h5>
-        <table>
-            {ranks[bombings]}
-        </table>
+        {ranks[bombings]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><span class="explain"
+        title="Scores from CTF and BB">CTF/BB Team Scores</span></h5>
+        {ranks[affmvp]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><span class="explain"
+        title="Scores from DM">DM Team Scores</span></h5>
+        {ranks[dmmvp]}
     </div>
     <div class='display-table float-table'>
         <h5>Best</h5>
@@ -163,6 +175,14 @@ Sniper</span></td>
                 <td>{weapwield}</td>
             </tr>
         </table>
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/ffa">FFA Win Ratio</a></h5>
+        {ranks[ffa]}
+    </div>
+    <div class='display-table float-table'>
+        <h5><a href="/ranks/ffasurv">FFA Survivor Win Ratio</a></h5>
+        {ranks[ffasurv]}
     </div>
 
     <div style="clear: both;"></div>

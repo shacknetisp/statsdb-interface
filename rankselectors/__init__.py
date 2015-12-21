@@ -20,6 +20,8 @@ selectors = [
     (['games'], 'games'),
     (['captures'], 'captures'),
     (['bombings'], 'bombings'),
+    (['mvp'], 'mvp'),
+    (['winners'], 'winners'),
 ]
 
 
