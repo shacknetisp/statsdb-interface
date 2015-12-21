@@ -13,16 +13,23 @@ alloweddays = [7, 30, 90, 180, 365]
 selectors = [
     (['maps'], 'maps'),
     (['servers'], 'servers'),
-    (['spm'], 'spm'),
-    (['dpm'], 'dpm'),
-    (['fpm'], 'fpm'),
-    (['spf'], 'spf'),
+
+    (['spm'], 'spx.spm'),
+    (['dpm'], 'spx.dpm'),
+    (['fpm'], 'spx.fpm'),
+    (['spf'], 'spx.spf'),
+
+    (['games'], 'single.games'),
+    (['captures'], 'single.captures'),
+    (['bombings'], 'single.bombings'),
+    (['mvp'], 'single.mvp'),
+
     (['weapon'], 'weapon'),
-    (['games'], 'games'),
-    (['captures'], 'captures'),
-    (['bombings'], 'bombings'),
-    (['mvp'], 'mvp'),
     (['winners'], 'winners'),
+
+    (["modes"], 'modes'),
+    (["muts", "mutators"], 'mutators'),
+    (["selections"], 'selections'),
 ]
 
 

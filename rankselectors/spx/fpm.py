@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #Frags per Minute
-from . import spx
+from rankselectors import spx
 
 
 class Selector(spx.Selector):

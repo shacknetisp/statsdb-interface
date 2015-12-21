@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import cgi
 from collections import OrderedDict
 import web
 

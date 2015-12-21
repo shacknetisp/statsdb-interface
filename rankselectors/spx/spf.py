@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #Score per Frags
-from . import spx
+from rankselectors import spx
 
 
 class Selector(spx.Selector):

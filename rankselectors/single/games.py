@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import single
+from rankselectors import single
 
 
 class Selector(single.Selector):
