@@ -30,7 +30,10 @@ class Selector(rankselectors.Selector):
         if pager is not None:
             indexes = pager.list()
         else:
-            indexes = sorted(data, key=lambda x: -data[x])[:limit]
+            if limit is not None:
+                indexes = sorted(data, key=lambda x: -data[x])[:limit]
+            else:
+                indexes = sorted(data, key=lambda x: -data[x])
         for m in indexes:
             with table.tr as tr:
                 tr(web.link('/mode/', m, redeclipse().modeimg(m)))
@@ -43,6 +46,6 @@ class Selector(rankselectors.Selector):
             <h3>{title}</h3>
             {table}
         </div>
-        """.format(table=self.table().html(),
+        """.format(table=self.table(limit=None).html(),
             title=self.pagetitle)
         return web.page(ret, self.pagetitle)
