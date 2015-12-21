@@ -19,8 +19,7 @@ class Selector(rankselectors.Selector):
         new = {}
         for game in list(gs.multi().values()):
             m = game["mode"]
-            idx = "%s %s" % (
-                web.link('/mode/', m, redeclipse().modeimg(m)),
+            idx = (web.link('/mode/', m, redeclipse().modeimg(m)),
                 redeclipse(game).mutslist(game, True, True))
             if idx not in new:
                 new[idx] = 0
@@ -30,14 +29,15 @@ class Selector(rankselectors.Selector):
 
     def table(self, limit=5, pager=None):
         data = self.get()
-        table = web.Table(["Mode", "Games"])
+        table = web.Table(["Mode", "Mutators", "Games"])
         if pager is not None:
             indexes = pager.list()
         else:
             indexes = sorted(data, key=lambda x: -data[x])[:limit]
         for m in indexes:
             with table.tr as tr:
-                tr(m)
+                tr(m[0])
+                tr(m[1])
                 tr(data[m])
         return table
 
@@ -46,7 +46,7 @@ class Selector(rankselectors.Selector):
         <a href="/ranks/modes/{days}">Single Modes</a>
         |
         <a href="/ranks/muts/{days}">Single Mutators</a>
-        <div class='display-table'>
+        <div class='display-table small-table'>
             <h3>{title}</h3>
             {table}
         </div>

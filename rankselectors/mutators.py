@@ -40,7 +40,7 @@ class Selector(rankselectors.Selector):
 
     def page(self, request):
         ret = """
-        <div class='display-table'>
+        <div class='display-table small-table'>
             <h3>{title}</h3>
             {table}
         </div>
