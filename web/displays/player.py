@@ -128,8 +128,8 @@ def single(request, db, specific):
             weapons=weaponstable.html(),
             )
     else:
-        ret = "<div class='center'><h2>No such server.</h2></div>"
-    return web.page(ret, title="Server %s" % specific)
+        ret = "<div class='center'><h2>No such player.</h2></div>"
+    return web.page(ret, title="Player %s" % specific)
 
 
 def multi(request, db):

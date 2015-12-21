@@ -90,7 +90,7 @@ def handle(request, db):
 def safe_handle(request, db):
     # Split paths and find where to call
     paths = [x for x in request.path.split('/') if x]
-    top = None
+    top = ''
     sub = None
     specific = None
     # Go through list, popping.

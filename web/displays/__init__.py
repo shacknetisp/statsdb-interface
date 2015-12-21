@@ -7,7 +7,7 @@ from redeclipse import redeclipse
 #List of displays
 #(<web calling points>, <display module>)
 displays = [
-    #(['', 'overview'], 'overview'),
+    (['', 'overview'], 'overview'),
     (['game', 'games', 'g'], 'game'),
     (['server', 'servers', 's'], 'server'),
     (['player', 'players', 'p'], 'player'),
