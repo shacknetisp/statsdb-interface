@@ -20,7 +20,7 @@ class Selector(rankselectors.Selector):
         for game in list(gs.multi().values()):
             m = game["mode"]
             idx = (web.link('/mode/', m, redeclipse().modeimg(m)),
-                redeclipse(game).mutslist(game, True, True))
+                redeclipse(game).mutslist(game, True, True) or '-')
             if idx not in new:
                 new[idx] = 0
             new[idx] += 1
