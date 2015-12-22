@@ -18,9 +18,7 @@ class Selector(rankselectors.Selector):
         gs.flags_none()
         new = {}
         for game in list(gs.multi().values()):
-            m = game["mode"]
-            idx = (web.link('/mode/', m, redeclipse().modeimg(m)),
-                redeclipse(game).mutslist(game, True, True) or '-')
+            idx = (game["mode"], game["mutators"], game["version"])
             if idx not in new:
                 new[idx] = 0
             new[idx] += 1
@@ -39,8 +37,15 @@ class Selector(rankselectors.Selector):
                 indexes = sorted(data, key=lambda x: -data[x])
         for m in indexes:
             with table.tr as tr:
-                tr(m[0])
-                tr(m[1])
+                fakegame = {
+                    "mode": m[0],
+                    "mutators": m[1],
+                    "version": m[2],
+                }
+                tr(web.link('/mode/', m[0],
+                    redeclipse(fakegame).modeimg(m[0])))
+                tr(redeclipse(fakegame).mutslist(
+                    fakegame, True, True) or '-')
                 tr(data[m])
         return table
 
