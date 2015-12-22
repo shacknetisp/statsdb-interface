@@ -22,3 +22,4 @@ Disallow: /maps/
 Disallow: /weapon/
 Disallow: /weapons/
 Disallow: /ranks/
+Disallow: /api/

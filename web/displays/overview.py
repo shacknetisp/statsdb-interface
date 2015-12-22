@@ -50,13 +50,9 @@ def multi(request, db):
             tr(web.link('/mode/', game["mode"],
                 redeclipse(game).modeimg(game["mode"])))
             tr(redeclipse(game).mutslist(game, True) or '-')
-            row = db.execute(
-                "SELECT version FROM game_servers WHERE game = %d" % gid
-                ).fetchone()
-            version = row[0]
             tr("%s [%s]" % (
                 web.link('/server/', game["server"], game["server"]),
-                version))
+                game["version"]))
             tr(web.link('/map/', game["map"], game["map"], True))
             tr(timeutils.durstr(round(game["timeplayed"])))
             tr(timeutils.agohtml(game["time"]))
