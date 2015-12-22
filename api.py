@@ -121,9 +121,28 @@ def safe_handle(request, db):
         if paths:
             specific = paths.pop(0)
         ret = {'error': 'No such selector.'}
-        if sub and sub in dbselectors.selectors:
-            selector = dbselectors.selectors[sub](request.query, db, specific)
-            ret = selector.single() if specific else selector.multi()
+        if sub == "ranks":
+            specific2 = None
+            if paths:
+                try:
+                    specific2 = int(paths.pop(0))
+                except ValueError:
+                    pass
+            if (specific and specific2 in rankselectors.alloweddays
+                and specific in rankselectors.selectors):
+                    opts = (request.query['opts'][0]
+                        if 'opts' in request.query and request.query['opts']
+                        else None)
+                    selector = rankselectors.get(specific, db, specific2, opts)
+                    ret = selector.get() if hasattr(
+                        selector, 'get') else selector.data
+            elif specific2 not in rankselectors.alloweddays or not specific2:
+                ret = {'error': 'Unacceptable number of days'}
+        else:
+            if sub and sub in dbselectors.selectors:
+                selector = dbselectors.selectors[sub](
+                    request.query, db, specific)
+                ret = selector.single() if specific else selector.multi()
         return Response(json.dumps(ret), headers={
             'Content-type': 'application/json',
         })
@@ -162,18 +181,19 @@ def safe_handle(request, db):
                 specific = int(paths.pop(0))
             except ValueError:
                 pass
-        if sub and specific in rankselectors.alloweddays and hasattr(
-            rankselectors.selectors[sub], 'page'):
-                opts = (request.query['opts'][0]
-                    if 'opts' in request.query and request.query['opts']
-                    else None)
-                out = rankselectors.get(sub, db, specific,
-                        opts
-                    ).page(request)
-                if out:
-                    return Response(out, headers={
-                        'Content-type': 'text/html',
-                    })
+        if sub and specific in rankselectors.alloweddays and (
+                sub in rankselectors.selectors
+                    ) and hasattr(rankselectors.selectors[sub], 'page'):
+                    opts = (request.query['opts'][0]
+                        if 'opts' in request.query and request.query['opts']
+                        else None)
+                    out = rankselectors.get(sub, db, specific,
+                            opts
+                        ).page(request)
+                    if out:
+                        return Response(out, headers={
+                            'Content-type': 'text/html',
+                        })
 
     return WebResponse(
         "<h2 class='center'>404 Page not Found</h2>",

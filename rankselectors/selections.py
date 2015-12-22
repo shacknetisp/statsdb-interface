@@ -49,6 +49,14 @@ class Selector(rankselectors.Selector):
                 tr(data[m])
         return table
 
+    def get(self):
+        r = {}
+        for k, v in list(self.data.items()):
+            if k[0] not in r:
+                r[k[0]] = {}
+            r[k[0]][k[1]] = v
+        return r
+
     def page(self, request):
         ret = """
         <a href="/ranks/modes/{days}">Single Modes</a>
