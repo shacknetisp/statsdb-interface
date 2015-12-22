@@ -117,7 +117,7 @@ def single(request, db, specific):
             firstago=web.link("/game/", player["games"][0],
                 timeutils.agohtml(
                     gameselector.single(player["games"][0])["time"])),
-            lastago=web.link("/game/", player["games"][0],
+            lastago=web.link("/game/", player["games"][-1],
                 timeutils.agohtml(
                     gameselector.single(player["games"][-1])["time"])),
             topmap=topmap,
