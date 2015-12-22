@@ -86,3 +86,12 @@ ul.pagelist a.current {
     color:#fff;
     text-decoration: none;
 }
+
+#infolinks {
+    border-top: 2px solid #822;
+}
+
+#infolinks a {
+    padding-right: 4px;
+    padding-left: 4px;
+}
