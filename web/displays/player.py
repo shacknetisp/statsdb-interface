@@ -6,7 +6,7 @@ import timeutils
 import utils
 import cgi
 onpagecount = 15
-recentlimit = 1000
+recentlimit = 500
 
 
 def single(request, db, specific):
@@ -108,7 +108,7 @@ def single(request, db, specific):
                 All Games...</a></h5>
             </div>
             <div class='display-table small-table'>
-                <h3>Weapon Statistics</h3>
+                <h3>Weapon Statistics: Last {recentnum} games.</h3>
                 {weapons}
             </div>
         </div>
@@ -126,6 +126,7 @@ def single(request, db, specific):
             fratio=fratio,
             games=gamestable.html(),
             weapons=weaponstable.html(),
+            recentnum=recentlimit,
             )
     else:
         ret = "<div class='center'><h2>No such player.</h2></div>"
