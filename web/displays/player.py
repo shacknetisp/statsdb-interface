@@ -98,7 +98,7 @@ def single(request, db, specific):
                 </div>
             </div>
             <div style="clear: both;"></div>
-            <h3>Recent Games</h3>
+            <h3>Last {recentnum} Games</h3>
             Frag Ratio: {fratio}<br>
             DPM: {dpm}<br>
             <div class='display-table'>
@@ -108,7 +108,7 @@ def single(request, db, specific):
                 All Games...</a></h5>
             </div>
             <div class='display-table small-table'>
-                <h3>Weapon Statistics: Last {recentnum} games.</h3>
+                <h3>Weapon Statistics</h3>
                 {weapons}
             </div>
         </div>
