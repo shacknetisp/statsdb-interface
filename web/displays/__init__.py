@@ -30,12 +30,17 @@ for d in displays:
 displays = nd
 
 
-def weaponstable(weapons, totalwielded, order):
+def weaponstable(weapons, totalwielded, order, games=None):
+    title = "Weapons"
+    if len(order) == 1:
+        title = weapons[order[0]]["name"].capitalize()
+    if games is not None:
+        title = "%s: Last %d games" % (title, games)
     table = web.Table(
         ["Weapon", "Loadout", "Wielded",
             '<abbr title="Damage Per Minute">DPM</abbr>',
             '<abbr title="Frags Per Minute">FPM</abbr>'],
-                'Weapons', 'display-table small-table')
+                title, 'display-table small-table')
     for weapon in order:
         with table.tr as tr:
             weapon = weapons[weapon]
@@ -65,5 +70,5 @@ def weaponstable(weapons, totalwielded, order):
     return table
 
 
-def weapontable(weapon, totalwielded):
-    return weaponstable({'a': weapon}, totalwielded, ['a'])
+def weapontable(weapon, totalwielded, games=None):
+    return weaponstable({'a': weapon}, totalwielded, ['a'], games)
