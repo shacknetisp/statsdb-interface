@@ -2,6 +2,7 @@
 from fnmatch import fnmatch
 import importlib
 import cfg
+import utils
 cache = {}
 fcache = {
     "mode": {},
@@ -19,12 +20,12 @@ def redeclipse(s=None):
         s = {"version": s}
     if s["version"] in cache:
         return cache[s["version"]]
+    version = utils.version(s["version"])
     for m, v in list(cfg.get('versions').items()):
-            for match in v:
-                if fnmatch(s["version"], match):
-                    cache[s["version"]] = importlib.import_module(
-                        "redeclipse.re%s" % m).RE()
-                    return cache[s["version"]]
+        if (version >= utils.version(v[0]) and version <= utils.version(v[1])):
+            cache[s["version"]] = importlib.import_module(
+                "redeclipse.re%s" % m).RE()
+            return cache[s["version"]]
     return None
 
 
@@ -78,6 +79,27 @@ class sql_re_mut:
                 vcache[gameid] = version
             fcache["mut"][(gameid, mut)] = redeclipse(version).mutators[mut]
             return fcache["mut"][(gameid, mut)]
+        except:
+            import traceback
+            traceback.print_exc()
+            raise
+
+
+@functions.append
+class sql_re_verin:
+
+    numparams = 3
+    name = "re_verin"
+
+    def __init__(self, db):
+        self.db = db
+
+    def __call__(self, version, lower, upper):
+        try:
+            version = utils.version(version)
+            lower = utils.version(lower)
+            upper = utils.version(upper)
+            return (version >= lower and version <= upper)
         except:
             import traceback
             traceback.print_exc()

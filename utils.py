@@ -18,3 +18,7 @@ def sok(d):
     if 'error' in d:
         return False
     return bool(d)
+
+
+def version(s):
+    return tuple([int(n) for n in s.split('.')])

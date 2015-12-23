@@ -137,8 +137,9 @@ class Selector:
             return "1 = 1"
         return """%s IN (SELECT game FROM game_servers
         WHERE %s)""" % (i,
-            ' OR version GLOB '.join(['1 = 0'] + [
-                ("'%s'" % x) for x in cfg.get('countversions')]),
+            ' OR re_verin(version, '.join(['1 = 0'] + [
+                ("'%s', '%s')" % (x[0], x[1]))
+                for x in cfg.get('countversions')]),
             )
 
     #Recent param, < 0 means no limit.
