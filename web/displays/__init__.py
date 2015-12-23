@@ -62,11 +62,11 @@ def weaponstable(weapons, totalwielded, order, games=None):
                 weapon["damage2"] / (psdiv / 60),
                 (weapon["damage1"] + weapon["damage2"]) / (
                     psdiv / 60)))
-            tr("<span class='explain' title='%d %d'>%d</span></td>" % (
-                weapon["frags1"] / (psdiv / 60),
-                weapon["frags2"] / (psdiv / 60),
-                (weapon["frags1"] + weapon["frags2"]) / (
-                    psdiv / 60)))
+            tr("<span class='explain' title='%.1f %.1f'>%.1f</span></td>" % (
+                round(weapon["frags1"] / (psdiv / 60), 1),
+                round(weapon["frags2"] / (psdiv / 60), 1),
+                round((weapon["frags1"] + weapon["frags2"]) / (psdiv / 60), 1)
+                ))
     return table
 
 
