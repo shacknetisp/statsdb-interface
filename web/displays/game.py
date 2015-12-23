@@ -65,17 +65,9 @@ def single(request, db, specific):
                                 ))
                             tr(redeclipse(game).scorestr(game, team["score"]))
 
-        ffarounds = ""
+        ffarounds = web.Table(["Round", "Winner", "Versus"],
+            "Teams", "display-table small-table")
         if "ffarounds" in game:
-            ffarounds += """
-            <div class='display-table'>
-                <h3>Rounds</h3>
-                <table>
-                    <tr>
-                        <th>Round</th>
-                        <th>Winner</th>
-                        <th>Versus</th>
-                    </tr>"""
             donerounds = []
             for ffaround in game["ffarounds"]:
                 if ffaround["round"] in donerounds:
@@ -93,27 +85,26 @@ def single(request, db, specific):
                         versuslist.append(web.linkif(
                             "/player/", ffaround_s["playerhandle"],
                             game["players"][ffaround_s["player"]]["name"]))
-                if haswinner and ffaround["winner"]:
-                    ffarounds += "<tr>"
-                    ffarounds += "<td>%d</td>" % ffaround["round"]
-                    ffarounds += web.linkif(
-                        "/player/", ffaround["playerhandle"],
-                        game["players"][ffaround["player"]]["name"])
-                    ffarounds += "<td>"
-                    ffarounds += ", ".join(versuslist)
-                    ffarounds += "</td>"
-                    ffarounds += "</tr>"
-                elif not haswinner:
-                    donerounds.append(ffaround["round"])
-                    if len(versuslist) == 1:
-                        ffarounds += """<tr><td>%d</td><td><i>A bot</i>
-                        </td><td>%s</td></tr>""" % (ffaround["round"],
-                            ", ".join(versuslist))
-                    else:
-                        ffarounds += """<tr><td>%d</td><td><i>Epic fail!</i>
-                        </td><td>%s</td></tr>""" % (ffaround["round"],
-                            ", ".join(versuslist))
-            ffarounds += "</table></div>"
+                with ffarounds.tr as tr:
+                    if haswinner and ffaround["winner"]:
+                            tr(ffaround["round"])
+                            tr(web.linkif(
+                                "/player/", ffaround["playerhandle"],
+                                game["players"][ffaround["player"]]["name"]))
+                            if versuslist:
+                                tr(", ".join(versuslist))
+                            else:
+                                tr("<i>AI</i>")
+                    elif not haswinner:
+                        donerounds.append(ffaround["round"])
+                        if len(versuslist) == 1:
+                            tr(ffaround["round"])
+                            tr('<i>AI</i>')
+                            tr(", ".join(versuslist))
+                        else:
+                            tr(ffaround["round"])
+                            tr('<i>Epic fail!</i>')
+                            tr(", ".join(versuslist))
 
         affinitiestable = None
         if "captures" in game:
@@ -176,7 +167,7 @@ def single(request, db, specific):
             teams=teamstable.html(True) if teamstable is not None else "",
             affinities=affinitiestable.html(True)
                 if affinitiestable is not None else "",
-            ffarounds=ffarounds,
+            ffarounds=ffarounds.html(True) if "ffarounds" in game else "",
             weapons=weaponstable.html(True)
                 if weaponstable is not None else "",
             )
