@@ -134,8 +134,8 @@ def safe_handle(request, db):
                         if 'opts' in request.query and request.query['opts']
                         else None)
                     selector = rankselectors.get(specific, db, specific2, opts)
-                    ret = selector.get() if hasattr(
-                        selector, 'get') else selector.data
+                    ret = selector.apiget() if hasattr(
+                        selector, 'apiget') else selector.data
             elif specific2 not in rankselectors.alloweddays or not specific2:
                 ret = {'error': 'Unacceptable number of days'}
         else:

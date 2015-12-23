@@ -49,7 +49,7 @@ class Selector(rankselectors.Selector):
                 tr(data[m])
         return table
 
-    def get(self):
+    def apiget(self):
         r = {}
         for k, v in list(self.data.items()):
             if k[0] not in r:
