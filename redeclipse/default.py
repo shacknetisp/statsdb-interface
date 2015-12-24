@@ -51,7 +51,7 @@ class RE:
                 for m in muts:
                     out.append(web.link('/mut/', m, m))
                 return '-'.join(out)
-            outl = chunks([web.link('/mut/', m, m) for m in muts], 3)
+            outl = chunks([web.link('/mut/', m, m) for m in muts], 5)
             htmll = []
             for chunk in outl:
                 htmll.append(" ".join(chunk))
