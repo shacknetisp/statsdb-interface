@@ -23,7 +23,8 @@ def single(request, db, specific):
             game = gs.single(gid)
             with recentgames.tr as tr:
                 tr(web.link("/game/", gid, "Game #%d" % gid))
-                tr(redeclipse(game).modeimg(game["mode"]))
+                tr(web.link("/mode/", game["mode"],
+                    redeclipse(game).modeimg(game["mode"])))
                 tr(redeclipse(game).mutslist(game, True) or '-')
                 tr(web.link("/map/", game["map"], game["map"], True))
                 tr(timeutils.durstr(round(game["timeplayed"])))
