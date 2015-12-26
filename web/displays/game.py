@@ -32,7 +32,8 @@ def single(request, db, specific):
             ["Name", "Score", "Handle", "Alive", "Frags", "Deaths"],
             "Players", "display-table")
         for player in sorted(
-            list(game["players"].values()), key=lambda x: x["name"]):
+            list(game["players"].values()), key=lambda x: (
+                redeclipse(game).scorenum(game, x["score"]))):
                 with playerstable.tr as tr:
                     tr(web.linkif('/player/', player["handle"], player["name"]))
                     tr(redeclipse(game).scorestr(game, player["score"]))

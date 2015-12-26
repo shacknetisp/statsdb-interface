@@ -74,6 +74,12 @@ class RE:
                 return timeutils.durstr(score / 1000, dec=True, full=True)
         return str(score)
 
+    def scorenum(self, game, score):
+        if (game["mode"] == self.modes["race"]
+            and game["mutators"] & self.mutators["timed"]):
+                return score
+        return -score
+
     def modeimg(self, mode, c=24):
         return '''<img class="img%d"
         title="%s" src="%s" alt="%s">''' % (c, self.modestr[mode],
