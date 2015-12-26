@@ -69,7 +69,7 @@ def single(request, db, specific):
             "Teams", "display-table small-table")
         if "ffarounds" in game:
             donerounds = []
-            for ffaround in game["ffarounds"]:
+            for ffaround in sorted(game["ffarounds"], key=lambda x: x["round"]):
                 if ffaround["round"] in donerounds:
                     continue
                 haswinner = False
