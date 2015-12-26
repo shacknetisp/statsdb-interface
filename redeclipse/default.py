@@ -77,7 +77,7 @@ class RE:
     def scorenum(self, game, score):
         if (game["mode"] == self.modes["race"]
             and game["mutators"] & self.mutators["timed"]):
-                return score
+                return score if score != 0 else 99999999
         return -score
 
     def modeimg(self, mode, c=24):
