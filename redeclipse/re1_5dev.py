@@ -29,6 +29,7 @@ class RE(default.RE):
         modes["dac"]: ["quick", "king"],
         modes["bb"]: ["hold", "basket", "attack"],
         modes["race"]: ["marathon", "timed", "gauntlet"],
+        modes["dm"]: ["gladiator"],
         }
 
     #Fancy Mode Names
