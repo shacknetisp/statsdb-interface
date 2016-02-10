@@ -53,19 +53,17 @@ def weaponstable(weapons, totalwielded, order, games=None):
                 weapon["timeloadout"] / max(1, totalwielded) * 100))
             tr("%d%%" % (
                 weapon["timewielded"] / max(1, totalwielded) * 100))
-            psdiv = (weapon["timeloadout"]
-                if weap == "melee"
-                else weapon["timewielded"])
-            psdiv = max(psdiv, 1)
+            psdiv = max(weapon["timewielded"], 1) / 60
+            psdiv2 = max(weapon["timeloadout"]
+                if weap == "melee" else weapon["timewielded"], 1) / 60
             tr("<span class='explain' title='%d %d'>%d</span>" % (
-                weapon["damage1"] / (psdiv / 60),
-                weapon["damage2"] / (psdiv / 60),
-                (weapon["damage1"] + weapon["damage2"]) / (
-                    psdiv / 60)))
+                weapon["damage1"] / psdiv,
+                weapon["damage2"] / psdiv2,
+                weapon["damage1"] / psdiv + weapon["damage2"] / psdiv2))
             tr("<span class='explain' title='%.1f %.1f'>%.1f</span></td>" % (
-                round(weapon["frags1"] / (psdiv / 60), 1),
-                round(weapon["frags2"] / (psdiv / 60), 1),
-                round((weapon["frags1"] + weapon["frags2"]) / (psdiv / 60), 1)
+                round(weapon["frags1"] / psdiv, 1),
+                round(weapon["frags2"] / psdiv2, 1),
+                round(weapon["frags1"] / psdiv + weapon["frags2"] / psdiv2, 1)
                 ))
     return table
 
