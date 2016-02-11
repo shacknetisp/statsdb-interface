@@ -5,9 +5,12 @@ import cfg
 
 
 def page(content, title="", css="", debug=""):
+    #Insert content into template
+    #Replace non-ascii characters with XML escapes
     ret = open("files/html/base.html").read().format(
         content=content,
-        title=(": " + title) if title else "", css=css, debuginfo=debug)
+        title=(": " + title) if title else "", css=css, debuginfo=debug).encode(
+            'ascii', 'xmlcharrefreplace')
     return ret
 
 

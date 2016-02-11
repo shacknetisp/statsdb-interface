@@ -22,11 +22,12 @@ def single(request, db, specific):
         server = ss.single(game["server"])
         # Display the server's desc & version from this game.
         serverrow = db.execute(
-            """SELECT version,desc
+            """SELECT version,desc,host,port
             FROM game_servers WHERE game = %d""" % game["id"]
             ).fetchone()
         server["version"] = serverrow[0]
-        server["desc"] = cgi.escape(serverrow[1])
+        server["desc"] = cgi.escape(serverrow[1]) or cgi.escape(
+            "%s:%d" % (serverrow[2], serverrow[3]))
 
         playerstable = web.Table(
             ["Name", "Score", "Handle", "Alive", "Frags", "Deaths"],
