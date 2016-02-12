@@ -56,6 +56,8 @@ class sql_re_mode:
             traceback.print_exc()
             raise
 
+sql_re_mut_modecache = {}
+
 
 @functions.append
 class sql_re_mut:
@@ -78,6 +80,44 @@ class sql_re_mut:
                         gameid)).fetchone()[0]
                 vcache[gameid] = version
             fcache["mut"][(gameid, mut)] = redeclipse(version).mutators[mut]
+            return fcache["mut"][(gameid, mut)]
+        except:
+            import traceback
+            traceback.print_exc()
+            raise
+
+
+@functions.append
+class sql_re_mut_check:
+
+    numparams = 2
+    name = "re_mut_check"
+
+    def __init__(self, db):
+        self.db = db
+
+    def __call__(self, gameid, mut):
+        try:
+            if (gameid, mut) in fcache["mut"]:
+                return fcache["mut"][(gameid, mut)]
+            if gameid in vcache:
+                version = vcache[gameid]
+            else:
+                version = self.db.con.execute(
+                    "SELECT version FROM game_servers WHERE game = %d" % (
+                        gameid)).fetchone()[0]
+                vcache[gameid] = version
+            if gameid in sql_re_mut_modecache:
+                mode = sql_re_mut_modecache[gameid]
+            else:
+                mode = self.db.con.execute(
+                    "SELECT mode FROM games WHERE id = %d" % (
+                        gameid)).fetchone()[0]
+                sql_re_mut_modecache[gameid] = mode
+            fcache["mut"][(gameid, mut)] = 0
+            if (mut in redeclipse(version).gspmuts[mode] or
+                mut in redeclipse(version).basemuts):
+                fcache["mut"][(gameid, mut)] = redeclipse(version).mutators[mut]
             return fcache["mut"][(gameid, mut)]
         except:
             import traceback
