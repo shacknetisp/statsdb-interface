@@ -28,7 +28,7 @@ class RE(default.RE):
         modes["ctf"]: ["quick", "defend", "protect"],
         modes["dac"]: ["quick", "king"],
         modes["bb"]: ["hold", "basket", "attack"],
-        modes["race"]: ["marathon", "timed", "gauntlet"],
+        modes["race"]: ["timed", "marathon", "gauntlet"],
         modes["dm"]: ["gladiator", "oldschool"],
         }
 

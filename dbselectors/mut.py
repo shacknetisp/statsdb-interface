@@ -19,7 +19,7 @@ class Selector(dbselectors.Selector):
             "recentgames": {},
             }
         gamerows = list(self.db.execute(
-            """SELECT id FROM games
+            """SELECT * FROM games
             WHERE mutators & re_mut_check(id, '%s')""" % ret["id"]))
         ret["games"] = [r[0] for r in gamerows]
 

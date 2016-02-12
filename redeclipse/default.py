@@ -12,7 +12,7 @@ class RE:
             self.cmodestr[v] = k
 
         #Create Mutator Lists
-        gspnum = self.basemuts.index("gsp") - 1
+        gspnum = self.basemuts.index("gsp")
         self.basemuts = self.tomuts(self.basemuts)
         del self.basemuts["gsp"]
         self.mutators.update(self.basemuts)
