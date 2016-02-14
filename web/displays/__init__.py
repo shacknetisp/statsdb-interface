@@ -38,8 +38,8 @@ def weaponstable(weapons, totalwielded, order, games=None):
         title = "%s: Last %d games" % (title, games)
     table = web.Table(
         ["Weapon", "Loadout", "Wielded",
-            '<abbr title="Damage Per Minute">DPM</abbr>',
-            '<abbr title="Frags Per Minute">FPM</abbr>'],
+            '<abbr title="Damage Per Minute Wielded">DPM</abbr>',
+            '<abbr title="Frags Per Minute Wielded">FPM</abbr>'],
                 title, 'display-table small-table')
     for weapon in order:
         with table.tr as tr:
