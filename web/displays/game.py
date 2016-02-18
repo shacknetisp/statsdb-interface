@@ -136,7 +136,7 @@ def single(request, db, specific):
             for w in list(game['weapons'].values())
             if w['timewielded'] is not None])
         weaponstable = web.displays.weaponstable(game['weapons'],
-            totalwielded, redeclipse(game).weaponlist)
+            totalwielded, redeclipse(game).weaponlist, version=game)
         if game["mode"] == redeclipse(game).modes['race']:
             weaponstable = None
 

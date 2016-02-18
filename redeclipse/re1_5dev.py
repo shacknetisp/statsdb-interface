@@ -8,7 +8,9 @@ class RE(default.RE):
     # Weapon Lists
     loadoutweaponlist = ["pistol", "sword", "shotgun",
         "smg", "flamer", "plasma", "zapper", "rifle"]
-    weaponlist = ["melee"] + loadoutweaponlist + ["grenade", "mine", "rocket"]
+    weaponlist = ["claw"] + loadoutweaponlist + ["grenade", "mine", "rocket",
+        "melee"]
+    notwielded = ["melee1", "melee2"]
 
     #Mode Lists
     modes = {

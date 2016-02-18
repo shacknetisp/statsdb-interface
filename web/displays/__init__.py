@@ -30,7 +30,7 @@ for d in displays:
 displays = nd
 
 
-def weaponstable(weapons, totalwielded, order, games=None):
+def weaponstable(weapons, totalwielded, order, games=None, version=None):
     title = "Weapons"
     if len(order) == 1:
         title = weapons[order[0]]["name"].capitalize()
@@ -51,11 +51,16 @@ def weaponstable(weapons, totalwielded, order, games=None):
                 '%s %s' % (redeclipse().weaponimg(weap), weap)))
             tr("%d%%" % (
                 weapon["timeloadout"] / max(1, totalwielded) * 100))
-            tr("%d%%" % (
-                weapon["timewielded"] / max(1, totalwielded) * 100))
-            psdiv = max(weapon["timewielded"], 1) / 60
+            nw = redeclipse(version).notwielded
+            if (weap + '1') in nw and (weap + '2') in nw:
+                tr("-")
+            else:
+                tr("%d%%" % (
+                    weapon["timewielded"] / max(1, totalwielded) * 100))
+            psdiv = max(weapon["timeloadout"]
+                if (weap + '1') in nw else weapon["timewielded"], 1) / 60
             psdiv2 = max(weapon["timeloadout"]
-                if weap == "melee" else weapon["timewielded"], 1) / 60
+                if (weap + '2') in nw else weapon["timewielded"], 1) / 60
             tr("<span class='explain' title='%d %d'>%d</span>" % (
                 weapon["damage1"] / psdiv,
                 weapon["damage2"] / psdiv2,
@@ -68,5 +73,5 @@ def weaponstable(weapons, totalwielded, order, games=None):
     return table
 
 
-def weapontable(weapon, totalwielded, games=None):
-    return weaponstable({'a': weapon}, totalwielded, ['a'], games)
+def weapontable(weapon, totalwielded, games=None, version=None):
+    return weaponstable({'a': weapon}, totalwielded, ['a'], games, version)

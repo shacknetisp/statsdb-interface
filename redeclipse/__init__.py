@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from fnmatch import fnmatch
 import importlib
 import cfg
 import utils

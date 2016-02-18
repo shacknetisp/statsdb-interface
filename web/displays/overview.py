@@ -19,8 +19,8 @@ def multi(request, db):
         weapons[name] = weapon
 
     topweapons = {
-        'wield': ('melee', 0),
-        'dpm': ('melee', 0),
+        'wield': (redeclipse().weaponlist[0], 0),
+        'dpm': (redeclipse().weaponlist[0], 0),
         'totalwielded': 0,
         }
     if weapons:
