@@ -68,7 +68,7 @@ def single(request, db, specific):
                             tr(redeclipse(game).scorestr(game, team["score"]))
 
         ffarounds = web.Table(["Round", "Winner", "Versus"],
-            "Teams", "display-table small-table")
+            "Rounds", "display-table small-table")
         if "ffarounds" in game:
             donerounds = []
             for ffaround in sorted(game["ffarounds"], key=lambda x: x["round"]):
