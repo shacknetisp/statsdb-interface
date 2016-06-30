@@ -25,7 +25,9 @@ def redeclipse(s=None):
             cache[s["version"]] = importlib.import_module(
                 "redeclipse.re%s" % m).RE()
             return cache[s["version"]]
-    return None
+    cache[s["version"]] = importlib.import_module(
+        "redeclipse.re%s" % defaultversion).RE()
+    return cache[s["version"]]
 
 
 @functions.append
