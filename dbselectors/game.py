@@ -105,16 +105,20 @@ class Selector(dbselectors.Selector):
                                 player["bombings"].append(bombing)
 
                     if self.flags["playerweapons"]:
-                        for weapon in redeclipse(ret).weaponlist:
-                            w = {'name': weapon}
-                            for t in redeclipse(ret).weapcols:
-                                try:
-                                    w[t] = self.db.execute("""
+                        cols = ["weapon"] + redeclipse(ret).weapcols
+                        for row in self.db.execute("""
                                     SELECT %s FROM game_weapons
                                     WHERE game = %d
-                                    AND player = %d AND weapon = ?""" % (
-                                        t, ret['id'], player_row[7]
-                                        ), (weapon,)).fetchone()[0]
+                                    AND player = %d""" % (
+                                        ','.join(cols), ret['id'], player_row[7]
+                                        )):
+                            weapon = row[0]
+                            w = {'name': weapon}
+                            for colidx in range(len(cols) - 1):
+                                colidx += 1
+                                t = cols[colidx]
+                                try:
+                                    w[t] = row[colidx]
                                 except TypeError:
                                     w[t] = 0
                             player["weapons"][weapon] = w
