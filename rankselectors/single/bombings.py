@@ -10,3 +10,4 @@ class Selector(single.Selector):
         self.tabletitle = ("Player", "Bombings")
         self.playerkey = lambda x: len(x['bombings'])
         self.uniqueplayers = 4
+        self.extraflags = ["affinities", "playeraffinities"]

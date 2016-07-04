@@ -16,6 +16,7 @@ class Selector(rankselectors.Selector):
         super(Selector, self).__init__(*args, **kwargs)
         self.pagetitle = ""
         self.q = {}
+        self.extraflags = []
 
     def update(self):
         self.q.update({
@@ -24,7 +25,7 @@ class Selector(rankselectors.Selector):
         })
         gs = dbselectors.get('game', self.db, self.q)
         gs.flags_none()
-        gs.weakflags(['players', 'playerdamage'], True)
+        gs.weakflags(['players', 'playerdamage'] + self.extraflags, True)
         players = {}
         for game in list(gs.multi().values()):
             for player in list(game["players"].values()):
@@ -50,7 +51,7 @@ class Selector(rankselectors.Selector):
         return table
 
     def page(self, request):
-        data = self.get()
+        data = [x for x in self.get() if x[1] > 0]
         pager = web.Pager(request, 10, data)
         ret = """
         <div class='display-table'>
