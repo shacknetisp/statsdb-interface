@@ -32,17 +32,18 @@ class Selector(rankselectors.Selector):
                     if p['handle'] not in d:
                         d[p['handle']] = 0
                     d[p['handle']] += p['timealive'] / 60
-                    if key[1] == 0:
-                        players[p['handle']] += (
-                            p['weapons'][key[0]]['damage1']
-                            + p['weapons'][key[0]]['damage2']
-                            + ((p['weapons'][key[0]]['frags1']
-                            + p['weapons'][key[0]]['frags2']) * 100))
-                    else:
-                        players[p['handle']] += (
-                            p['weapons'][key[0]]['damage%d' % key[1]]
-                            + ((p['weapons'][key[0]][
-                                'frags%d' % key[1]]) * 100))
+                    if key[0] in p['weapons']:
+                        if key[1] == 0:
+                            players[p['handle']] += (
+                                p['weapons'][key[0]]['damage1']
+                                + p['weapons'][key[0]]['damage2']
+                                + ((p['weapons'][key[0]]['frags1']
+                                + p['weapons'][key[0]]['frags2']) * 100))
+                        else:
+                            players[p['handle']] += (
+                                p['weapons'][key[0]]['damage%d' % key[1]]
+                                + ((p['weapons'][key[0]][
+                                    'frags%d' % key[1]]) * 100))
         for p in players:
             players[p] /= max(1, d[p])
             players[p] = round(players[p])
