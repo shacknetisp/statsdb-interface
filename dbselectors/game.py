@@ -106,19 +106,19 @@ class Selector(dbselectors.Selector):
 
                     if self.flags["playerweapons"]:
                         cols = ["weapon"] + redeclipse(ret).weapcols
-                        for row in self.db.execute("""
+                        for wrow in self.db.execute("""
                                     SELECT %s FROM game_weapons
                                     WHERE game = %d
                                     AND player = %d""" % (
                                         ','.join(cols), ret['id'], player_row[7]
                                         )):
-                            weapon = row[0]
+                            weapon = wrow[0]
                             w = {'name': weapon}
                             for colidx in range(len(cols) - 1):
                                 colidx += 1
                                 t = cols[colidx]
                                 try:
-                                    w[t] = row[colidx]
+                                    w[t] = wrow[colidx]
                                 except TypeError:
                                     w[t] = 0
                             player["weapons"][weapon] = w
