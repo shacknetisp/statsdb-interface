@@ -178,7 +178,7 @@ Sniper</span></td>
         {ranks[ffa]}
     </div>
     <div class='display-table float-table'>
-        <h5><a href="/ranks/winners/180?&opts=ffasurv"">
+        <h5><a href="/ranks/winners/180?&opts=ffasurv">
         FFA Survivor Win Ratio</a></h5>
         {ranks[ffasurv]}
     </div>
@@ -186,9 +186,7 @@ Sniper</span></td>
     <div style="clear: both;"></div>
     <div class='display-table'>
         <h5><a href="/games">Latest Games</a></h5>
-        <table>
-            {games}
-        </table>
+        {games}
     </div>
     <div style="clear: both;"></div>
     """.format(

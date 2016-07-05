@@ -19,14 +19,15 @@ class Selector(rankselectors.Selector):
         self.uniqueplayers = 2
         super(Selector, self).__init__(*args, **kwargs)
         self.pagetitle = "%s win ratio: Last %d days" % (
-            titles[self.opts] if self.opts in titles else "", self.days)
+            titles[str(self.opts)]
+            if str(self.opts) in titles else "", self.days)
         self.q = {}
 
     def update(self):
         self.q.update({
             'gt-time': [time.time() - 60 * 60 * 24 * self.days],
             'gt-uniqueplayers': [self.uniqueplayers - 1],
-            self.opts: [],
+            str(self.opts): [],
         })
         gs = dbselectors.get('game', self.db, self.q)
         gs.flags_none()
@@ -61,7 +62,7 @@ class Selector(rankselectors.Selector):
         return table
 
     def page(self, request):
-        if self.opts not in titles:
+        if str(self.opts) not in titles:
             return False
         data = self.get()
         pager = web.Pager(request, 10, data)
