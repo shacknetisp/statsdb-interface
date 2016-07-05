@@ -27,7 +27,8 @@ class Selector(rankselectors.Selector):
 
     def table(self, limit=5, pager=None):
         data = self.get()
-        table = web.Table(["Mode", "Mutators", "Games"])
+        table = web.Table(['<a href="/ranks/modes/%d">Mode</a>' % self.days,
+            '<a href="/ranks/muts/%d">Mutators</a>' % self.days, "Games"])
         if pager is not None:
             indexes = pager.list()
         else:
@@ -58,14 +59,14 @@ class Selector(rankselectors.Selector):
         return r
 
     def page(self, request):
+        data = self.get()
+        pager = web.Pager(request, 20, data)
         ret = """
-        <a href="/ranks/modes/{days}">Single Modes</a>
-        |
-        <a href="/ranks/muts/{days}">Single Mutators</a>
-        <div class='display-table small-table'>
+        <div class='display-table'>
             <h3>{title}</h3>
             {table}
+            {pager}
         </div>
-        """.format(table=self.table(limit=None).html(),
-            title=self.pagetitle, days=self.days)
+        """.format(table=self.table(pager=pager).html(),
+            pager=pager.html(), title=self.pagetitle)
         return web.page(ret, self.pagetitle)
