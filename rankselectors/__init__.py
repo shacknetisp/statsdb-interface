@@ -6,7 +6,7 @@ from threading import Lock
 import copy
 
 cache = {}
-alloweddays = [7, 30, 90, 180, 365]
+alloweddays = [1, 7, 30, 90, 180, 365]
 
 #List of selectors
 #(<api calling points>, <rank selector module>)
