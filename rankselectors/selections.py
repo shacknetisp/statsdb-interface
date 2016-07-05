@@ -60,7 +60,7 @@ class Selector(rankselectors.Selector):
 
     def page(self, request):
         data = self.get()
-        pager = web.Pager(request, 20, data)
+        pager = web.Pager(request, 20, sorted(data, key=lambda x: -data[x]))
         ret = """
         <div class='display-table'>
             <h3>{title}</h3>
