@@ -66,8 +66,9 @@ def multi(request, db):
     gameselector.flags_none()
 
     servers = serverselector.multi()
+    fservers = [x for x in servers if servers[x]["games"]]
     pager = web.Pager(request, onpagecount,
-        sorted(servers, key=lambda x: -servers[x]["games"][-1]))
+        sorted(fservers, key=lambda x: -servers[x]["games"][-1]))
     servertable = web.Table(
         ["Handle", "Description", "Games", "First Game", "Latest Game"])
     for handle in pager.list():
