@@ -94,7 +94,7 @@ class Selector(dbselectors.Selector):
                                 """SELECT (sum(damage1) + sum(damage2))
                                 FROM game_weapons
                                 WHERE game = %d AND player = %s""" % (
-                                    row[0], player["id"])).fetchone()[0]
+                                    row[0], player["id"])).fetchone()[0] or 0
 
                     if self.flags["playeraffinities"]:
                         for capture in captures:
