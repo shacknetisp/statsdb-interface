@@ -32,7 +32,7 @@ def single(request, db, specific):
 
         # Race Times
         racetable = web.Table(["Time", "Player", "Handle", "Game", "When"])
-        for race in gmap["topraces"][:5]:
+        for race in gmap["topraces"][:3]:
             with racetable.tr as tr:
                 tr(timeutils.durstr(race["time"] / 1000, dec=True, full=True))
                 tr(web.linkif('/player/',
@@ -50,10 +50,30 @@ def single(request, db, specific):
         </div>
         """ % racetable.html()
 
+        eracetable = web.Table(["Time", "Player", "Handle", "Game", "When"])
+        for race in gmap["toperaces"][:3]:
+            with eracetable.tr as tr:
+                tr(timeutils.durstr(race["time"] / 1000, dec=True, full=True))
+                tr(web.linkif('/player/',
+                    race["gameplayer"]["handle"], race["gameplayer"]["name"]))
+                tr(web.linkif('/player/',
+                    race["gameplayer"]["handle"],
+                    race["gameplayer"]["handle"] or '-'))
+                tr(web.link('/game/', race["game"]["id"],
+                    "Game #%d" % race["game"]["id"]))
+                tr(timeutils.agohtml(race["game"]["time"]))
+        eracetimes = """
+        <div class='display-table small-table'>
+            <h3>Top Endurance Race Times</h3>
+            %s
+        </div>
+        """ % eracetable.html()
+
         ret += """
         <div class="center">
             <h2>{map[name]}</h2>
             {racetimes}
+            {eracetimes}
             <div class='display-table'>
                 <h3>Recent Games</h3>
                 {recentgames}
@@ -63,6 +83,7 @@ def single(request, db, specific):
         """.format(map=gmap,
             recentgames=recentgames.html(),
             racetimes=racetimes if gmap["toprace"]["time"] else '',
+            eracetimes=eracetimes if gmap["toperace"]["time"] else '',
             pages=pager.html())
     else:
         ret = "<div class='center'><h2>No such map.</h2></div>"
@@ -81,7 +102,7 @@ def multi(request, db):
     pager = web.Pager(request, onpagecount,
         sorted(maps, key=lambda x: -maps[x]["games"][-1]))
     maptable = web.Table(["Name", "Games",
-        "First Game", "Latest Game", "Best Race Time"])
+        "First Game", "Latest Game", '<a href="/racemaps">Best Race Time</a>'])
     for mapname in pager.list():
         gmap = maps[mapname]
         firstgame = gameselector.single(gmap["games"][0])

@@ -10,6 +10,40 @@ class Selector(dbselectors.Selector):
         self.flags = ["recentgames", "race"]
         super(Selector, self).__init__(*args, **kwargs)
 
+    def getracetimes(self, m, gs, n, extra=""):
+        racetimes = []
+        for row in self.db.execute(
+            """SELECT * FROM games
+            WHERE map = ?
+            AND mode = re_mode(id, 'race')
+            AND(mutators & re_mut(id, 'timed'))
+            %s
+            AND %s
+            AND (mutators & re_mut(id, 'freestyle')) = 0""" % (extra,
+                self.vlimit("id")), (m['name'],)):
+                game = gs.fromrow(row)
+                finishedplayers = [
+                    p for p in list(game["players"].values())
+                    if p["score"] > 0]
+                for p in finishedplayers:
+                    rtime = {}
+                    rtime["time"] = p["score"]
+                    rtime["gameplayer"] = p
+                    rtime["game"] = game
+                    racetimes.append(rtime)
+        racetimes = sorted(racetimes, key=lambda x: x["time"])
+        tmpracetimes = []
+        handles = []
+        for rtime in racetimes:
+            if rtime["gameplayer"]["handle"] not in handles:
+                tmpracetimes.append(rtime)
+            if rtime["gameplayer"]["handle"]:
+                handles.append(rtime["gameplayer"]["handle"])
+        racetimes = tmpracetimes
+        if racetimes:
+            m[n] = racetimes[0]
+        m[n + 's'] = racetimes[:10]
+
     def make_single(self, specific):
         ret = {
             "name": specific,
@@ -19,7 +53,13 @@ class Selector(dbselectors.Selector):
                 "gameplayer": None,
                 "time": 0,
                 },
+            "toperace": {
+                "game": None,
+                "gameplayer": None,
+                "time": 0,
+                },
             "topraces": [],
+            "toperaces": [],
             }
         gamerows = list(self.db.execute(
             """SELECT * FROM games
@@ -40,37 +80,9 @@ class Selector(dbselectors.Selector):
 
         # Race Times
         if self.flags['race']:
-            racetimes = []
-            for row in self.db.execute(
-                """SELECT * FROM games
-                WHERE map = ?
-                AND mode = re_mode(id, 'race')
-                AND(mutators & re_mut(id, 'timed'))
-                AND %s
-                AND (mutators & re_mut(id, 'freestyle')) = 0""" % (
-                    self.vlimit("id")), (ret['name'],)):
-                    game = gs.fromrow(row)
-                    finishedplayers = [
-                        p for p in list(game["players"].values())
-                        if p["score"] > 0]
-                    for p in finishedplayers:
-                        rtime = {}
-                        rtime["time"] = p["score"]
-                        rtime["gameplayer"] = p
-                        rtime["game"] = game
-                        racetimes.append(rtime)
-            racetimes = sorted(racetimes, key=lambda x: x["time"])
-            tmpracetimes = []
-            handles = []
-            for rtime in racetimes:
-                if rtime["gameplayer"]["handle"] not in handles:
-                    tmpracetimes.append(rtime)
-                if rtime["gameplayer"]["handle"]:
-                    handles.append(rtime["gameplayer"]["handle"])
-            racetimes = tmpracetimes
-            if racetimes:
-                ret["toprace"] = racetimes[0]
-            ret["topraces"] = racetimes[:10]
+            self.getracetimes(ret, gs, "toprace")
+            self.getracetimes(ret, gs, "toperace",
+                "AND(mutators & re_mut(id, 'endurance'))")
         return ret
 
     def make_multi(self):

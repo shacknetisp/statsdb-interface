@@ -14,6 +14,7 @@ displays = [
     (['playergames'], 'playergames'),
     (['weapon', 'weapons'], 'weapon'),
     (['map', 'maps'], 'map'),
+    (['racemaps'], 'racemaps'),
     (['mode', 'modes'], 'mode'),
     (['mut', 'mutator', 'muts', 'mutators'], 'mut'),
 ]
