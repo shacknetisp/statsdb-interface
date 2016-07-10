@@ -29,19 +29,14 @@ class DB:
         self.lock.release()
 
     def execute(self, *args):
-        if not self.lock.locked():
-            with self:
-                return self.con.execute(*args)
-        else:
-            return self.con.execute(*args)
+        return self.con.execute(*args)
 
     def backup(self, backupfile):
-        self.lock.acquire()
-        # Copy the DB
-        self.con = sqlite3.connect(self.path)
-        cur = self.con.cursor()
-        cur.execute('BEGIN IMMEDIATE')
-        shutil.copyfile(self.path, backupfile)
-        self.con.rollback()
-        self.con.close()
-        self.lock.release()
+        with self.lock:
+            # Copy the DB
+            self.con = sqlite3.connect(self.path)
+            cur = self.con.cursor()
+            cur.execute('BEGIN IMMEDIATE')
+            shutil.copyfile(self.path, backupfile)
+            self.con.rollback()
+            self.con.close()
